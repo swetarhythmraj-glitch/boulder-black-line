@@ -1007,7 +1007,7 @@ function wireClear(btnId, inputId, key) {
     var inp = $(inputId);
     inp.value = "";
     placeById[key] = null;
-    if (key === "qPickup") qzFlightSync();
+    if (key === "qPickup") { qzFlightSync(); airlineGatePickup(); }
     refreshFlightFields();
     routeWidget();
     inp.focus();
@@ -1187,6 +1187,10 @@ function gaClose() {
   document.body.classList.remove("airline-open");
 }
 function gaSelect(name) {
+  /* A selection is recorded only in the airport-pickup flow: if
+     the pickup is no longer an airport, the tap is ignored and
+     nothing is recorded. */
+  if (!qzPickupIsAirport()) { gaClose(); return; }
   diaAirline = name;
   diaAirlineSkipped = false;
   diaGateDone = true;
@@ -1220,11 +1224,15 @@ $("bFboDropoff").addEventListener("change", function () { refreshFlightFields();
   var sel = $("bAirline");
   if (sel) sel.innerHTML = '<option value="">Choose your airline</option>' + GA_ALL.map(function (n) { return '<option value="' + n + '">' + n + '</option>'; }).join("");
 })();
-/* The airline sheet asks when an airport pickup is chosen (this
-   page's standing trigger — the same detection that shows the
-   flight-number field) and, mirroring the reference, when a DIA
-   drop-off is chosen. Skipping dismisses it until Continue, which
-   asks again. */
+/* The airline sheet asks ONLY when an airport pickup is chosen —
+   the standing rule (user, 2026-11-17 22:53 MST): the airline
+   choose option and the flight-number field appear only when the
+   rider's PICKUP address is an airport (any airport), on the same
+   detection that shows the flight-number field. A DIA drop-off
+   never asks. Skipping dismisses it until Continue, which asks
+   again (airport pickups only). When the pickup stops being an
+   airport, any chosen airline is cleared and an open sheet is
+   closed, so no stale airline can ride along. */
 function airlineGatePickup() {
   if (document.body.classList.contains("book-open")) return;
   if (qzPickupIsAirport()) {
@@ -1233,13 +1241,7 @@ function airlineGatePickup() {
     if (diaAirline) { diaAirline = null; syncAirlineUI(); }
     diaAirlineSkipped = false;
     diaGateDone = false;
-  }
-}
-function airlineGateDropoff() {
-  if (document.body.classList.contains("book-open")) return;
-  var d = placeById.qDropoff;
-  if (d && isDIAPlace(d)) {
-    if (!diaAirline && !diaAirlineSkipped && !diaGateDone) gaShow();
+    gaClose();
   }
 }
 ["qDiaSide", "bDiaSide"].forEach(function (id) {
@@ -1347,7 +1349,6 @@ $("quickForm").addEventListener("submit", function (e) {
   }
   if (bad) { flagField(bad, true); return; }
   if (qzPickupIsAirport() && !diaAirline && !diaGateDone) { diaGateDone = true; gaShow(); return; }
-  if (placeById.qDropoff && isDIAPlace(placeById.qDropoff) && !diaAirline && !diaGateDone) { diaGateDone = true; gaShow(); return; }
   if (!widgetRouteReady()) {
     if (placeById.qPickup && placeById.qDropoff) { flagMsg($("qDropoff"), "We are still pricing your route. Give it a moment, then tap Continue again.", false); flagField($("qDropoff"), true); }
     else if (!placeById.qPickup) { flagMsg($("qPickup"), "Please pick your pickup from the address list so we can price your ride.", false); flagField($("qPickup"), true); }
@@ -1517,16 +1518,14 @@ function bindAc(id, key) {
     clearField(inp);
     placeById[key] = normPlace(inp, p);
     if (key === "qPickup" && qzPickupIsAirport()) diaGateDone = false;
-    if (key === "qDropoff" && placeById.qDropoff && isDIAPlace(placeById.qDropoff)) diaGateDone = false;
     if (key === "qPickup") qzFlightSync();
     refreshFlightFields();
     routeWidget();
     if (key === "qPickup") airlineGatePickup();
-    if (key === "qDropoff") airlineGateDropoff();
   });
   inp.addEventListener("input", function () {
     placeById[key] = null;
-    if (key === "qPickup") qzFlightSync();
+    if (key === "qPickup") { qzFlightSync(); airlineGatePickup(); }
     refreshFlightFields();
     routeWidget();
   });
