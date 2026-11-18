@@ -282,9 +282,10 @@ html.veh-pending #qVehImg{display:none}
 html.look-app .qmap-note{color:#B9B9B9;background:linear-gradient(100deg,#161616 40%,#202020 50%,#161616 60%);background-size:200% 100%}
 html.look-app .qmap-note.qmap-failed{background:#161616}
 @media (prefers-reduced-motion: reduce){.qveh-skel,.qmap-note{animation:none}}
-.qmap{position:relative;height:100px;border-radius:12px;overflow:hidden;background:#E7EDE3;margin:0}
+.qmap{position:relative;height:300px;border-radius:12px;overflow:hidden;background:#E7EDE3;margin:0}
 .qfare{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;background:var(--surface2);border-radius:12px;padding:12px 16px;margin:0 0 8px}
 .qfare[hidden]{display:none}
+#qzFlightField[hidden]{display:none}
 .qfare .q-lbl{font-size:15px;font-weight:600;color:var(--ink)}
 .qfare .q-amt{font-size:24px;font-weight:700;color:var(--amber-strong);line-height:1}
 .qfare .q-det{font-size:14px;font-weight:600;color:var(--muted)}
@@ -421,8 +422,6 @@ body.xyz-edit-on .ticker{margin-top:64px}
 <section style="padding:4px 0 48px">
   <div class="wrap qwrap">
     <div class="qcard">
-      <div class="kicker">Quote request</div>
-      <h1>Book your ride with Boulder Black Line</h1>
       <div class="qid">
         <span class="qid-co">Boulder Black Line</span>
         <span class="qid-owner">Owner: <span data-bbl-owner>Boulder Black Line</span></span>
@@ -437,6 +436,7 @@ body.xyz-edit-on .ticker{margin-top:64px}
             <div class="field"><label class="flabel" for="qzTime">Time</label><input id="qzTime" type="time"><div class="err">Please pick the time of your ride.</div></div>
           </div>
           <div class="field"><label class="flabel" for="qzPickup">Pickup location</label><input id="qzPickup" type="text" placeholder="Start typing an address" autocomplete="off"><div class="err">Please enter your pickup location.</div></div>
+          <div class="field" id="qzFlightField" hidden><label class="flabel" for="qzFlight">Flight number (optional)</label><input id="qzFlight" type="text" autocomplete="off" placeholder="e.g. UA 1234"><div class="err"></div></div>
           <div class="field"><label class="flabel" for="qzDropoff">Drop-off location</label><input id="qzDropoff" type="text" placeholder="Start typing an address" autocomplete="off"><div class="err">Please enter your drop-off location.</div></div>
           <div class="qfare" id="qFare" hidden></div>
           <div class="qduo">
@@ -456,7 +456,7 @@ body.xyz-edit-on .ticker{margin-top:64px}
           <img src="bbl-suv-2.jpg" alt="2026 Cadillac Escalade ESV, rear three-quarter view" loading="lazy">
           <img src="bbl-suv-3.jpg" alt="2026 Cadillac Escalade ESV, front cabin with black leather interior" loading="lazy">
           <img src="bbl-suv-4.jpg" alt="2026 Cadillac Escalade ESV, rear passenger seats with black leather interior" loading="lazy">
-          <img src="bbl-suv-5.jpg" alt="2026 Cadillac Escalade ESV, side profile showing the extended-length body" loading="lazy">
+          <img src="bbl-suv-5.jpg" alt="2026 Cadillac Escalade ESV, front corner detail with vertical LED headlight" loading="lazy">
           </div>
           <button class="qshow-btn qshow-prev" id="qShowPrev" type="button" aria-label="Previous photo">&#8249;</button>
           <button class="qshow-btn qshow-next" id="qShowNext" type="button" aria-label="Next photo">&#8250;</button>
@@ -660,16 +660,44 @@ function qzWidget(){
 function qzTrimMap(){
   try {
     if(!mapsReady || !qzMap || !qzPlaces.pickup || !qzPlaces.dropoff) return;
-    var b = new google.maps.LatLngBounds();
-    b.extend(mkLatLng(qzPlaces.pickup.lat, qzPlaces.pickup.lng)); b.extend(mkLatLng(qzPlaces.dropoff.lat, qzPlaces.dropoff.lng));
-    qzMap.fitBounds(b, 56);
     var svc = new google.maps.DirectionsService();
     svc.route({ origin: mkLatLng(qzPlaces.pickup.lat, qzPlaces.pickup.lng), destination: mkLatLng(qzPlaces.dropoff.lat, qzPlaces.dropoff.lng), travelMode: google.maps.TravelMode.DRIVING }, function(res, st){
-      if(st === "OK" && res){ if(qzLine) qzLine.setMap(null); qzLine = new google.maps.DirectionsRenderer({ map: qzMap, suppressMarkers: true, polylineOptions: { strokeColor: "#c2922e", strokeWeight: 5 } }); qzLine.setDirections(res); }
+      if(st === "OK" && res && res.routes && res.routes[0]){
+        if(qzLine) qzLine.setMap(null);
+        /* preserveViewport: the framing is done explicitly below, once, from
+           the route's own bounds with a small padding that fits the map box.
+           The old code called fitBounds(bounds, 56) up front: 56px of padding
+           on the 100px-tall map left a negative viewport height, collapsed
+           the zoom to near-world level, and shrank the route line to a few
+           pixels beside the Denver pin. */
+        qzLine = new google.maps.DirectionsRenderer({ map: qzMap, suppressMarkers: true, preserveViewport: true, polylineOptions: { strokeColor: "#c2922e", strokeWeight: 5 } });
+        qzLine.setDirections(res);
+        var rb = res.routes[0].bounds;
+        if(rb){ qzMap.fitBounds(rb, 32); }
+        else { var b = new google.maps.LatLngBounds(); b.extend(mkLatLng(qzPlaces.pickup.lat, qzPlaces.pickup.lng)); b.extend(mkLatLng(qzPlaces.dropoff.lat, qzPlaces.dropoff.lng)); qzMap.fitBounds(b, 32); }
+      }
     });
   } catch(e){}
 }
 function qzRoute(){ qzWidget(); qzTrimMap(); }
+/* Flight number field: visible only while the SELECTED pickup place is
+   an airport. Detection rides on the flags normPlace already sets for
+   ANY airport, not just DEN: isAnyAirport when the place's Google types
+   include "airport" or its name/address says airport, and isAirport
+   when a DIA pick snapped to a terminal point. Based on the selected
+   place only, never on raw typed text. Hiding clears the value, so a
+   stale flight number can never ride along on a later request. The
+   field is optional: an airport pickup submits fine without it. */
+function qzPickupIsAirport(){
+  var p = qzPlaces.pickup;
+  return !!(p && (p.isAnyAirport || p.isAirport));
+}
+function qzFlightSync(){
+  var wrap = qz$("qzFlightField"); if(!wrap) return;
+  var show = qzPickupIsAirport();
+  wrap.hidden = !show;
+  if(!show){ var inp = qz$("qzFlight"); if(inp) inp.value = ""; }
+}
 function qzNullFare(){ qzFare = null; qzRouteMeta = null; qz$("qFare").hidden = true; }
 function qzAutoc(id, key){
   var inp = qz$(id); if(!inp) return;
@@ -679,9 +707,10 @@ function qzAutoc(id, key){
     if(p){ inp.value = p.formatted_address || p.name || inp.value; }
     clearField(inp);
     qzPlaces[key] = normPlace(inp, p);
+    qzFlightSync();
     qzRoute();
   });
-  inp.addEventListener("input", function(){ qzPlaces[key] = null; qzNullFare(); });
+  inp.addEventListener("input", function(){ qzPlaces[key] = null; qzNullFare(); qzFlightSync(); });
 }
 window.__qzInitMaps = function(){
   try {
@@ -701,6 +730,7 @@ setTimeout(function(){
 }, 10000);
 (function(){
   qzSetMin();
+  qzFlightSync();
   var form = qz$("quoteForm"); if(!form) return;
   form.addEventListener("submit", function(ev){
     ev.preventDefault();
@@ -718,6 +748,8 @@ setTimeout(function(){
     need(dropoff, !!qzPlaces.dropoff, "Please pick your drop-off location from the suggestions.");
     need(phone, (phone.value || "").replace(/\D/g, "").length >= 10, "Please enter a valid phone number.");
     if(bad){ bad.focus(); return; }
+    var flightNumber = "";
+    if(qzPickupIsAirport()){ var flEl = qz$("qzFlight"); if(flEl) flightNumber = (flEl.value || "").trim().toUpperCase(); }
     var code = "QR-" + (1000 + Math.floor(Math.random() * 9000));
     var rec = {
       id: "q" + Date.now().toString(36),
@@ -733,6 +765,7 @@ setTimeout(function(){
       fare: qzFare, miles: qzRouteMeta ? qzRouteMeta.miles : null, mins: qzRouteMeta ? qzRouteMeta.mins : null,
       createdAt: new Date().toISOString()
     };
+    if(flightNumber) rec.flightNumber = flightNumber;
     try {
       var all = []; try { all = JSON.parse(localStorage.getItem(QZ_LS) || "[]"); } catch(e){ all = []; }
       if(!Array.isArray(all)) all = [];
@@ -754,6 +787,7 @@ setTimeout(function(){
         passengers: rec.passengers, notes: rec.notes, status: "requested",
         fareDetail: fareDetail, createdAt: rec.createdAt, quote: true
       });
+      if(flightNumber) books[books.length - 1].flightNumber = flightNumber;
       localStorage.setItem(QZ_LS_BOOKS, JSON.stringify(books));
       if (window.BBL_BACKEND) { try { BBL_BACKEND.recordBooking(books[books.length-1]); } catch(e){} }
     } catch(e){}
@@ -763,6 +797,7 @@ setTimeout(function(){
       ["Drop-off", rec.dropoff],
       ["Passengers", String(rec.passengers)]
     ];
+    if(rec.flightNumber) rows.splice(2, 0, ["Flight", rec.flightNumber]);
     if(rec.fare != null) rows.push(["Your fare", "$" + fmtMoney(rec.fare) + " (" + rec.miles.toFixed(1) + " mi)"]);
     if(rec.notes) rows.push(["Notes", rec.notes]);
     qz$("qSummary").innerHTML = rows.map(function(r){ return "<div class='srow'><span>" + r[0] + "</span><b>" + r[1] + "</b></div>"; }).join("");
@@ -777,6 +812,7 @@ setTimeout(function(){
     form.reset(); form.style.display = "";
     qzPlaces = { pickup: null, dropoff: null };
     qzNullFare(); qzSetMin();
+    qzFlightSync();
     qz$("qMap").scrollIntoView({ behavior: "smooth", block: "center" });
   });
 })();
