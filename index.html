@@ -524,7 +524,6 @@ body.airline-open{overflow:hidden}
   <div class="wrap nav">
     <a class="brand" href="/index.html">Boulder <span>Black Line</span></a>
     <div class="auth-area">
-      <a class="btn btn-ghost" href="/owner.html">Log In</a>
       <a class="btn btn-ghost callbtn" href="tel:+17203264652"><span class="call-full">Call (720) 326-4652</span><span class="call-short">Call now</span><span class="call-plain">Call</span></a>
       <a class="btn btn-amber" href="#quickForm">Book Now</a>
     </div>
@@ -532,29 +531,10 @@ body.airline-open{overflow:hidden}
 </header></header>
 
 <main id="top">
-<!-- HERO (XYZ layout): photo band with headline, then the booking widget:
-     map panel, mode toggle, service, route fields, fare, Continue. -->
+<!-- HERO (XYZ layout): the booking widget first (map panel, mode toggle,
+     service, route fields, fare, Continue), then the photo band below it
+     (user order 2026-11-17 22:45: slideshow under the Continue button). -->
 <section class="qhero">
-  <div class="qband">
-    <div class="qshow" id="qShow" role="region" aria-roledescription="carousel" aria-label="2026 Cadillac Escalade ESV photos">
-      <div class="qshow-track" id="qShowTrack">
-      <img id="qVehImg" data-bbl-veh="vehicle" src="bbl-suv-1.jpg" alt="2026 Cadillac Escalade ESV, front three-quarter view">
-      <img src="bbl-suv-2.jpg" alt="2026 Cadillac Escalade ESV, rear three-quarter view" loading="lazy">
-      <img src="bbl-suv-3.jpg" alt="2026 Cadillac Escalade ESV, front cabin with black leather interior" loading="lazy">
-      <img src="bbl-suv-4.jpg" alt="2026 Cadillac Escalade ESV, rear passenger seats with black leather interior" loading="lazy">
-      <img src="bbl-suv-5.jpg" alt="2026 Cadillac Escalade ESV, front three-quarter view showing the vertical LED headlights" loading="lazy">
-      </div>
-      <button class="qshow-btn qshow-prev" id="qShowPrev" type="button" aria-label="Previous photo">&#8249;</button>
-      <button class="qshow-btn qshow-next" id="qShowNext" type="button" aria-label="Next photo">&#8250;</button>
-      <div class="qshow-dots" id="qShowDots">
-      <button type="button" class="qshow-dot is-on" data-i="0" aria-label="Photo 1 of 5"></button>
-      <button type="button" class="qshow-dot" data-i="1" aria-label="Photo 2 of 5"></button>
-      <button type="button" class="qshow-dot" data-i="2" aria-label="Photo 3 of 5"></button>
-      <button type="button" class="qshow-dot" data-i="3" aria-label="Photo 4 of 5"></button>
-      <button type="button" class="qshow-dot" data-i="4" aria-label="Photo 5 of 5"></button>
-      </div>
-    </div>
-  </div>
   <form class="appbook" id="quickForm" novalidate aria-label="Check your ride">
     <div class="map-panel qmap">
       <div id="qMap" role="img" aria-label="Map of your route"></div>
@@ -587,6 +567,26 @@ body.airline-open{overflow:hidden}
       <button class="continue-btn" type="submit">Continue</button>
     </div>
   </form>
+  <div class="qband">
+    <div class="qshow" id="qShow" role="region" aria-roledescription="carousel" aria-label="2026 Cadillac Escalade ESV photos">
+      <div class="qshow-track" id="qShowTrack">
+      <img id="qVehImg" data-bbl-veh="vehicle" src="bbl-suv-1.jpg" alt="2026 Cadillac Escalade ESV, front three-quarter view">
+      <img src="bbl-suv-2.jpg" alt="2026 Cadillac Escalade ESV, rear three-quarter view" loading="lazy">
+      <img src="bbl-suv-3.jpg" alt="2026 Cadillac Escalade ESV, front cabin with black leather interior" loading="lazy">
+      <img src="bbl-suv-4.jpg" alt="2026 Cadillac Escalade ESV, rear passenger seats with black leather interior" loading="lazy">
+      <img src="bbl-suv-5.jpg" alt="2026 Cadillac Escalade ESV, front three-quarter view showing the vertical LED headlights" loading="lazy">
+      </div>
+      <button class="qshow-btn qshow-prev" id="qShowPrev" type="button" aria-label="Previous photo">&#8249;</button>
+      <button class="qshow-btn qshow-next" id="qShowNext" type="button" aria-label="Next photo">&#8250;</button>
+      <div class="qshow-dots" id="qShowDots">
+      <button type="button" class="qshow-dot is-on" data-i="0" aria-label="Photo 1 of 5"></button>
+      <button type="button" class="qshow-dot" data-i="1" aria-label="Photo 2 of 5"></button>
+      <button type="button" class="qshow-dot" data-i="2" aria-label="Photo 3 of 5"></button>
+      <button type="button" class="qshow-dot" data-i="3" aria-label="Photo 4 of 5"></button>
+      <button type="button" class="qshow-dot" data-i="4" aria-label="Photo 5 of 5"></button>
+      </div>
+    </div>
+  </div>
   <div class="qveh-strip" id="qVeh">
     <div class="qveh-skel" id="qVehSkel" aria-hidden="true"></div>
     <div class="qveh-txt">
@@ -699,7 +699,7 @@ body.airline-open{overflow:hidden}
       <div><h3>Contact</h3><p>Call / text: <a href="tel:+17203264652">(720) 326-4652</a><br>Email: <a href="mailto:info@boulderblackline.com">info@boulderblackline.com</a></p></div>
       <div><h3>Good to know</h3><p>Licensed &amp; insured · <span class="ph">[Permit / PUC #]</span><br>One SUV, one driver, rides are first-booked, first-served.<br>Airport pickups include flight tracking.</p></div>
     </div>
-    <div class="fine">© 2026 Boulder Black Line · <a href="/privacy.html">Privacy Policy</a> · <a href="/terms.html">Terms of Service</a></div>
+    <div class="fine">© 2026 Boulder Black Line · <a href="/privacy.html">Privacy Policy</a> · <a href="/terms.html">Terms of Service</a> · <a href="/owner.html">Admin</a></div>
   </div>
 </footer>
 
