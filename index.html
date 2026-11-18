@@ -123,6 +123,7 @@ header.site .btn{white-space:nowrap}
 .continue-btn{width:100%;background:#fff;color:#14100B;min-height:58px;font-size:17px;border-radius:999px;border:0;font-weight:800;cursor:pointer}
 .continue-btn:hover{background:#F1E8D2}
 .continue-btn:active{transform:scale(.98)}
+.continue-btn[disabled]{opacity:.55;cursor:default}
 @media(max-width:560px){.map-panel{height:320px}.app-panel{padding:14px}}
 .grid{display:grid;gap:14px}.g4{grid-template-columns:repeat(4,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:repeat(2,1fr)}
 @media(max-width:900px){.g4,.g3{grid-template-columns:repeat(2,1fr)}} @media(max-width:560px){.g4,.g3,.g2{grid-template-columns:1fr}}
@@ -136,6 +137,21 @@ textarea{min-height:84px;resize:vertical}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
 .shake{animation:shake .32s ease}
 @media(prefers-reduced-motion:reduce){.shake{animation:none}html{scroll-behavior:auto}*{transition:none!important}}
+/* Guided flow (owner's order, 2026-11-18): a finished field turns
+   green; the next REQUIRED field carries a glowing outline that
+   pulses on a 1s cycle (noticeable, not a blink). Optional fields
+   never glow. The error flag always wins — these rules apply only
+   to fields that are not .invalid. Reduced motion: the glow
+   becomes a steady outline, no pulsing. */
+.field.gf-done:not(.invalid) input,.field.gf-done:not(.invalid) select,.field.gf-done:not(.invalid) textarea{border-color:var(--green);box-shadow:0 0 0 4px color-mix(in srgb,var(--green) 22%,transparent)}
+.field.gf-next:not(.invalid) input,.field.gf-next:not(.invalid) select,.field.gf-next:not(.invalid) textarea{border-color:var(--amber);animation:gfGlow 1s ease-in-out infinite}
+@keyframes gfGlow{0%,100%{box-shadow:0 0 0 3px color-mix(in srgb,var(--amber) 28%,transparent),0 0 10px color-mix(in srgb,var(--amber) 22%,transparent)}50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--amber) 48%,transparent),0 0 20px color-mix(in srgb,var(--amber) 40%,transparent)}}
+#qContinue.gf-done,#toStep3.gf-done,#confirmBtn.gf-done{box-shadow:0 0 0 3px color-mix(in srgb,var(--amber) 38%,transparent),0 0 16px color-mix(in srgb,var(--amber) 32%,transparent)}
+.field.gf-done:not(.invalid) .consent-box{border-color:var(--green);box-shadow:0 0 0 4px color-mix(in srgb,var(--green) 22%,transparent)}
+.field.gf-next:not(.invalid) .consent-box{border-color:var(--amber);animation:gfGlow 1s ease-in-out infinite}
+.field.gf-done:not(.invalid) .consent-box input,.field.gf-next:not(.invalid) .consent-box input{box-shadow:none;animation:none}
+@media(prefers-reduced-motion:reduce){.field.gf-next:not(.invalid) .consent-box{animation:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--amber) 40%,transparent)}}
+@media(prefers-reduced-motion:reduce){.field.gf-next:not(.invalid) input,.field.gf-next:not(.invalid) select,.field.gf-next:not(.invalid) textarea{animation:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--amber) 40%,transparent)}}
 section{padding:64px 0} .alt{background:var(--surface2)}
 .kicker{font-size:12.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:10px}
 h2.sec{font-size:clamp(26px,4vw,38px);font-weight:800;margin-bottom:10px}
@@ -947,7 +963,7 @@ main{animation:bblPagein .35s ease-out}
       </div>
       <div class="field cond dia-side" id="qDiaSideField"><div class="dia-side-row"><label class="flabel" for="qDiaSide">DIA pickup side</label><select id="qDiaSide"><option value="west">West</option><option value="east">East</option></select></div><div class="guide-note slim" id="qDiaGuide"></div></div>
       <div class="q-fare" id="qFare" hidden></div>
-      <button class="continue-btn" type="submit">Continue</button>
+      <button class="continue-btn" id="qContinue" type="submit">Continue</button>
     </div>
   </form>
   <div class="qband">
@@ -992,7 +1008,7 @@ main{animation:bblPagein .35s ease-out}
       <article class="svc svc-k-wedding"><img src="bbl-svc-wedding.jpg" alt="Black Cadillac Escalade ESV in profile outside a stone wedding venue with a floral arch" loading="lazy"><div class="svc-body"><h3>Wedding &amp; Ceremony</h3><p>Ceremony, photos, reception: one calm driver for the whole day, waiting at every stop while you celebrate.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="wedding">Book this</button></div></div></article>
       <article class="svc svc-k-concert svc-pano"><img src="bbl-svc-concert.jpg" alt="Black Cadillac Escalade ESV at a theater marquee on a concert night" loading="lazy"><div class="svc-body"><h3>Concert &amp; Events</h3><p>Red Rocks, Ball Arena and every metro venue — dropped off at the gate and picked up at a set spot after the show.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="concert">Book this</button></div></div></article>
       <article class="svc svc-k-mountain svc-split svc-split-r"><img src="bbl-svc-mountain.jpg" alt="Black Cadillac Escalade ESV on a winding Colorado mountain road" loading="lazy"><div class="svc-body"><h3>Mountain Rides</h3><p>Ski towns, resorts and mountain weddings in the long-wheelbase Escalade — room for skis, boards and all the gear.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="mountain">Book this</button></div></div></article>
-      <article class="svc svc-k-hourly"><img src="bbl-svc-hourly.jpg" alt="Black Cadillac Escalade ESV waiting at a hotel front drive at dusk" loading="lazy"><div class="svc-body"><h3>Hourly Reservation</h3><p>Your driver stays with you through errands, tours or a full evening of stops. One booking, 3-hour minimum.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="hourly">Book this</button></div></div></article>
+      <article class="svc svc-k-hourly"><img src="bbl-svc-hourly.jpg" alt="Black Cadillac Escalade ESV waiting at a hotel front drive at dusk" loading="lazy"><div class="svc-body"><h3>Hourly Reservation</h3><p>Your driver stays with you through errands, tours or a full evening of stops. One booking, 2-hour minimum.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="hourly">Book this</button></div></div></article>
     </div>
   </div>
 </section>
@@ -1079,7 +1095,7 @@ main{animation:bblPagein .35s ease-out}
           <div class="field cond" id="tailFieldDropoff"><label class="flabel" for="bTailDropoff">Flight or tail number (drop-off airport)</label><input id="bTailDropoff" type="text" placeholder="e.g. N12345 on a private plane"><div class="err"></div></div>
           <div class="field cond" id="fboFieldDropoff"><label class="flabel" for="bFboDropoff">FBO / facility (drop-off airport)</label><select id="bFboDropoff"><option value="">Select…</option><option value="Signature Aviation">Signature Aviation</option><option value="Other">Other</option></select><div class="err"></div></div>
           <div class="field cond" id="fboOtherFieldDropoff"><label class="flabel" for="bFboOtherDropoff">Facility name (drop-off airport)</label><input id="bFboOtherDropoff" type="text" placeholder="Name of the facility"><div class="err"></div></div>
-          <div class="field cond" id="hoursField"><label class="flabel" for="bHours">Hours needed *</label><select id="bHours"><option value="">Select…</option><option value="3">3 hours (minimum)</option><option value="4">4 hours</option><option value="5">5 hours</option><option value="6">6 hours</option><option value="8">8 hours</option></select><div class="err">Please choose how many hours (3-hour minimum).</div></div>
+          <div class="field cond" id="hoursField"><label class="flabel" for="bHours">Hours needed *</label><select id="bHours"><option value="">Select…</option><option value="2">2 hours (minimum)</option><option value="3">3 hours</option><option value="4">4 hours</option><option value="5">5 hours</option><option value="6">6 hours</option><option value="8">8 hours</option><option value="10">10 hours</option><option value="12">12 hours</option></select><div class="err">Please choose how many hours (2-hour minimum).</div></div>
           <div class="field cond" id="stopsField" style="grid-column:1/-1"><label class="flabel" for="bStops">Your stops</label><textarea id="bStops" placeholder="e.g. Ceremony at [venue], photos at [park], reception at [hall]. Add times if you have them."></textarea><div class="err"></div></div>
         </div>
         <div class="booknav"><button type="button" class="btn btn-ghost" id="bookExit">Back</button><button type="button" class="btn btn-amber" id="toStep3">Continue</button></div>
@@ -1158,7 +1174,7 @@ main{animation:bblPagein .35s ease-out}
   <a href="sms:+17203264652">Text</a>
 </nav>
 
-<script src="bbl-pricing.js"></script>
+<script src="bbl-pricing.js?v=2026-11-18-rates2"></script>
 <script src="bbl-backend.js"></script>
 <script>
 "use strict";
@@ -1178,11 +1194,11 @@ function fmtTime(t){if(!t)return"";var p=t.split(":"),h=+p[0],m=p[1],ap=h>=12?"P
 function fmtDate(d){if(!d)return"";var dt=new Date(d+"T12:00:00");return dt.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})}
 function escHtml(t){return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
 function flagMsg(el,msg,focusIt){var f=el.closest(".field");if(f){var e=f.querySelector(".err");if(e&&msg)e.textContent=msg}flagField(el,!!focusIt)}
-var FARE_CONFIG = window.BBL_PRICING; /* Boulder Black Line pricing snapshot — this site's only pricing source. */
+var FARE_CONFIG = window.BBL_PRICING || {}; /* Boulder Black Line pricing snapshot — this site's only pricing source. The || {} keeps a missing snapshot from killing the whole script at this line; the integrity check at the foot of this script heals or reports it. */
 /* Default map view: Denver downtown and the metro area, wide
    framing, no pin. Route framing takes over once both addresses
    are picked. */
-var BBL_DEFAULT_CENTER = FARE_CONFIG.denverCenter; /* 39.7392, -104.9903 */
+var BBL_DEFAULT_CENTER = FARE_CONFIG.denverCenter || { lat: 39.7392, lng: -104.9903 }; /* 39.7392, -104.9903 */
 var BBL_DEFAULT_ZOOM = 10;
 var DIA_CANON_ADDR = "Denver International Airport, 8500 Peña Blvd, Denver, CO 80249, USA";
 /* Airline code to DIA terminal side (same table the reference pages ship). */
@@ -1191,18 +1207,22 @@ var DIA_AIRLINE_SIDE = {
   WN: "east", F9: "east", AA: "east", AS: "east", B6: "east", AC: "east", EI: "east", DE: "east",
   IB: "east", JL: "east", KL: "east", N0: "east", SY: "east", Y4: "east", WS: "east"
 };
-/* One way point to point services get route fares. Hourly is priced
-   per hour from the snapshot, and wedding, concert and mountain keep
-   their flat package prices. */
-var ROUTE_SERVICES = { airport: 1, business: 1, special: 1 };
+/* Every point-to-point service is priced by the route, at the same
+   rates as RideWave (owner, 2026-11-18): the meter fare, the stadium
+   / venue rule and the mountain flat fares all live in the pricing
+   snapshot (bbl-pricing.js). Hourly is priced per hour from the same
+   snapshot. No service carries its own package price anymore — the
+   XYZ-era wedding / concert / mountain flats were not RideWave
+   rates and are gone. */
+var ROUTE_SERVICES = { airport: 1, business: 1, special: 1, wedding: 1, concert: 1, mountain: 1 };
 var SERVICES = {
-  airport: { name: "Airport Pickup / Drop-off", base: 110 },
-  business: { name: "Business Pickup", base: 95 },
-  special: { name: "Special Occasions", base: 395 },
-  wedding: { name: "Wedding & Ceremony", base: 395 },
-  concert: { name: "Concert & Events", base: 135 },
-  mountain: { name: "Mountain Rides", base: 285 },
-  hourly: { name: "Hourly Reservation", base: 95 }
+  airport: { name: "Airport Pickup / Drop-off" },
+  business: { name: "Business Pickup" },
+  special: { name: "Special Occasions" },
+  wedding: { name: "Wedding & Ceremony" },
+  concert: { name: "Concert & Events" },
+  mountain: { name: "Mountain Rides" },
+  hourly: { name: "Hourly Reservation" }
 };
 var state = { service: "", price: 0 };
 /* The booking ride facts, copied from the widget on Continue. The
@@ -1212,13 +1232,25 @@ var bk = { pickup: "", dropoff: "", date: "", time: "" };
 var diaManual = null;
 
 function computedFare(miles, hasAirport) { return FARE_CONFIG.computeFare(miles, hasAirport); }
+/* The full RideWave rate stack for one routed ride: meter fare, then
+   the mountain flat fares, then the stadium / venue rule, with the
+   admin-request gate for places outside the covered area. Endpoints
+   are the picked places (coordinates + address), never raw text. */
+function priceRoute(miles, p, d) {
+  return FARE_CONFIG.priceRide(miles, {
+    pickup: p.address || "", dropoff: d.address || "",
+    pickupLat: p.lat, pickupLng: p.lng, dropoffLat: d.lat, dropoffLng: d.lng
+  });
+}
 
 /* ---------- map and route state ---------- */
 var mapsReady = false;
 var gMap = null, qzMap = null, dirRenderer = null, mkA = null, mkB = null;
 var placeById = { qPickup: null, qDropoff: null, qStop: null };
 var routeQuote = null; /* {fromText, toText, stopText, miles, mins, fare, hasAirport} */
+var geoQuote = null; /* {fromText, toText, fare, stadium, mountain, openCountry} — geometry-only pricing, resolved the moment both places are picked; fare is null while the meter governs */
 var routeSeq = 0, routeFailed = false;
+var ROUTE_WATCHDOG_MS = 12000; /* bounded wait for a Directions answer: past this, a still-pending ride lands in the route-failure state instead of sitting on "Pricing..." forever */
 
 /* The one place genuine LatLng objects are made. Markers, bounds,
    route endpoints and waypoints all go through here, so no Google
@@ -1241,10 +1273,12 @@ function isDIAPlace(p) {
   if (a.indexOf("denver international airport") !== -1) return true;
   if (a.indexOf("jeppesen terminal") !== -1) return true;
   var b = FARE_CONFIG.diaBounds;
+  if (!b) return false;
   return typeof p.lat === "number" && p.lat >= b.latMin && p.lat <= b.latMax && p.lng >= b.lngMin && p.lng <= b.lngMax;
 }
 function snapDIA(p) {
   var s = diaSide() === "east" ? FARE_CONFIG.diaEast : FARE_CONFIG.diaWest;
+  if (!s) return p;
   p.lat = s.lat; p.lng = s.lng; p.isAirport = true;
   return p;
 }
@@ -1344,13 +1378,24 @@ function paintMap(result) {
 }
 
 /* ---------- widget fare line (reference format) ---------- */
+/* The booked-by-request fare line (the admin-request gate, with
+   this site's own number) — shared by the route quote and the
+   geometry quote. */
+var REQUEST_HTML = 'This trip is booked by request. Call or text <a href="tel:+17203264652" style="color:inherit;font-weight:700;text-decoration:underline">(720) 326-4652</a> and we will quote it for you.';
 function refreshWidgetFare() {
+  gfRefresh(null);
+  refreshContinueBtn();
   var el = $("qFare");
   if (!el) return;
+  if (pricingBroken) {
+    el.hidden = false;
+    el.innerHTML = 'Prices could not load on this copy of the page. <a href="index.html" style="color:inherit;font-weight:700;text-decoration:underline">Tap to reload the page</a>';
+    return;
+  }
   var svc = $("qService").value;
   if (svc === "hourly") {
     el.hidden = false;
-    el.textContent = "Hourly rate: $" + FARE_CONFIG.hourlyRate + " per hour, 3 hour minimum. Your total is set by the hours you pick in booking.";
+    el.textContent = "Hourly rate: $" + FARE_CONFIG.hourlyFirstHour + " for the first hour, then $" + FARE_CONFIG.hourlyRate + " per hour · " + FARE_CONFIG.hourlyMinHours + " hour minimum. Your total is set by the hours you pick in booking.";
     return;
   }
   if (!ROUTE_SERVICES[svc]) {
@@ -1360,8 +1405,14 @@ function refreshWidgetFare() {
   }
   if (quoteMatches(routeQuote, $("qPickup").value, $("qDropoff").value)) {
     el.hidden = false;
+    if (routeQuote.openCountry) { el.innerHTML = REQUEST_HTML; return; }
     el.innerHTML = '<span class="q-lbl">Your fare:</span> <span class="q-amt">$' + fmtMoney(routeQuote.fare) + '</span> <span class="q-det">· ' + routeQuote.miles.toFixed(1) + ' mi · about ' + Math.max(1, Math.round(routeQuote.mins)) + ' min</span>';
     return;
+  }
+  if (quoteMatches(geoQuote, $("qPickup").value, $("qDropoff").value)) {
+    el.hidden = false;
+    if (geoQuote.openCountry) { el.innerHTML = REQUEST_HTML; return; }
+    if (geoQuote.fare != null) { el.innerHTML = '<span class="q-lbl">Your fare:</span> <span class="q-amt">$' + fmtMoney(geoQuote.fare) + '</span>'; return; }
   }
   if (!routeFailed && placeById.qPickup && placeById.qDropoff) {
     el.hidden = false;
@@ -1372,46 +1423,267 @@ function refreshWidgetFare() {
   el.textContent = "";
 }
 
+/* Geometry-only pricing, resolved the moment both places are
+   picked — no Directions round-trip. In the snapshot the mountain
+   flat fares, the stadium flat and the admin-request gate are all
+   decided by place geometry (priceRide applies them over any meter
+   fare), so a flat-priced ride never waits for its route. fare
+   stays null while the meter governs (the fare then genuinely
+   needs the route distance) and for the stadium $200 minimum
+   (the max of the meter fare and $200). */
+function computeGeoQuote() {
+  geoQuote = null;
+  var p = placeById.qPickup, d = placeById.qDropoff;
+  if (!p || !d) return;
+  try {
+  var data = {
+    pickup: p.address || "", dropoff: d.address || "",
+    pickupLat: p.lat, pickupLng: p.lng, dropoffLat: d.lat, dropoffLng: d.lng
+  };
+  var mtn = FARE_CONFIG.mountainRuleFor(data);
+  var stad = mtn ? null : FARE_CONFIG.stadiumRuleFor(data);
+  var fare = null;
+  if (mtn) fare = mtn.amount;
+  else if (stad && stad.flat) fare = FARE_CONFIG.stadiumFare;
+  geoQuote = {
+    fromText: $("qPickup").value, toText: $("qDropoff").value,
+    fare: fare, stadium: stad, mountain: mtn,
+    openCountry: FARE_CONFIG.adminRequestGate ? FARE_CONFIG.openCountryFor(data) : false
+  };
+  } catch (e) { geoQuote = null; }
+}
+
 function routeWidget() {
   if (!mapsReady) { refreshWidgetFare(); return; }
   refreshFlightFields();
   var p = placeById.qPickup, d = placeById.qDropoff;
   var stop = !$("stopRow").hidden ? placeById.qStop : null;
   if (!p || !d) {
-    routeQuote = null; routeFailed = false;
+    routeQuote = null; routeFailed = false; geoQuote = null;
     paintMap(null);
     refreshWidgetFare();
     return;
   }
+  computeGeoQuote();
+  refreshWidgetFare();
   var seq = ++routeSeq;
   runRoute(p, stop, d, function (rq) {
+   try {
     if (seq !== routeSeq) return;
-    if (!rq) { routeQuote = null; routeFailed = true; paintMap(null); refreshWidgetFare(); return; }
+    if (!rq) { routeQuote = null; routeFailed = true; paintMap(null); flagMsg($("qDropoff"), "We could not find a route between those addresses. Check them and try again.", false); refreshWidgetFare(); return; }
     routeFailed = false;
     var hasAir = !!(p.isAnyAirport || p.isAirport || d.isAnyAirport || d.isAirport || (stop && (stop.isAnyAirport || stop.isAirport)));
+    var priced = priceRoute(rq.miles, p, d);
     routeQuote = {
       fromText: $("qPickup").value, toText: $("qDropoff").value,
       stopText: stop ? $("qStop").value : "",
       miles: rq.miles, mins: rq.mins,
-      fare: computedFare(rq.miles, hasAir), hasAirport: hasAir
+      fare: priced.fare, meterFare: priced.meterFare,
+      stadium: priced.stadium, mountain: priced.mountain,
+      openCountry: priced.openCountry, hasAirport: hasAir
     };
     paintMap(rq.result);
     refreshWidgetFare();
     updatePrice();
+   } catch (e) {
+    /* A throw inside this callback (pricing is called here)
+       must land in the route-failure state, never in an endless
+       pending state: on 2026-11-18 a stale cached pricing
+       snapshot without priceRide killed this callback on the
+       owner's phone and Continue sat on "Pricing..." forever
+       with no route line and no fare. */
+    if (seq !== routeSeq) return;
+    routeQuote = null; routeFailed = true; paintMap(null);
+    flagMsg($("qDropoff"), "We could not find a route between those addresses. Check them and try again.", false);
+    refreshWidgetFare();
+   }
   });
+  /* Bounded wait: if the Directions answer never comes back at
+     all and the ride is STILL genuinely pending when the timer
+     fires (no route quote, no flat geometry quote, no gate
+     decision), it lands in the same route-failure state as a
+     failed route. Flat-priced rides are never pending here, so
+     they are never false-flagged. */
+  setTimeout(function () {
+    if (seq !== routeSeq) return;
+    if (!routePending()) return;
+    routeFailed = true;
+    flagMsg($("qDropoff"), "We could not find a route between those addresses. Check them and try again.", false);
+    refreshWidgetFare();
+  }, ROUTE_WATCHDOG_MS);
 }
 function widgetRouteReady() {
   if (!ROUTE_SERVICES[state.service]) return true;
-  return quoteMatches(routeQuote, $("qPickup").value, $("qDropoff").value);
+  if (quoteMatches(routeQuote, $("qPickup").value, $("qDropoff").value)) return !routeQuote.openCountry;
+  if (quoteMatches(geoQuote, $("qPickup").value, $("qDropoff").value)) return !geoQuote.openCountry && geoQuote.fare != null;
+  return false;
+}
+/* A normal wait is not an error: while a meter fare genuinely
+   needs its route, Continue shows "Pricing…" and is disabled —
+   no red flag on any field. Flat-priced rides resolve from
+   geometry (computeGeoQuote) and never enter this state, and the
+   admin-request gate is a decision, not a wait. */
+function routePending() {
+  if (!ROUTE_SERVICES[$("qService").value]) return false;
+  if (!placeById.qPickup || !placeById.qDropoff) return false;
+  if (routeFailed) return false;
+  if (quoteMatches(routeQuote, $("qPickup").value, $("qDropoff").value)) return false;
+  if (quoteMatches(geoQuote, $("qPickup").value, $("qDropoff").value) && (geoQuote.openCountry || geoQuote.fare != null)) return false;
+  return true;
+}
+function refreshContinueBtn() {
+  var b = $("qContinue"); if (!b) return;
+  var pending = routePending();
+  b.disabled = pending;
+  b.textContent = pending ? "Pricing…" : "Continue";
 }
 function clearRouteState() {
   placeById = { qPickup: null, qDropoff: null, qStop: null };
   routeQuote = null;
+  geoQuote = null;
   routeFailed = false;
   routeSeq++;
   paintMap(null);
   refreshWidgetFare();
 }
+/* ---------- guided flow: green-done + glowing next ----------
+   The owner's order (2026-11-18): a finished field turns green,
+   the flow moves on its own to the next REQUIRED field, and that
+   field carries a glowing outline (the gfGlow pulse, 1s — a
+   little faster, noticeable, not a blink; steady under reduced
+   motion). The walk covers required fields only: the optional
+   flight-number field is never a target and is never focused by
+   the flow, though a rider can still tap into it directly.
+   Validity mirrors the page's own rules: a route-service address
+   counts when its place is picked (free text counts for hourly),
+   the out-of-area gate makes the drop-off NOT valid (it is an
+   error state, never green), the DIA pickup side counts while
+   shown (it arrives pre-set from the terminal snap, like Bags),
+   and the sheet uses the confirm handler's own name / phone /
+   email / consent rules (step 2 ends at the consent box, which
+   the confirm validator requires — Confirm's ready-glow waits
+   for it). The focus advance is guarded: it moves only while
+   focus is still on the just-completed field, or on no field. Exactly one field glows page-wide: the sheet's
+   next is suppressed while the sheet is closed, the widget's
+   while it is open. The red error flag always wins visually
+   (the CSS guards on :not(.invalid)); an invalid field simply
+   stops reading as done here until it is fixed. */
+function gfFieldWrap(el) { return el && el.closest ? el.closest(".field") : null; }
+function gfGateOpen() {
+  var p = $("qPickup").value, d = $("qDropoff").value;
+  if (quoteMatches(routeQuote, p, d) && routeQuote.openCountry) return true;
+  if (quoteMatches(geoQuote, p, d) && geoQuote.openCountry) return true;
+  return false;
+}
+function gfWidgetValid(id) {
+  var el = $(id); if (!el) return false;
+  if (id === "qService") return !!el.value;
+  if (id === "qPickup") return state.service === "hourly" ? !!el.value.trim() : !!placeById.qPickup;
+  if (id === "qDropoff") {
+    if (gfGateOpen()) return false;
+    return state.service === "hourly" ? !!el.value.trim() : !!placeById.qDropoff;
+  }
+  if (id === "qStop") return !!placeById.qStop;
+  if (id === "qDate" || id === "qTime" || id === "qDiaSide") return !!el.value;
+  return false;
+}
+function gfWidgetOrder() {
+  var ids = ["qService", "qPickup", "qDropoff"];
+  if (!$("stopRow").hidden) ids.push("qStop");
+  ids.push("qDate", "qTime");
+  var qf = $("qDiaSideField");
+  if (qf && qf.classList.contains("show")) ids.push("qDiaSide");
+  return ids;
+}
+function gfSheetStep() {
+  var steps = document.querySelectorAll(".bstep");
+  for (var i = 0; i < steps.length; i++) if (steps[i].classList.contains("on")) return steps[i].getAttribute("data-step");
+  return "1";
+}
+function gfSheetValid(id) {
+  var el = $(id); if (!el) return false;
+  if (id === "bPax" || id === "bBags" || id === "bHours") return !!el.value;
+  if (id === "bName") return (el.value || "").trim().length >= 2;
+  if (id === "bPhone") return (el.value || "").replace(/\D/g, "").length >= 10;
+  if (id === "bEmail") return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((el.value || "").trim());
+  if (id === "bConsent") return !!el.checked;
+  return false;
+}
+function gfSheetOrder() {
+  if (gfSheetStep() === "2") return ["bName", "bPhone", "bEmail", "bConsent"];
+  var ids = ["bPax", "bBags"];
+  if (state.service === "hourly") ids.push("bHours");
+  return ids;
+}
+function gfApply(ids, validFn, suppressNext) {
+  var nextId = null;
+  for (var i = 0; i < ids.length; i++) {
+    var el = $(ids[i]); if (!el) continue;
+    var w = gfFieldWrap(el); if (!w) continue;
+    var okF = validFn(ids[i]);
+    w.classList.toggle("gf-done", okF);
+    if (!okF && !nextId) nextId = ids[i];
+    w.classList.toggle("gf-next", !suppressNext && nextId === ids[i]);
+  }
+  return nextId;
+}
+var GF_WIDGET_ALL = ["qService", "qPickup", "qDropoff", "qStop", "qDate", "qTime", "qDiaSide"];
+var GF_SHEET_ALL = ["bPax", "bBags", "bHours", "bName", "bPhone", "bEmail", "bConsent"];
+function gfClearOutside(allIds, orderIds) {
+  for (var i = 0; i < allIds.length; i++) {
+    if (orderIds.indexOf(allIds[i]) !== -1) continue;
+    var el = $(allIds[i]); if (!el) continue;
+    var w = gfFieldWrap(el); if (!w) continue;
+    w.classList.remove("gf-done"); w.classList.remove("gf-next");
+  }
+}
+function gfRefresh(sourceId) {
+  var sheetOpen = !!(document.body && document.body.classList && document.body.classList.contains("book-open"));
+  var wOrder = gfWidgetOrder(), sOrder = gfSheetOrder();
+  gfClearOutside(GF_WIDGET_ALL, wOrder);
+  gfClearOutside(GF_SHEET_ALL, sOrder);
+  var wNext = gfApply(wOrder, gfWidgetValid, sheetOpen);
+  var wBtn = $("qContinue");
+  if (wBtn) wBtn.classList.toggle("gf-done", !wNext && !routePending());
+  var sNext = gfApply(sOrder, gfSheetValid, !sheetOpen);
+  var sBtn = $(gfSheetStep() === "2" ? "confirmBtn" : "toStep3");
+  if (sBtn) sBtn.classList.toggle("gf-done", sheetOpen && !sNext);
+  if (!sourceId) return;
+  var target = null;
+  if (!sheetOpen && wOrder.indexOf(sourceId) !== -1 && gfWidgetValid(sourceId) && wNext) target = $(wNext);
+  if (sheetOpen && sOrder.indexOf(sourceId) !== -1 && gfSheetValid(sourceId) && sNext) target = $(sNext);
+  if (target) {
+    /* Focus guard: advance only while focus is still on the field
+       that was just completed, or on no field at all (the body).
+       If the rider has already tapped or tabbed to another field,
+       their focus is never fought. */
+    var ae = document.activeElement, srcEl = $(sourceId);
+    if (ae !== target && (!ae || ae === document.body || ae === srcEl)) {
+      var w = gfFieldWrap(target);
+      if (w && w.scrollIntoView) w.scrollIntoView({ behavior: "smooth", block: "center" });
+      /* Date and Time are never focused by the flow: on iOS,
+         focusing one opens its picker, dismissing the picker
+         commits the shown value (today / the current time) as
+         a change, and the flow then advanced again and popped
+         the next picker — the flash the owner hit. They carry
+         the glow only; a real tap opens them. */
+      if (target.focus && target.id !== "qDate" && target.id !== "qTime") target.focus({ preventScroll: true });
+    }
+  }
+}
+/* Completion events: selects / date / time advance on change;
+   text fields advance on blur-with-a-valid-value and only
+   re-sync on input, so focus is never yanked mid-typing. Place
+   picks advance from bindAc's place_changed (gfRefresh(key)). */
+["qService", "qDate", "qTime", "qDiaSide", "bPax", "bBags", "bHours", "bConsent"].forEach(function (id) {
+  var el = $(id); if (el) el.addEventListener("change", function () { gfRefresh(id); });
+});
+["qPickup", "qDropoff", "qStop", "bName", "bPhone", "bEmail"].forEach(function (id) {
+  var el = $(id); if (!el) return;
+  el.addEventListener("blur", function () { gfRefresh(id); });
+  el.addEventListener("input", function () { gfRefresh(null); });
+});
+
 
 /* ---------- service + mode toggle ---------- */
 function setMode(hourly) {
@@ -1522,6 +1794,12 @@ function toggleEndFields(end, show) {
   var o = $("fboOtherField" + end); if (o) o.classList.toggle("show", !!show && !!sel && sel.value === "Other");
 }
 function refreshFlightFields() {
+  /* This sync is cosmetic (field visibility + guides). It sits on
+     the same call stacks as pricing (bindAc place_changed ->
+     routeWidget), so it must never throw into them: a device
+     quirk here once left a fully-picked form with no fare, no
+     route and a dead Continue. The body is fully guarded. */
+  try {
   var info = pickupAirport();
   var ff = $("flightField"); if (ff) ff.classList.toggle("show", !!info.diaPickup);
   var sf = $("diaSideField"); if (sf) sf.classList.toggle("show", !!info.diaPickup);
@@ -1545,6 +1823,8 @@ function refreshFlightFields() {
   if (!qzPickupIsAirport() && diaAirline) clearAirline();
   refreshDiaSideUI();
   syncAirlineUI();
+  gfRefresh(null);
+  } catch (e) {}
 }
 function refreshDiaSideUI() {
   try { var sel = $("bDiaSide"); if (sel) sel.value = diaSide(); } catch (e) {}
@@ -1758,12 +2038,14 @@ function airlineGatePickup() {
 function calcPrice() {
   var s = SERVICES[state.service];
   if (!s) return 0;
-  if (state.service === "hourly") { var h = parseInt($("bHours").value || "3", 10); return FARE_CONFIG.hourlyRate * h; }
+  if (state.service === "hourly") { var h = parseInt($("bHours").value || "2", 10); return FARE_CONFIG.hourlyFare(h); }
   if (ROUTE_SERVICES[state.service]) {
     var rq = quoteMatches(routeQuote, bk.pickup, bk.dropoff) ? routeQuote : null;
-    return rq ? rq.fare : 0;
+    if (rq && rq.fare != null) return rq.fare;
+    var gq = quoteMatches(geoQuote, bk.pickup, bk.dropoff) ? geoQuote : null;
+    return gq && gq.fare != null ? gq.fare : 0;
   }
-  return s.base;
+  return 0;
 }
 function shortPlace(txt, endId) {
   txt = (txt || "").trim();
@@ -1794,10 +2076,15 @@ function updatePrice() {
     return;
   }
   var rq = quoteMatches(routeQuote, bk.pickup, bk.dropoff) ? routeQuote : null;
+  var gq = !rq && quoteMatches(geoQuote, bk.pickup, bk.dropoff) ? geoQuote : null;
   var meta = fmtDate(bk.date) + (bk.time ? " · " + fmtTime(bk.time) : "");
-  if (state.service === "hourly") { meta += " · " + ($("bHours").value || "3") + " hours"; }
+  if (state.service === "hourly") { meta += " · " + ($("bHours").value || "2") + " hours"; }
   else if (rq) { meta += " · " + rq.miles.toFixed(1) + " mi · about " + Math.max(1, Math.round(rq.mins)) + " min"; }
-  var unpriced = !!ROUTE_SERVICES[state.service] && !rq && !routeFailed && mapsReady;
+  if (rq && rq.mountain) { meta += " · Mountain fare — " + rq.mountain.name + " · flat $" + fmtMoney(rq.mountain.amount); }
+  else if (rq && rq.stadium) { meta += " · Stadium fare — " + rq.stadium.name + (rq.stadium.flat ? " · flat $200" : " · $200 minimum"); }
+  else if (gq && gq.mountain) { meta += " · Mountain fare — " + gq.mountain.name + " · flat $" + fmtMoney(gq.mountain.amount); }
+  else if (gq && gq.stadium) { meta += " · Stadium fare — " + gq.stadium.name + " · flat $200"; }
+  var unpriced = !!ROUTE_SERVICES[state.service] && !rq && !(gq && gq.fare != null) && !routeFailed && mapsReady;
   var amtTxt = unpriced ? "Not priced yet" : ("$" + fmtMoney(state.price));
   var metaTxt = unpriced ? "Your fare is set once your route is priced. Go back and pick your addresses from the list." : meta;
   ps.innerHTML = '<div class="sum-top"><div><span class="sum-lbl">Flat total</span><b class="sum-amt">' + amtTxt + '</b></div><div class="sum-svc">' + s.name + '</div></div><div class="sum-route">' + escHtml(shortPlace(bk.pickup, "qPickup")) + ' to ' + escHtml(shortPlace(bk.dropoff, "qDropoff")) + '</div><div class="sum-meta">' + escHtml(metaTxt) + '</div>';
@@ -1820,6 +2107,7 @@ function goStep(n) {
   }
   var bkEl = $("book");
   if (bkEl) bkEl.scrollIntoView({ behavior: "smooth", block: "start" });
+  gfRefresh(null);
 }
 function openBookView() {
   var v = $("book"); if (!v) return;
@@ -1831,6 +2119,7 @@ function openBookView() {
 }
 function closeBookView() {
   document.body.classList.remove("book-open");
+  gfRefresh(null);
   var top = $("quickForm");
   if (top) top.scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -1838,6 +2127,7 @@ function closeBookView() {
 /* ---------- widget Continue ---------- */
 $("quickForm").addEventListener("submit", function (e) {
   e.preventDefault();
+  if (pricingBroken) { try { location.reload(); } catch (e2) {} return; }
   var bad = null;
   if (!$("qService").value) { flagField($("qService"), false); bad = $("qService"); }
   ["qPickup", "qDate", "qTime"].forEach(function (id) {
@@ -1851,10 +2141,23 @@ $("quickForm").addEventListener("submit", function (e) {
   if (bad) { flagField(bad, true); return; }
   if (qzPickupIsAirport() && !diaAirline && !diaGateDone) { diaGateDone = true; gaShow(); return; }
   if (!widgetRouteReady()) {
-    if (placeById.qPickup && placeById.qDropoff) { flagMsg($("qDropoff"), "We are still pricing your route. Give it a moment, then tap Continue again.", false); flagField($("qDropoff"), true); }
+    if (routeQuote && routeQuote.openCountry && quoteMatches(routeQuote, $("qPickup").value, $("qDropoff").value)) { flagMsg($("qDropoff"), FARE_CONFIG.adminRequestMsg, false); flagField($("qDropoff"), true); }
+    else if (geoQuote && geoQuote.openCountry && quoteMatches(geoQuote, $("qPickup").value, $("qDropoff").value)) { flagMsg($("qDropoff"), FARE_CONFIG.adminRequestMsg, false); flagField($("qDropoff"), true); }
     else if (!placeById.qPickup) { flagMsg($("qPickup"), "Please pick your pickup from the address list so we can price your ride.", false); flagField($("qPickup"), true); }
-    else { flagMsg($("qDropoff"), "Please pick your drop-off from the address list so we can price your ride.", false); flagField($("qDropoff"), true); }
-    return;
+    else if (!placeById.qDropoff) { flagMsg($("qDropoff"), "Please pick your drop-off from the address list so we can price your ride.", false); flagField($("qDropoff"), true); }
+    else if (routeFailed) { flagMsg($("qDropoff"), "We could not find a route between those addresses. Check them and try again.", false); flagField($("qDropoff"), true); }
+    else {
+      /* Both places are picked, the route did not fail, yet no
+         quote matches: the pricing pass was interrupted before
+         it could store a quote. Recompute once, right now,
+         instead of leaving Continue silently dead — a flat ride
+         resolves from geometry on this same tap. */
+      routeWidget();
+    }
+    /* Both places are picked and the route is still pricing: a
+       normal wait, not an error — no flag. Continue already shows
+       "Pricing…" and is disabled until the fare lands. */
+    if (!widgetRouteReady()) return;
   }
   bk.pickup = $("qPickup").value;
   bk.dropoff = $("qDropoff").value;
@@ -1924,7 +2227,7 @@ $("confirmBtn").addEventListener("click", function () {
     fare: state.price,
     miles: rq ? rq.miles : null,
     mins: rq ? rq.mins : null,
-    hours: state.service === "hourly" ? (parseInt($("bHours").value, 10) || 3) : null,
+    hours: state.service === "hourly" ? (parseInt($("bHours").value, 10) || 2) : null,
     createdAt: new Date().toISOString()
   };
   if (flightNumber) rec.flightNumber = flightNumber;
@@ -1996,6 +2299,7 @@ $("bookAnother").addEventListener("click", function () {
     gMap.setZoom(BBL_DEFAULT_ZOOM);
     setMarker("a", null); setMarker("b", null);
   }
+  gfRefresh(null);
   window.scrollTo(0, 0);
 });
 
@@ -2023,8 +2327,14 @@ function bindAc(id, key) {
     refreshFlightFields();
     routeWidget();
     if (key === "qPickup") airlineGatePickup();
+    gfRefresh(key);
   });
   inp.addEventListener("input", function () {
+    /* The autocomplete's own fill can surface as an input event
+       right after a pick (seen on iOS): while the field still
+       shows the picked address, that event is not an edit and
+       the pick stands. Only a real text change drops the place. */
+    if (placeById[key] && inp.value === placeById[key].display) return;
     placeById[key] = null;
     if (key === "qPickup") { qzFlightSync(); airlineGatePickup(); }
     refreshFlightFields();
@@ -2070,6 +2380,52 @@ setTimeout(function () { if (!mapsReady) qzMapsFailed(); }, 10000);
   qzFlightSync();
   refreshFlightFields();
 })();
+
+/* ---------- pricing snapshot integrity + self-heal ----------
+   The page and bbl-pricing.js are cached DIFFERENTLY on the
+   rider's phone: this page is always-fresh, the pricing file is
+   a cache-first asset in the host's service worker (and only
+   max-age=0 at the CDN). On 2026-11-18 the owner's phone paired
+   this page with the Nov 17 pricing snapshot — no priceRide, no
+   mountainRuleFor — and pricing wedged invisibly: the geometry
+   quote died in its guard and priceRoute threw inside the route
+   callback, leaving "Calculating your fare..." / "Pricing..."
+   forever. So the snapshot is now verified, not trusted: the
+   script tag pins bbl-pricing.js?v=<stamp> (a URL no cache
+   holds), and this check verifies the stamp + every pricing
+   function and field the page calls. A mismatch buys ONE
+   cache-busted reload; success re-points FARE_CONFIG and
+   re-prices, failure is stated plainly on the fare line
+   (pricingBroken) instead of wedging. */
+var PRICING_STAMP_EXPECTED = "2026-11-18-rates2";
+var pricingBroken = false;
+function pricingSnapshotOk(P) {
+  return !!P && P.stamp === PRICING_STAMP_EXPECTED &&
+    typeof P.computeFare === "function" && typeof P.priceRide === "function" &&
+    typeof P.mountainRuleFor === "function" && typeof P.stadiumRuleFor === "function" &&
+    typeof P.openCountryFor === "function" && typeof P.hourlyFare === "function" &&
+    typeof P.hourlyFirstHour === "number" && typeof P.hourlyRate === "number" &&
+    typeof P.hourlyMinHours === "number" && typeof P.stadiumFare === "number" &&
+    typeof P.adminRequestGate === "boolean" && typeof P.adminRequestMsg === "string" &&
+    !!P.denverCenter && !!P.diaBounds && !!P.diaEast && !!P.diaWest;
+}
+function healPricing() {
+  try {
+    var sc = document.createElement("script");
+    sc.src = "bbl-pricing.js?cb=" + Date.now();
+    sc.onload = function () {
+      if (pricingSnapshotOk(window.BBL_PRICING)) {
+        FARE_CONFIG = window.BBL_PRICING;
+        if (FARE_CONFIG.denverCenter) BBL_DEFAULT_CENTER = FARE_CONFIG.denverCenter;
+        refreshWidgetFare();
+        if (placeById.qPickup && placeById.qDropoff) routeWidget();
+      } else { pricingBroken = true; refreshWidgetFare(); }
+    };
+    sc.onerror = function () { pricingBroken = true; refreshWidgetFare(); };
+    (document.head || document.documentElement).appendChild(sc);
+  } catch (e) { pricingBroken = true; }
+}
+if (!pricingSnapshotOk(window.BBL_PRICING)) healPricing();
 </script>
 <script>
 /* BBL preview identity runtime. One contained block, added to the XYZ

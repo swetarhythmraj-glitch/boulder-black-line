@@ -1,23 +1,60 @@
 /* =====================================================================
    BOULDER BLACK LINE — PRICING CONFIG (this site's OWN pricing system)
    ---------------------------------------------------------------------
-   One-time snapshot, taken 2026-11-17, of the fare formula and values
-   the XYZ / Nobu pages ship with — which is the RideWave rider-app fare
-   math those pages were built on.
+   Snapshot taken 2026-11-18, refreshed the same day at the owner's
+   order ("make the rate same as RideWave, including mountain rides
+   and Denver area and concerts and event venues"). Every value and
+   rule below is copied from RideWave's CURRENT LIVE fare code:
 
-   SOURCE (shipped code, repo swetarhythmraj-glitch/ridewave-web):
-     - xyz-quote.html  git blob 55f5dc8005c1a3690fef97ae7ee805c75d05498f
-     - xyz.html        git blob a56a49c94a15040b8db15c2b950e8ee6c8ba9951
-   Both files carry a byte-identical `var FARE_CONFIG = {...}` block;
-   every value below is copied from that block, nothing invented.
+   SOURCES (shipped code, fetched 2026-11-18):
+     - ridewave-functions, functions/index.js, git blob
+       17e751439ffe81247b63635c84cc2c7b48e2763c — the server fare
+       oracle: RATE, DIA_SURCHARGE + the narrow DIA keyword test,
+       _longDistanceSurcharge, _canonicalFare, STADIUM_ZONES /
+       METRO_ZONES + _stadiumRuleFor, MOUNTAIN_ZONES +
+       _mountainRuleFor, the open-country gate (_endpointCovered /
+       _openCountryFor), HOURLY_FIRST_HOUR / HOURLY_RATE.
+     - ridewave-web, app.html, git blob
+       48f41448e533c1a719bdd4a62b1297ba844ecb22 — the rider page's
+       client mirror of the same tables (numerically identical),
+       fareValue(), hourlyFare(h) = 100 + 80 * (h - 1), and the
+       hourly stepper's 2..12 hour clamp (the 2-hour minimum).
+
+   WHAT THE STACK IS (applied in this order):
+     1. Meter fare: base + miles x per-mile + DIA surcharge +
+        long-distance surcharge past 50 miles, never below base.
+        The DIA surcharge fires ONLY on the DIA keyword test below
+        (Denver International / DIA / DEN addresses) — other
+        airports (Centennial, Boulder Municipal, ASE, EGE...) do
+        NOT draw it. There is no per-minute charge (ratePerMin = 0
+        on every RideWave tier) and NO flat route-pair price: the
+        $140 Boulder<->DEN invoices in RideWave's history are
+        admin-set prices, not a coded rule — the meter governs.
+     2. Mountain flat fares: an endpoint inside a mountain zone
+        with the other endpoint inside the Denver metro (or in
+        another mountain zone) prices at the town's one flat fare
+        for every vehicle class. Mountain <-> mountain takes the
+        HIGHER town's flat, once, never double.
+     3. Stadium / venue fare: an endpoint inside a stadium zone
+        with the other endpoint inside the metro prices FLAT $200;
+        with the other endpoint outside the metro, the meter fare
+        stands with a $200 minimum. Both endpoints in zones = one
+        $200, never double.
+     4. Admin-request gate: an endpoint provably outside the metro
+        union, the mountain zones and the stadium zones is "open
+        country" — the ride has NO instant price (priceRide returns
+        fare: null); the customer calls or texts and the office
+        quotes it, exactly as RideWave's closed list works.
+     Stops never trigger any zone rule — only pickup and drop-off
+     are tested. Hourly charters never enter the zone rules.
 
    ISOLATION RULE (owner order, 2026-11-17):
-   This file is the ONLY pricing source for the Boulder Black Line site.
-   It is a snapshot, not a link. Editing RideWave / XYZ / Nobu pricing
-   does NOT change this file, and editing this file does NOT change
-   RideWave / XYZ / Nobu. To change Boulder Black Line prices, edit
-   THIS file (or, at go-live, this site's own `bbl_pricing_config`
-   record in its own backend — see bbl-backend.js).
+   This file is the ONLY pricing source for the Boulder Black Line
+   site. It is a snapshot, not a link. Editing RideWave pricing does
+   NOT change this file, and editing this file does NOT change
+   RideWave. To change Boulder Black Line prices, edit THIS file
+   (or, at go-live, this site's own `bbl_pricing_config` record in
+   its own backend — see bbl-backend.js).
    ===================================================================== */
 (function () {
   "use strict";
@@ -30,10 +67,29 @@
       black: { base: 10, ratePerMile: 2.30 },
       bsuv:  { base: 12, ratePerMile: 2.90 }
     },
+    /* DIA surcharge by tier — charged only when an endpoint address
+       passes the DIA keyword test (diaSurchargeFor below). */
     airportSurcharge: { x: 10, xl: 10, black: 20, bsuv: 20 },
+    diaKeywords: [
+      "denver international", "denver int", "denver airport",
+      "international airport", "peña blvd", "pena blvd", "8500 pe",
+      "(den)", "denver, co 80249"
+    ],
     longHaulAfterMiles: 50,
     longHaulPerMile: { x: 0.50, xl: 0.50, black: 0.75, bsuv: 1.00 },
-    hourlyRate: 95,
+    /* Hourly — RideWave's published model: first hour $100, each
+       additional hour $80, 2-hour minimum (the $180 two-hour floor),
+       up to 12 hours. Deliberately NOT tier-based. */
+    hourlyFirstHour: 100,
+    hourlyRate: 80,
+    hourlyMinHours: 2,
+    hourlyMaxHours: 12,
+    /* Stadium / venue fare (RideWave, owner Nov 17, 2026). */
+    stadiumFare: 200,
+    /* The admin-request gate is ON, mirroring RideWave's closed
+       list. The message carries THIS business's own number. */
+    adminRequestGate: true,
+    adminRequestMsg: "This trip is booked by request. Call or text (720) 326-4652 and we will quote it for you.",
     /* DIA terminal coordinates — routing uses these coordinates,
        never the airport address string (AGENTS.md standing rule). */
     diaWest: { lat: 39.8558, lng: -104.6762 },
@@ -42,11 +98,74 @@
     denverCenter: { lat: 39.7392, lng: -104.9903 }
   };
 
-  /* The shipped fare formula, copied from xyz-quote.html computedFare():
+  /* Stadium zones — centre + radius circles, copied from the live
+     RideWave tables (backend + rider page, identical). Centres are
+     the venues' own published listing points. */
+  BBL_PRICING.stadiumZones = [
+    { name: "Empower Field at Mile High", lat: 39.743987, lng: -105.020102, radiusM: 1000, names: ["empower field", "mile high", "broncos stadium", "1701 bryant"] },
+    { name: "Ball Arena",                 lat: 39.74864,  lng: -105.007786, radiusM: 750,  names: ["ball arena", "pepsi center", "1000 chopper"] },
+    { name: "Coors Field",                lat: 39.755992, lng: -104.994174, radiusM: 900,  names: ["coors field", "2001 blake"] },
+    { name: "Dick's Sporting Goods Park", lat: 39.805662, lng: -104.891804, radiusM: 1100, names: ["dick's sporting goods park", "dicks sporting goods park", "dsg park", "6000 victory"] },
+    { name: "Folsom Field",               lat: 40.009497, lng: -105.266919, radiusM: 800,  names: ["folsom field"] },
+    { name: "Red Rocks Amphitheatre",     lat: 39.665554, lng: -105.205250, radiusM: 1200, names: ["red rocks", "18300 w alameda", "18300 alameda"] },
+    { name: "Fiddler's Green Amphitheatre", lat: 39.600493, lng: -104.893867, radiusM: 750, names: ["fiddler's green", "fiddlers green", "6350 greenwood plaza"] },
+    { name: "Centennial Center Park Amphitheatre", lat: 39.596585, lng: -104.837442, radiusM: 500, names: ["centennial center park", "centennial amphitheater", "centennial amphitheatre", "13050 e peakview", "13050 peakview"] }
+  ];
+
+  /* The Denver metro — a union of centre + radius circles over the
+     cities the owner named plus the suburbs that fill the gaps.
+     Copied from the live RideWave table. */
+  BBL_PRICING.metroZones = [
+    { name: "Boulder",              lat: 40.0150, lng: -105.2705, radiusM: 9000 },
+    { name: "Erie",                 lat: 40.0503, lng: -105.0499, radiusM: 7000 },
+    { name: "Lafayette/Louisville", lat: 39.9857, lng: -105.1108, radiusM: 6500 },
+    { name: "Broomfield",           lat: 39.9205, lng: -105.0867, radiusM: 7000 },
+    { name: "I-25 corridor",        lat: 39.9650, lng: -104.9900, radiusM: 6000 },
+    { name: "Westminster",          lat: 39.8367, lng: -105.0372, radiusM: 7500 },
+    { name: "Commerce City",        lat: 39.8083, lng: -104.9337, radiusM: 6500 },
+    { name: "Golden",               lat: 39.7555, lng: -105.2211, radiusM: 7000 },
+    { name: "Lakewood",             lat: 39.7047, lng: -105.0814, radiusM: 8000 },
+    { name: "Denver",               lat: 39.7392, lng: -104.9903, radiusM: 9500 },
+    { name: "Aurora",               lat: 39.7294, lng: -104.8319, radiusM: 8000 },
+    { name: "DEN airport",          lat: 39.8561, lng: -104.6737, radiusM: 8000 },
+    { name: "Englewood",            lat: 39.6479, lng: -104.9876, radiusM: 6500 },
+    { name: "Littleton",            lat: 39.6133, lng: -105.0166, radiusM: 7000 },
+    { name: "Highlands Ranch",      lat: 39.5536, lng: -104.9692, radiusM: 6500 },
+    { name: "Centennial",           lat: 39.5804, lng: -104.8768, radiusM: 8000 }
+  ];
+
+  /* Mountain zones — one flat per town, copied from the live
+     RideWave table. Aspen's own ski mountains and its airport ride
+     at the Aspen price as satellite circles under the Aspen name;
+     Eagle County Regional Airport (EGE) rides at the Eagle price.
+     Name fallbacks carry RideWave's two traps: never the bare word
+     "loveland" (it would match Loveland, the Front Range city) and
+     never bare "eagle". */
+  BBL_PRICING.mountainZones = [
+    { name: "Aspen",             lat: 39.1907, lng: -106.8192, radiusM: 2500, flat: 1200, names: ["aspen, co", "aspen, colorado"] },
+    { name: "Aspen",             lat: 39.1826, lng: -106.8553, radiusM: 1000, flat: 1200, names: ["aspen highlands"] },
+    { name: "Aspen",             lat: 39.2053, lng: -106.8608, radiusM: 1000, flat: 1200, names: ["buttermilk"] },
+    { name: "Aspen",             lat: 39.2143, lng: -106.9458, radiusM: 2000, flat: 1200, names: ["snowmass"] },
+    { name: "Aspen",             lat: 39.2232, lng: -106.8688, radiusM: 1000, flat: 1200, names: ["aspen airport", "pitkin county airport", "aspen/pitkin"] },
+    { name: "Glenwood Springs",  lat: 39.5500, lng: -107.3248, radiusM: 2000, flat: 950,  names: ["glenwood springs"] },
+    { name: "Loveland Ski Area", lat: 39.6814, lng: -105.9145, radiusM: 2000, flat: 400,  names: ["loveland ski", "loveland basin", "loveland valley", "loveland pass"] },
+    { name: "Winter Park",       lat: 39.8869, lng: -105.7625, radiusM: 4000, flat: 500,  names: ["winter park"] },
+    { name: "Keystone",          lat: 39.6003, lng: -105.9831, radiusM: 2500, flat: 600,  names: ["keystone, co", "keystone resort", "river run"] },
+    { name: "Copper Mountain",   lat: 39.5008, lng: -106.1465, radiusM: 2000, flat: 700,  names: ["copper mountain"] },
+    { name: "Breckenridge",      lat: 39.4821, lng: -106.0487, radiusM: 2000, flat: 700,  names: ["breckenridge"] },
+    { name: "Vail",              lat: 39.6403, lng: -106.3709, radiusM: 2500, flat: 800,  names: ["vail, co", "vail village", "lionshead"] },
+    { name: "Eagle",             lat: 39.6553, lng: -106.8287, radiusM: 2500, flat: 800,  names: ["eagle, co", "eagle, colorado"] },
+    { name: "Eagle",             lat: 39.6426, lng: -106.9177, radiusM: 1500, flat: 800,  names: ["eagle county regional", "eagle county airport"] }
+  ];
+
+  /* The meter formula, copied from the shipped computedFare():
        fare = base + miles * ratePerMile
             + airportSurcharge            (if either end is an airport)
             + (miles - 50) * longHaulPerMile   (only past 50 miles)
-     rounded to cents. */
+     rounded to cents. Kept in this boolean form as the meter core
+     (the build harness parity-checks it against the shipped page);
+     meterFare() below is the same math with RideWave's real DIA
+     keyword test deciding the surcharge. */
   BBL_PRICING.computeFare = function (miles, hasAirport) {
     var rt = BBL_PRICING.rates[BBL_PRICING.tier];
     var fare = rt.base + miles * rt.ratePerMile;
@@ -57,13 +176,195 @@
     return Math.round(fare * 100) / 100;
   };
 
-  BBL_PRICING.meta = {
-    business: "Boulder Black Line",
-    snapshotDate: "2026-11-17",
-    sourceFiles: ["xyz.html", "xyz-quote.html"],
-    sourceRepo: "swetarhythmraj-glitch/ridewave-web",
-    note: "Snapshot only — no live link to RideWave pricing in either direction."
+  /* RideWave's DIA surcharge test (backend _diaSurcharge — the
+     NARROW keyword list, deliberately): the surcharge fires when
+     either endpoint address names Denver International Airport.
+     Any other airport address returns 0. */
+  var DIA_SHORT_TOKENS = /\b(?:dia|den)\b/i;
+  BBL_PRICING.diaSurchargeFor = function (pickupAddr, dropoffAddr) {
+    var amt = BBL_PRICING.airportSurcharge[BBL_PRICING.tier];
+    if (!amt) return 0;
+    var pu = (pickupAddr || "").toLowerCase(), dr = (dropoffAddr || "").toLowerCase();
+    if (!pu && !dr) return 0;
+    for (var i = 0; i < BBL_PRICING.diaKeywords.length; i++) {
+      var k = BBL_PRICING.diaKeywords[i];
+      if ((pu && pu.indexOf(k) >= 0) || (dr && dr.indexOf(k) >= 0)) return amt;
+    }
+    if (DIA_SHORT_TOKENS.test(pickupAddr || "") || DIA_SHORT_TOKENS.test(dropoffAddr || "")) return amt;
+    return 0;
   };
 
+  /* The wider "is this address DIA at all" test (backend
+     _isDIAAddress) — used only as the no-coordinates fallback for
+     the metro test, never for money. */
+  BBL_PRICING.isDIAAddress = function (addr) {
+    var s = (addr || "").toString().toLowerCase();
+    if (!s) return false;
+    for (var i = 0; i < BBL_PRICING.diaKeywords.length; i++) {
+      if (s.indexOf(BBL_PRICING.diaKeywords[i]) >= 0) return true;
+    }
+    if (/terminal\s+(?:east|west|north|south|[ewns])\b/.test(s)) return true;
+    if (s.indexOf("jeppesen") >= 0) return true;
+    if (s.indexOf("80249") >= 0 && (s.indexOf("terminal") >= 0 || s.indexOf("airport") >= 0)) return true;
+    return DIA_SHORT_TOKENS.test(addr || "");
+  };
+
+  /* The canonical meter fare (backend _canonicalFare): base +
+     miles x per-mile + DIA surcharge + long-distance surcharge,
+     never below base, rounded to cents. */
+  BBL_PRICING.meterFare = function (miles, pickupAddr, dropoffAddr) {
+    var rt = BBL_PRICING.rates[BBL_PRICING.tier];
+    var m = Number(miles) || 0;
+    var raw = rt.base + m * rt.ratePerMile
+      + BBL_PRICING.diaSurchargeFor(pickupAddr, dropoffAddr);
+    if (m > BBL_PRICING.longHaulAfterMiles) {
+      raw += (m - BBL_PRICING.longHaulAfterMiles) * (BBL_PRICING.longHaulPerMile[BBL_PRICING.tier] || 0);
+    }
+    return Math.round(Math.max(rt.base, raw) * 100) / 100;
+  };
+
+  /* ---- zone geometry (the codebase's own distance shape) ---- */
+  function distM(la1, ln1, la2, ln2) {
+    var dLat = (la1 - la2) * 111320;
+    var dLng = (ln1 - ln2) * 111320 * Math.cos(la2 * Math.PI / 180);
+    return Math.sqrt(dLat * dLat + dLng * dLng);
+  }
+  function validLatLng(lat, lng) {
+    var la = parseFloat(lat), ln = parseFloat(lng);
+    return (isFinite(la) && isFinite(ln) && (la !== 0 || ln !== 0)) ? [la, ln] : null;
+  }
+  function zoneOf(zones, lat, lng, addr) {
+    var p = validLatLng(lat, lng), i, j;
+    if (p) {
+      for (i = 0; i < zones.length; i++) {
+        if (distM(p[0], p[1], zones[i].lat, zones[i].lng) <= zones[i].radiusM) return zones[i];
+      }
+    }
+    var s = (addr || "").toString().toLowerCase();
+    if (s) {
+      for (i = 0; i < zones.length; i++) {
+        for (j = 0; j < zones[i].names.length; j++) {
+          if (s.indexOf(zones[i].names[j]) >= 0) return zones[i];
+        }
+      }
+    }
+    return null;
+  }
+  BBL_PRICING.distM = distM;
+  BBL_PRICING.stadiumZoneOf = function (lat, lng, addr) { return zoneOf(BBL_PRICING.stadiumZones, lat, lng, addr); };
+  BBL_PRICING.mountainZoneOf = function (lat, lng, addr) { return zoneOf(BBL_PRICING.mountainZones, lat, lng, addr); };
+
+  /* Is one endpoint inside the metro area? Coordinates decide when
+     they exist; with none, only the airport can be proved metro —
+     anything else unproven counts as outside, so the mileage fare
+     is honoured with the $200 minimum rather than capped flat. */
+  BBL_PRICING.endpointInMetro = function (lat, lng, addr) {
+    var p = validLatLng(lat, lng);
+    if (p) {
+      for (var i = 0; i < BBL_PRICING.metroZones.length; i++) {
+        var z = BBL_PRICING.metroZones[i];
+        if (distM(p[0], p[1], z.lat, z.lng) <= z.radiusM) return true;
+      }
+      return false;
+    }
+    return BBL_PRICING.isDIAAddress(addr);
+  };
+
+  /* The stadium rule for a ride-shaped object ({pickup, dropoff,
+     pickupLat, pickupLng, dropoffLat, dropoffLng}), or null when
+     neither endpoint is a stadium zone. */
+  BBL_PRICING.stadiumRuleFor = function (data) {
+    var puZ = BBL_PRICING.stadiumZoneOf(data.pickupLat, data.pickupLng, data.pickup);
+    var doZ = BBL_PRICING.stadiumZoneOf(data.dropoffLat, data.dropoffLng, data.dropoff);
+    var z = puZ || doZ;
+    if (!z) return null;
+    var otherInMetro;
+    if (puZ && doZ) otherInMetro = true;
+    else if (puZ) otherInMetro = BBL_PRICING.endpointInMetro(data.dropoffLat, data.dropoffLng, data.dropoff);
+    else otherInMetro = BBL_PRICING.endpointInMetro(data.pickupLat, data.pickupLng, data.pickup);
+    return { name: z.name, flat: otherInMetro };
+  };
+
+  /* The mountain rule for a ride-shaped object, or null when the
+     flat does not govern: no mountain endpoint, or a mountain
+     endpoint whose other end is neither metro nor mountain (that
+     pair is not auto-priced — the gate below refuses it). */
+  BBL_PRICING.mountainRuleFor = function (data) {
+    var puZ = BBL_PRICING.mountainZoneOf(data.pickupLat, data.pickupLng, data.pickup);
+    var doZ = BBL_PRICING.mountainZoneOf(data.dropoffLat, data.dropoffLng, data.dropoff);
+    if (!puZ && !doZ) return null;
+    if (puZ && doZ) {
+      var hi = puZ.flat >= doZ.flat ? puZ : doZ;
+      return { name: hi.name, flat: hi.flat, amount: hi.flat };
+    }
+    var z = puZ || doZ;
+    var otherInMetro = puZ
+      ? BBL_PRICING.endpointInMetro(data.dropoffLat, data.dropoffLng, data.dropoff)
+      : BBL_PRICING.endpointInMetro(data.pickupLat, data.pickupLng, data.pickup);
+    if (!otherInMetro) return null;
+    return { name: z.name, flat: z.flat, amount: z.flat };
+  };
+
+  /* Closed list: an endpoint is covered if it is inside the metro
+     union, a mountain zone or a stadium zone. */
+  BBL_PRICING.endpointCovered = function (lat, lng, addr) {
+    if (BBL_PRICING.mountainZoneOf(lat, lng, addr)) return true;
+    if (BBL_PRICING.stadiumZoneOf(lat, lng, addr)) return true;
+    return BBL_PRICING.endpointInMetro(lat, lng, addr);
+  };
+  /* Mirrors the shipped backend gate exactly (_openCountryFor +
+     _endpointCovered in functions/index.js, enforced at checkout by
+     _requireServerFare with ADMIN_REQUEST_ONLY, and mirrored on the
+     rider's confirm screen): a ride is open country when EITHER
+     endpoint is covered by nothing — outside the metro union and
+     not itself in a stadium or mountain zone. There is no zone
+     suppression: Longmont -> Coors Field is refused online even
+     though the fare oracle prices it (stadium $200 minimum), because
+     Longmont is covered by nothing. The oracle fare still stands on
+     the result for admin parity; the customer calls or texts. */
+  BBL_PRICING.openCountryFor = function (data) {
+    return !BBL_PRICING.endpointCovered(data.pickupLat, data.pickupLng, data.pickup)
+        || !BBL_PRICING.endpointCovered(data.dropoffLat, data.dropoffLng, data.dropoff);
+  };
+
+  /* The full RideWave rate stack for one ride. Returns
+     { fare, meterFare, stadium, mountain, openCountry } — fare is
+     null when the admin-request gate applies (no instant price). */
+  BBL_PRICING.priceRide = function (miles, data) {
+    var meter = BBL_PRICING.meterFare(miles, data.pickup, data.dropoff);
+    var mtn = BBL_PRICING.mountainRuleFor(data);
+    var stad = mtn ? null : BBL_PRICING.stadiumRuleFor(data);
+    var fare = meter;
+    if (mtn) fare = mtn.amount;
+    else if (stad) fare = stad.flat ? BBL_PRICING.stadiumFare : Math.max(fare, BBL_PRICING.stadiumFare);
+    var open = BBL_PRICING.adminRequestGate ? BBL_PRICING.openCountryFor(data) : false;
+    return { fare: open ? null : fare, meterFare: meter, stadium: stad, mountain: mtn, openCountry: open };
+  };
+
+  /* Hourly — the rider page's own formula: first hour, then the
+     hourly rate for each additional hour. */
+  BBL_PRICING.hourlyFare = function (hours) {
+    var h = Math.max(1, Number(hours) || 0);
+    return BBL_PRICING.hourlyFirstHour + BBL_PRICING.hourlyRate * (h - 1);
+  };
+
+  BBL_PRICING.meta = {
+    business: "Boulder Black Line",
+    snapshotDate: "2026-11-18",
+    sourceFiles: ["functions/index.js (ridewave-functions)", "app.html (ridewave-web)"],
+    sourceBlobs: ["17e751439ffe81247b63635c84cc2c7b48e2763c", "48f41448e533c1a719bdd4a62b1297ba844ecb22"],
+    note: "Snapshot only — no live link to RideWave pricing in either direction. Rates made identical to RideWave's live fare stack at the owner's order, 2026-11-18."
+  };
+
+  /* Version stamp — the quote page pins its script URL to this
+     stamp (bbl-pricing.js?v=<stamp>) and verifies it at boot.
+     The page is served always-fresh while this file is served
+     cache-first by the host's service worker, so an unstamped
+     pairing once wedged pricing on the owner's phone (2026-11-18:
+     the Nov 17 snapshot, which has no priceRide/mountainRuleFor,
+     served against the current page forever). ANY edit to this
+     file MUST bump the stamp here AND the page's
+     PRICING_STAMP_EXPECTED + script-tag query together. */
+  BBL_PRICING.stamp = "2026-11-18-rates2";
   window.BBL_PRICING = BBL_PRICING;
 })();
