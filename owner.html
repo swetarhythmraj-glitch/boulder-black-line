@@ -100,13 +100,28 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
 .foot-crest img{width:130px;height:130px;display:block;margin:0 auto}
 @media (min-width:761px){.foot-crest img{width:160px;height:160px}}
 </style>
+<style>
+/* Centred brand header (2026-11-18): the same treatment as the
+   public pages — the brand sits centred and a little bigger and the
+   header's Call button is gone. No floating call/text bar on this
+   page (it is the admin login); the owner account controls stay
+   pinned to the right of the header. */
+.nav{position:relative;justify-content:center}
+.brand{font-size:22px}
+.owner-area{position:absolute;right:20px;top:50%;transform:translateY(-50%)}
+@media(max-width:760px){.brand{font-size:19px}}
+
+/* Brand blends into the header (user, 2026-11-18):
+   no pill, no box — the wordmark sits on the plain
+   header background, same as the booking page. */
+.brand{background:transparent;box-shadow:none;border:0;border-radius:0}
+</style>
 </head>
 <body>
 <div id="supportBanner" hidden style="background:#A8741A;color:#FFF8EA;font-weight:700;text-align:center;padding:10px 16px;font-size:14.5px">Support mode: you are signed in with the platform operator account. Every change you make here is logged for the business owner.</div>
 <header class="site">
   <div class="wrap nav">
-    <span class="brand">Boulder <span>Black Car Service</span><small>Owner Page · Denver Metro, CO</small></span>
-    <a class="btn btn-ghost callbtn" href="tel:+17203264652">Call (720) 326-4652</a>
+    <span class="brand">Boulder <span>Black Line</span><small>Owner Page · Denver Metro, CO</small></span>
     <div class="owner-area" id="ownerArea"></div>
   </div>
 </header>
@@ -968,7 +983,7 @@ $("accountsRefresh").addEventListener("click",function(){loadAccounts()});
     }
     subText(document.body);
     /* Wordmark: the brand name is split across nodes ("Boulder " + a span
-       "Black Car Service"), so the full-name pass cannot see it. Rebuild
+       "Black Line"), so the full-name pass cannot see it. Rebuild
        the wordmark from its own parts wearing the link company: the
        leading word becomes the company's first word and the span keeps
        the remainder of the company name when it reads like the original
@@ -986,7 +1001,7 @@ $("accountsRefresh").addEventListener("click",function(){loadAccounts()});
       var frag = document.createDocumentFragment();
       frag.appendChild(document.createTextNode(first + " "));
       var sp2 = document.createElement("span");
-      sp2.textContent = rest || "Black Car Service";
+      sp2.textContent = rest || "Black Line";
       frag.appendChild(sp2);
       if (small) { var sm2 = document.createElement("small"); sm2.textContent = small.textContent; frag.appendChild(sm2); }
       b.replaceChildren(frag);

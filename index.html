@@ -540,7 +540,7 @@ body.qpage .qhero .app-panel{flex:none}
 /* Short phone screens (natural stack 687px > viewport): the breathing room
    scales down one step and the form's header constant follows (59 -> 53),
    so the first view still lands on exactly one screen, map at its floor. */
-@media(max-width:760px) and (max-height:720px){
+@media(max-width:760px) and (max-height:800px){
   body.qpage header.site{padding-top:calc(6px + env(safe-area-inset-top))}
   body.qpage .qhero .appbook{min-height:calc(100vh - 53px - env(safe-area-inset-top,0px));min-height:calc(100svh - 53px - env(safe-area-inset-top,0px))}
   body.qpage .qhero .app-panel{padding:10px 14px;gap:8px}
@@ -584,7 +584,7 @@ body.qpage #book #successBox>div:last-child{margin-top:8px !important}
 /* Short phone screens: one more compaction tier so step 1 still lands on
    exactly one screen at 390x667 (the confirmation keeps every element and
    reports its overflow in sheetfit_harness.js rather than crushing text). */
-@media(max-width:760px) and (max-height:720px){
+@media(max-width:760px) and (max-height:800px){
   body.qpage.book-open #book{padding:8px 0 12px}
   body.qpage #book .book-card{padding:12px}
   body.qpage #book .progress{margin-bottom:10px}
@@ -640,7 +640,7 @@ body.qpage #book .cancel-line{margin-top:6px}
 /* Short phone screens: one more squeeze so step 1 still fits 390x667
    with the banner at its 110px floor (flex off, fixed height); the
    distribution simply adds nothing at this size. */
-@media(max-width:760px) and (max-height:720px){
+@media(max-width:760px) and (max-height:800px){
   body.qpage.book-open #book{padding:6px 0 10px;min-height:calc(100vh - 53px - env(safe-area-inset-top,0px));min-height:calc(100svh - 53px - env(safe-area-inset-top,0px))}
   body.qpage #book .book-card{padding:10px}
   body.qpage #book .progress{margin-bottom:8px}
@@ -661,18 +661,149 @@ body.qpage #book .cancel-line{margin-top:6px}
   body.qpage #book .book-card .btn{padding:9px 20px}
 }
 </style>
+<style>
+/* ---------- Centred header, floating Call/Text bar, more air
+   (user, 2026-11-18 04:57 MST): the brand moves to the centre of the
+   header and grows a step (15px -> 20px in its dark pill, more pill
+   padding); the header's Call now / Book Now buttons are removed —
+   calling and texting move to a floating bar fixed to the bottom of
+   the screen, two thumb-sized halves (Call / Text). The bar is
+   z-index 30: above the page, below the booking sheet (40) and the
+   header (50), so the open sheet covers it and sheet buttons never
+   compete with it. The first view gains a little air (header top
+   padding 12 -> 14, panel padding 14 -> 16, stack gaps 10 -> 14)
+   and its budget now includes the bar: header + form + the bar
+   (56px + the bottom safe area) = exactly one screen, with a 10px
+   appbook bottom padding resting Continue just above the bar and
+   only panel background between Continue and the bar; the slideshow
+   starts exactly at the bar's top edge, hidden behind it. Header
+   heights: 69px phone (was 59), 61px short tier (was 53), 65px
+   desktop (unchanged); the booking sheet's min-height constants
+   follow the header. The short-screen step-down tier now reaches
+   max-height:800px (was 720px) so mid-height phones keep the
+   one-screen fit with the bar in the budget; at that tier the panel
+   trims a step and the map's flex floor steps down to a 176px
+   flex-basis instead of crushing the fields. Below the fold the
+   rhythm normalises (slideshow -> strip 24px, strip -> footer 48px
+   total, footer columns 20px apart, footer sides aligned to the
+   form's padding) and the footer gains clearance for the bar. */
+/* header: centred brand only */
+body.qpage header.site .nav{justify-content:center}
+body.qpage .brand{padding:6px 14px}
+@media(max-width:760px){
+  body.qpage header.site{padding-top:calc(14px + env(safe-area-inset-top,0px))}
+  body.qpage .brand{font-size:20px;line-height:1.1;padding:10px 18px;border-radius:12px}
+  body.qpage #xyzBackEdit{top:calc(env(safe-area-inset-top,0px) + 82px)}
+}
+@media(max-width:760px) and (max-height:800px){
+  body.qpage header.site{padding-top:calc(6px + env(safe-area-inset-top,0px))}
+}
+/* floating call / text bar */
+.bbl-callbar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;background:#000;border-top:1px solid #2B2B2B;padding-bottom:env(safe-area-inset-bottom,0px)}
+.bbl-callbar a{flex:1 1 0;display:flex;align-items:center;justify-content:center;min-height:56px;font-size:16px;font-weight:700;color:#FFFFFF;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.bbl-callbar a + a{border-left:1px solid #2B2B2B}
+.bbl-callbar a:active{background:#1C1C1C}
+.bbl-callbar a:focus-visible{outline:3px solid #FFFFFF;outline-offset:-3px}
+/* first view: more air, and the bar is in the budget */
+body.qpage .qhero .app-panel{padding:16px 14px;gap:14px}
+@media(min-width:561px){body.qpage .qhero .app-panel{padding:16px 18px}}
+body.qpage .qhero .route-fields{gap:14px}
+body.qpage .qhero .appbook{padding-bottom:10px;min-height:calc(100vh - 65px - 56px - env(safe-area-inset-bottom,0px));min-height:calc(100svh - 65px - 56px - env(safe-area-inset-bottom,0px))}
+@media(max-width:760px){body.qpage .qhero .appbook{min-height:calc(100vh - 69px - env(safe-area-inset-top,0px) - 56px - env(safe-area-inset-bottom,0px));min-height:calc(100svh - 69px - env(safe-area-inset-top,0px) - 56px - env(safe-area-inset-bottom,0px))}}
+@media(max-width:760px) and (max-height:800px){
+  body.qpage .qhero .appbook{min-height:calc(100vh - 61px - env(safe-area-inset-top,0px) - 56px - env(safe-area-inset-bottom,0px));min-height:calc(100svh - 61px - env(safe-area-inset-top,0px) - 56px - env(safe-area-inset-bottom,0px))}
+  body.qpage .qhero .app-panel{padding:8px 14px;gap:8px}
+  body.qpage .qhero .route-fields{gap:8px}
+  #quickForm input,#quickForm select{height:44px;min-height:44px}
+  body.qpage .qhero .mode-toggle button{height:40px;min-height:40px}
+  body.qpage .qhero .continue-btn{height:46px;min-height:46px}
+  body.qpage .qhero .app-panel .flabel{margin-bottom:2px}
+  body.qpage .qhero .qmap{flex-basis:176px}
+}
+/* booking sheet: fill constants follow the taller header */
+body.qpage.book-open #book{min-height:calc(100vh - 65px);min-height:calc(100svh - 65px)}
+@media(max-width:760px){body.qpage.book-open #book{min-height:calc(100vh - 69px - env(safe-area-inset-top,0px));min-height:calc(100svh - 69px - env(safe-area-inset-top,0px))}}
+@media(max-width:760px) and (max-height:800px){body.qpage.book-open #book{min-height:calc(100vh - 61px - env(safe-area-inset-top,0px));min-height:calc(100svh - 61px - env(safe-area-inset-top,0px))}}
+/* anchor offsets follow the taller header */
+#quickForm{scroll-margin-top:124px}
+body.qpage .qhero .qmap{scroll-margin-top:80px}
+/* below the fold: one rhythm, full width, footer clears the bar */
+.qhero{padding-bottom:12px}
+.qveh-strip{padding:24px 14px 8px}
+body.qpage footer{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
+@media(max-width:760px){
+  body.qpage footer{padding-top:28px}
+  body.qpage footer .wrap{padding-left:14px;padding-right:14px}
+  body.qpage .f-grid{gap:20px}
+}
+@media(min-width:561px){body.qpage footer .wrap{padding-left:18px;padding-right:18px}}
+</style>
 
+<style>
+/* ---------- Hero headline + reference sections (user, 2026-11-18 05:06 MST):
+   a headline block joins the first view above the map (Boulder's own
+   line in the reference form), and below the hero the page grows the reference
+   sections in his order: Services (one card per service in the form's
+   select, each with a fresh photo of the same black Escalade ESV at a
+   different angle, a short description and a Book this button), Meet
+   your SUV, How booking works and What the rider gets (email-only
+   promises, matching the confirmation panel). The headline is a flex
+   child of the form, so the map stays the absorber and the first view
+   is still exactly one screen: the headline is funded by one step of
+   the panel's air at each tier (tall: padding 16 -> 10, gaps 14 -> 9,
+   inputs 46 -> 42, toggle 42 -> 40, Continue 50 -> 48; short tier one
+   step further, headline at 17px). Map floors unchanged (224 tall /
+   176 short tier); Continue still rests 10px above the floating bar. */
+.qheadline{font-family:Urbanist,Inter,sans-serif;font-weight:800;color:#FFFFFF;margin:0;padding:8px 14px 0;font-size:25px;line-height:1.08;letter-spacing:-.01em}
+.qheadline span{display:block}
+@media(min-width:561px){.qheadline{padding-left:18px;padding-right:18px}}
+@media(min-width:761px){.qheadline{font-size:34px;line-height:1.1;padding-top:12px}.qheadline span{display:inline}}
+body.qpage .qhero .app-panel{padding:10px 14px;gap:9px}
+@media(min-width:561px){body.qpage .qhero .app-panel{padding:10px 18px}}
+body.qpage .qhero .route-fields{gap:9px}
+#quickForm input,#quickForm select{height:42px;min-height:42px}
+body.qpage .qhero .mode-toggle button{height:40px;min-height:40px}
+body.qpage .qhero .continue-btn{height:48px;min-height:48px}
+@media(max-width:760px) and (max-height:800px){
+  .qheadline{font-size:17px;line-height:1.04;padding:2px 14px 0}
+  body.qpage .qhero .app-panel{padding:5px 14px;gap:6px}
+  body.qpage .qhero .route-fields{gap:6px}
+  #quickForm input,#quickForm select{height:39px;min-height:39px}
+  body.qpage .qhero .mode-toggle button{height:38px;min-height:38px}
+  body.qpage .qhero .continue-btn{height:44px;min-height:44px}
+}
+</style>
+
+
+<style>
+/* No header; the headline leads the page (user, 2026-11-18 05:29
+   MST): the header bar is gone entirely and the h1 headline is the
+   top element of the page — centred, two stacked lines, about
+   twice the size it shipped with in the sections round (40px on
+   tall screens, 30px on the short tier). The hero takes the top
+   safe area itself and the first-view budget is recomputed with
+   no header: top air + headline + map (flex absorber) + form +
+   Continue, resting 10px above the floating Call/Text bar,
+   exactly one screen. The map's top corners are rounded again
+   (18px, the panel radius; the wrapper's overflow clips the
+   Google canvas) while its bottom corners stay square. The
+   booking sheet now fills from the screen top: its min-height
+   loses the header constant and keeps only the top safe area. */
+body.qpage .qhero{padding-top:calc(12px + env(safe-area-inset-top,0px))}
+body.qpage .qhero .appbook{min-height:calc(100vh - 12px - env(safe-area-inset-top,0px) - 56px - env(safe-area-inset-bottom,0px));min-height:calc(100svh - 12px - env(safe-area-inset-top,0px) - 56px - env(safe-area-inset-bottom,0px))}
+.qheadline{font-size:40px;line-height:1.08;padding:10px 14px 0;text-align:center}
+.qheadline span{display:block}
+.qmap{border-top-left-radius:18px;border-top-right-radius:18px}
+body.qpage.book-open #book{min-height:calc(100vh - 0px - env(safe-area-inset-top,0px));min-height:calc(100svh - 0px - env(safe-area-inset-top,0px))}
+@media(max-width:760px) and (max-height:800px){
+  body.qpage .qhero{padding-top:calc(8px + env(safe-area-inset-top,0px))}
+  body.qpage .qhero .appbook{min-height:calc(100vh - 8px - env(safe-area-inset-top,0px) - 56px - env(safe-area-inset-bottom,0px));min-height:calc(100svh - 8px - env(safe-area-inset-top,0px) - 56px - env(safe-area-inset-bottom,0px))}
+  .qheadline{font-size:30px;line-height:1.04;padding:2px 14px 0}
+}
+</style>
 </head>
 <body class="qpage">
-<header class="site">
-  <div class="wrap nav">
-    <a class="brand" href="/index.html">Boulder <span>Black Line</span></a>
-    <div class="auth-area">
-      <a class="btn btn-ghost callbtn" href="tel:+17203264652"><span class="call-full">Call (720) 326-4652</span><span class="call-short">Call now</span><span class="call-plain">Call</span></a>
-      <a class="btn btn-amber" href="#quickForm">Book Now</a>
-    </div>
-  </div>
-</header></header>
+
 
 <main id="top">
 <!-- HERO (XYZ layout): the booking widget first (map panel, mode toggle,
@@ -680,6 +811,7 @@ body.qpage #book .cancel-line{margin-top:6px}
      (user order 2026-11-17 22:45: slideshow under the Continue button). -->
 <section class="qhero">
   <form class="appbook" id="quickForm" novalidate aria-label="Check your ride">
+    <h1 class="qheadline"><span>Boulder's private black SUV.</span> <span>Book in minutes.</span></h1>
     <div class="map-panel qmap">
       <div id="qMap" role="img" aria-label="Map of your route"></div>
       <div class="qmap-note" id="qMapNote">Loading map.</div>
@@ -738,6 +870,73 @@ body.qpage #book .cancel-line{margin-top:6px}
       <p class="qveh-desc" id="qVehDesc">Black outside, black inside, black leather throughout, finished with gloss-black premium wheels and blacked-out trim.</p>
     </div>
     <div class="qgal" id="qVehGallery" hidden></div>
+  </div>
+</section>
+
+<!-- SERVICES (reference pattern, BBL copy + BBL photos) -->
+<section id="services" style="padding-top:28px">
+  <div class="wrap">
+    <div class="kicker">Services</div>
+    <h2 class="sec">What do you need the SUV for?</h2>
+    <div class="svc-grid" id="svcGrid">
+      <article class="svc svc-k-business"><img src="bbl-svc-business.jpg" alt="Black Cadillac Escalade ESV on a downtown Denver street in front of glass office towers" loading="lazy"><div class="svc-body"><h3>Business Pickup</h3><p>On-time pickups for meetings, offices and client visits around the Denver metro — quiet, private, and priced before you ride.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="business">Book this</button></div></div></article>
+      <article class="svc svc-k-airport svc-feature"><img src="bbl-svc-airport.jpg" alt="Black Cadillac Escalade ESV waiting at an airport departures curb" loading="lazy"><div class="svc-body"><h3>Airport Pickup &amp; Drop-off</h3><p>We track your flight and meet you at the terminal — DIA and every metro airport, with room for all your bags.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="airport">Book this</button></div></div></article>
+      <article class="svc svc-k-special svc-feature"><img src="bbl-svc-special.jpg" alt="Black Cadillac Escalade ESV outside a restaurant row at dusk, city lights behind it" loading="lazy"><div class="svc-body"><h3>Special Occasions</h3><p>Anniversaries, birthdays, date nights and proposals — arrive relaxed, and ride home safely when the night ends.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="special">Book this</button></div></div></article>
+      <article class="svc svc-k-wedding"><img src="bbl-svc-wedding.jpg" alt="Black Cadillac Escalade ESV in profile outside a stone wedding venue with a floral arch" loading="lazy"><div class="svc-body"><h3>Wedding &amp; Ceremony</h3><p>Ceremony, photos, reception: one calm driver for the whole day, waiting at every stop while you celebrate.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="wedding">Book this</button></div></div></article>
+      <article class="svc svc-k-concert svc-pano"><img src="bbl-svc-concert.jpg" alt="Black Cadillac Escalade ESV at a theater marquee on a concert night" loading="lazy"><div class="svc-body"><h3>Concert &amp; Events</h3><p>Red Rocks, Ball Arena and every metro venue — dropped off at the gate and picked up at a set spot after the show.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="concert">Book this</button></div></div></article>
+      <article class="svc svc-k-mountain svc-split svc-split-r"><img src="bbl-svc-mountain.jpg" alt="Black Cadillac Escalade ESV on a winding Colorado mountain road" loading="lazy"><div class="svc-body"><h3>Mountain Rides</h3><p>Ski towns, resorts and mountain weddings in the long-wheelbase Escalade — room for skis, boards and all the gear.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="mountain">Book this</button></div></div></article>
+      <article class="svc svc-k-hourly"><img src="bbl-svc-hourly.jpg" alt="Black Cadillac Escalade ESV waiting at a hotel front drive at dusk" loading="lazy"><div class="svc-body"><h3>Hourly Reservation</h3><p>Your driver stays with you through errands, tours or a full evening of stops. One booking, 3-hour minimum.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="hourly">Book this</button></div></div></article>
+    </div>
+  </div>
+</section>
+
+<!-- SUV (reference pattern, BBL copy) -->
+<section id="suv" class="alt">
+  <div class="wrap">
+    <div class="kicker">The vehicle</div>
+    <h2 class="sec">Meet your SUV</h2>
+    <p class="secsub">One SUV and one driver, based in Boulder — the Escalade you book is the Escalade that arrives.</p>
+    <div class="suv-grid">
+      <img src="bbl-suv-1.jpg" alt="2026 Cadillac Escalade ESV, front three-quarter view">
+      <div>
+        <h3 style="font-size:24px">2026 Cadillac Escalade ESV, Black on Black</h3>
+        <p style="color:var(--ink2);margin:10px 0 0">Black outside, black inside, black leather throughout, finished with gloss-black premium wheels and blacked-out trim.</p>
+        <div class="spec-grid">
+          <div class="spec"><b>Up to 6</b><span>Passengers</span></div>
+          <div class="spec"><b>10+ bags</b><span>Luggage space</span></div>
+          <div class="spec"><b>Black leather</b><span>Interior, front to back</span></div>
+          <div class="spec"><b>Gloss-black</b><span>Premium wheels &amp; blacked-out trim</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW + WHAT THE RIDER GETS (reference pattern, BBL copy, email only) -->
+<section id="how" class="alt">
+  <div class="wrap">
+    <div class="kicker">How booking works</div>
+    <h2 class="sec">Booked in about two minutes</h2>
+    <p class="secsub">Guest booking — no account and no password. You see the flat fare before you confirm, and you pay nothing until the ride.</p>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><h3>Ride &amp; service</h3><p>Pickup, drop-off, date and time — plus a flight number or extra stops when your ride calls for them.</p></div>
+      <div class="step"><div class="n">2</div><h3>Price &amp; ride details</h3><p>Your flat fare and the SUV, shown up front. Add passengers, bags and anything your driver should know.</p></div>
+      <div class="step"><div class="n">3</div><h3>Your details</h3><p>Name, phone and email — and your OK to email you about this ride. Confirmations always come by email.</p></div>
+      <div class="step"><div class="n">4</div><h3>Review &amp; pay</h3><p>Check it over and confirm. You pay your driver at the ride, and your confirmation email lands right away.</p></div>
+    </div>
+
+    <h2 class="sec" style="margin-top:56px">You're never left wondering</h2>
+    <p class="secsub">Every booking brings an email at each moment that matters — when you book, when your driver is set, and before your ride.</p>
+    <div class="notif">
+      <div class="panel"><h3>What the rider gets</h3>
+        <ul class="tl">
+          <li><span class="dot"></span><div><b>Right away</b><span>Booking confirmation by email.</span></div></li>
+          <li><span class="dot"></span><div><b>When your driver is assigned</b><span>A welcome email with the driver information: driver name, vehicle and plate.</span></div></li>
+          <li><span class="dot"></span><div><b>Before your ride</b><span>An email reminder 24 hours before pickup.</span></div></li>
+        </ul>
+        <div class="msg"><b>Sample confirmation email:</b> “Boulder Black Line: You are booked Fri Nov 6, 4:30 PM, Boulder to Denver International Airport. Questions? Call (720) 326-4652.”</div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -846,6 +1045,11 @@ body.qpage #book .cancel-line{margin-top:6px}
     <div class="fine">© 2026 Boulder Black Line · <a href="/privacy.html">Privacy Policy</a> · <a href="/terms.html">Terms of Service</a> · <a href="/owner.html">Admin</a></div>
   </div>
 </footer>
+
+<nav class="bbl-callbar" aria-label="Call or text Boulder Black Line">
+  <a href="tel:+17203264652">Call</a>
+  <a href="sms:+17203264652">Text</a>
+</nav>
 
 <script src="bbl-pricing.js"></script>
 <script src="bbl-backend.js"></script>
@@ -1120,6 +1324,13 @@ function setService(k) {
   updatePrice();
   refreshWidgetFare();
 }
+/* service cards: Book this (mirrors the reference data-book handler) —
+   preselect the service in the top form (setService also switches
+   the form to Hourly mode for the hourly card), then scroll the
+   form into view and focus the pickup field. A named function so
+   the DOM-stub smoke harness can drive it with fake buttons. */
+function wireBookButtons(){document.querySelectorAll("[data-book]").forEach(function(b){b.addEventListener("click",function(){setService(b.getAttribute("data-book"));if(typeof tryOpenSheetFromWidget==="function"&&tryOpenSheetFromWidget())return;var f=$("quickForm");if(f)f.scrollIntoView({behavior:"smooth",block:"start"});setTimeout(function(){var p=$("qPickup");if(p)p.focus({preventScroll:true})},550)})})}
+wireBookButtons();
 $("modeP2P").addEventListener("click", function () { setService(state.service === "hourly" ? "airport" : state.service); });
 $("modeHourly").addEventListener("click", function () { setService("hourly"); });
 $("qService").addEventListener("change", function () { setService($("qService").value); });
@@ -1810,7 +2021,7 @@ setTimeout(function () { if (!mapsReady) qzMapsFailed(); }, 10000);
     }
     subText(document.body);
     /* Wordmark: the brand name is split across nodes ("Boulder " + a span
-       "Black Car Service"), so the full-name pass cannot see it. Rebuild
+       "Black Line"), so the full-name pass cannot see it. Rebuild
        the wordmark from its own parts wearing the link company: the
        leading word becomes the company's first word and the span keeps
        the remainder of the company name when it reads like the original
@@ -1828,7 +2039,7 @@ setTimeout(function () { if (!mapsReady) qzMapsFailed(); }, 10000);
       var frag = document.createDocumentFragment();
       frag.appendChild(document.createTextNode(first + " "));
       var sp2 = document.createElement("span");
-      sp2.textContent = rest || "Black Car Service";
+      sp2.textContent = rest || "Black Line";
       frag.appendChild(sp2);
       if (small) { var sm2 = document.createElement("small"); sm2.textContent = small.textContent; frag.appendChild(sm2); }
       b.replaceChildren(frag);

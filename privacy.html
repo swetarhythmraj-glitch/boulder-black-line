@@ -60,13 +60,34 @@ footer h3{color:#FFF6E0;font-size:19px;margin-bottom:10px} footer a{color:#EFB95
 .foot-crest img{width:130px;height:130px;display:block;margin:0 auto}
 @media (min-width:761px){.foot-crest img{width:160px;height:160px}}
 </style>
+<style>
+/* Centred brand + floating Call/Text bar (2026-11-18): the same
+   header treatment as the booking page — the brand sits centred and
+   a little bigger, the header's Call / Book buttons are gone, and
+   calling / texting live in the floating bar at the bottom of the
+   screen (bar colours matched to this page's dark footer). The
+   footer gains bottom clearance so its last line never hides
+   behind the bar. */
+.nav{justify-content:center}
+.brand{font-size:22px;text-align:center}
+@media(max-width:760px){.brand{font-size:20px}}
+footer{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
+.bbl-callbar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;background:#17130E;border-top:1px solid #3A3226;padding-bottom:env(safe-area-inset-bottom,0px)}
+.bbl-callbar a{flex:1 1 0;display:flex;align-items:center;justify-content:center;min-height:56px;font-family:Inter,system-ui,sans-serif;font-size:16px;font-weight:700;color:#FFF6E0;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.bbl-callbar a + a{border-left:1px solid #3A3226}
+.bbl-callbar a:active{background:#221C14}
+.bbl-callbar a:focus-visible{outline:3px solid #EFB954;outline-offset:-3px}
+
+/* Brand blends into the header (user, 2026-11-18):
+   no pill, no box — the wordmark sits on the plain
+   header background, same as the booking page. */
+.brand{background:transparent;box-shadow:none;border:0;border-radius:0}
+</style>
 </head>
 <body>
 <header class="site">
   <div class="wrap nav">
-    <a class="brand" href="/index.html">Boulder <span>Black Car Service</span><small>Private SUV Service · Denver Metro, CO</small></a>
-    <a class="btn btn-ghost callbtn" href="tel:+17203264652"><span class="call-full">Call (720) 326-4652</span><span class="call-short">Call now</span></a>
-    <a class="btn btn-amber" href="/index.html">Book a ride</a>
+    <a class="brand" href="/index.html">Boulder <span>Black Line</span><small>Private SUV Service · Denver Metro, CO</small></a>
   </div>
 </header>
 
@@ -131,6 +152,11 @@ footer h3{color:#FFF6E0;font-size:19px;margin-bottom:10px} footer a{color:#EFB95
     <div class="fine">© 2026 Boulder Black Line</div>
   </div>
 </footer>
+
+<nav class="bbl-callbar" aria-label="Call or text Boulder Black Line">
+  <a href="tel:+17203264652">Call</a>
+  <a href="sms:+17203264652">Text</a>
+</nav>
 <script>
 /* Back pill: when the visitor arrived from another page on this site,
    go back to that page. Otherwise the pill link goes to the rider page. */
@@ -223,7 +249,7 @@ footer h3{color:#FFF6E0;font-size:19px;margin-bottom:10px} footer a{color:#EFB95
     }
     subText(document.body);
     /* Wordmark: the brand name is split across nodes ("Boulder " + a span
-       "Black Car Service"), so the full-name pass cannot see it. Rebuild
+       "Black Line"), so the full-name pass cannot see it. Rebuild
        the wordmark from its own parts wearing the link company: the
        leading word becomes the company's first word and the span keeps
        the remainder of the company name when it reads like the original
@@ -241,7 +267,7 @@ footer h3{color:#FFF6E0;font-size:19px;margin-bottom:10px} footer a{color:#EFB95
       var frag = document.createDocumentFragment();
       frag.appendChild(document.createTextNode(first + " "));
       var sp2 = document.createElement("span");
-      sp2.textContent = rest || "Black Car Service";
+      sp2.textContent = rest || "Black Line";
       frag.appendChild(sp2);
       if (small) { var sm2 = document.createElement("small"); sm2.textContent = small.textContent; frag.appendChild(sm2); }
       b.replaceChildren(frag);
