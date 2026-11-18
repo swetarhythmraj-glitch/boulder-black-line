@@ -282,7 +282,7 @@ html.veh-pending #qVehImg{display:none}
 html.look-app .qmap-note{color:#B9B9B9;background:linear-gradient(100deg,#161616 40%,#202020 50%,#161616 60%);background-size:200% 100%}
 html.look-app .qmap-note.qmap-failed{background:#161616}
 @media (prefers-reduced-motion: reduce){.qveh-skel,.qmap-note{animation:none}}
-.qmap{position:relative;height:300px;border-radius:12px;overflow:hidden;background:#E7EDE3;margin:0}
+.qmap{position:relative;height:224px;border-radius:12px;overflow:hidden;background:#E7EDE3;margin:0}
 .qfare{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;background:var(--surface2);border-radius:12px;padding:12px 16px;margin:0 0 8px}
 .qfare[hidden]{display:none}
 #qzFlightField[hidden]{display:none}
@@ -404,88 +404,299 @@ body.xyz-edit-on .ticker{margin-top:64px}
   body.xyz-edit-on .ticker{margin-top:64px}
 }
 </style>
+<style>
+/* ---------- BBL hero match (user order 2026-11-17): the quote page hero,
+   form and flow mirror the XYZ main page. Values are XYZ's own (extracted
+   from src-ref/xyz.html cascade + the user's screenshots): dark hero,
+   full-page width with no card outline, pill fields, 224px map panel,
+   compact one-line header. Page-specific overrides only; base styles
+   above stay untouched. ---------- */
+/* header: XYZ compact one-line bar */
+body.qpage header.site{background:#000;border-bottom:1px solid #2B2B2B}
+body.qpage .brand{background:transparent;box-shadow:inset 0 0 0 1px #2B2B2B;color:#FFFFFF;border-radius:10px}
+body.qpage .brand span{color:#FFFFFF}
+@media(max-width:760px){
+  body.qpage header.site .nav{flex-wrap:nowrap;gap:4px;min-height:0;padding-top:6px;padding-bottom:6px;row-gap:0}
+  body.qpage header.site .wrap{padding-left:8px;padding-right:8px}
+  body.qpage .brand{flex:0 1 auto;font-size:15px;line-height:1.1;padding:7px 8px;white-space:nowrap;display:block;overflow:visible}
+  body.qpage header.site .btn{min-height:34px;padding:6px 8px;font-size:12px;border-radius:999px}
+  body.qpage .callbtn{order:0;margin-left:0}
+  body.qpage header.site .btn-amber{order:0;padding:6px 8px;font-size:12px;min-height:34px}
+  body.qpage .auth-area{display:flex;gap:4px;margin-left:auto;align-items:center}
+}
+@media(min-width:761px){
+  body.qpage .auth-area{display:flex;gap:8px;margin-left:auto;align-items:center}
+  body.qpage .navlinks{display:none}
+}
+/* hero: black, full width, no card, no outline */
+.qhero{background:#000;color:#FFFFFF;padding:0 0 26px;position:relative}
+.qhero .wrap{max-width:1180px;margin:0 auto;padding:0 10px}
+@media(max-width:760px){.qhero .wrap{padding:0}}
+/* photo band: the Escalade slideshow, headline overlaid like XYZ */
+.qband{position:relative;height:212px;overflow:hidden;background:#000}
+.qband .qshow{position:absolute;inset:0;border-radius:0;background:#000}
+.qband .qshow-track img{width:100%;height:212px;aspect-ratio:auto;object-fit:cover}
+.qband-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.34),rgba(0,0,0,.55) 58%,rgba(0,0,0,.90));pointer-events:none;z-index:1}
+.qband-in{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:0 6px 12px;pointer-events:none}
+.qband-in h1{font-family:Urbanist,Inter,sans-serif;font-size:clamp(34px,6vw,58px);font-weight:700;line-height:1.08;letter-spacing:-.01em;color:#FFFFFF;margin:0;max-width:720px}
+.qband .qshow-btn{z-index:4}
+.qband .qshow-dots{z-index:4;bottom:10px;justify-content:flex-end;padding-right:12px}
+.qband .qshow-dot{background:rgba(255,255,255,.45)}
+.qband .qshow-dot.is-on{background:#FFFFFF}
+/* booking widget on the hero (XYZ .appbook, dark hero values) */
+.qhero .appbook{background:#141414;color:#FFFFFF;border-radius:0;box-shadow:none;max-width:none;margin:0;overflow:visible;padding:0}
+.qmap{position:relative;height:224px;overflow:hidden;background:#111111;border-radius:20px;margin-top:2px;scroll-margin-top:53px}
+#qMap{position:absolute;inset:0;width:100%;height:100%;background:#111111}
+.qmap-note{position:absolute;inset:0;border-radius:20px;display:grid;place-items:center;font-size:13px;font-weight:600;color:#B9B9B9;background:#161616;z-index:2}
+.qmap-note.qmap-failed{background:#161616}
+.map-credit{position:absolute;left:10px;bottom:8px;font-size:11px;font-weight:600;color:#262626;background:rgba(255,255,255,.88);padding:2px 8px;border-radius:999px;z-index:3}
+.qhero .app-panel{padding:10px 14px;gap:8px}
+@media(min-width:561px){.qhero .app-panel{padding:10px 18px}}
+.qhero .mode-toggle{background:#1C1C1C;border-color:#333333;padding:2px}
+.qhero .mode-toggle button{height:42px;min-height:42px;color:#A3A3A3}
+.qhero .mode-toggle button.on{background:#FFFFFF;color:#000000}
+#quickForm input,#quickForm select{height:46px;min-height:46px}
+.qhero .app-panel input,.qhero .app-panel select{background:#1C1C1C;border-color:#333333;color:#FFFFFF}
+.qhero .app-panel input::placeholder{color:#8E8E8E}
+.qhero .app-panel .flabel{color:#C9C9C9;font-size:13px;line-height:18px;margin-bottom:4px}
+.qhero .route-fields{gap:8px}
+.qhero .route-field input{padding-left:46px;padding-right:118px}
+.qhero .mk{top:23px}
+.qhero .fld-clear{top:23px;background:rgba(28,28,28,.92)}
+.qhero .add-stop{top:23px;background:#1C1C1C;border-color:#3A3A3A;color:#FFFFFF}
+.qhero .swap{top:50px;background:#1C1C1C;border-color:#3A3A3A;color:#FFFFFF}
+.qhero .q-fare{margin:0 0 2px;display:flex;align-items:baseline;gap:4px 10px;flex-wrap:wrap}
+.qhero .q-fare[hidden]{display:none}
+.qhero .q-fare .q-lbl{font-size:16px;font-weight:600;color:#FFFFFF}
+.qhero .q-fare .q-amt{font-family:Urbanist;font-size:30px;font-weight:800;color:#FFFFFF;line-height:1}
+.qhero .q-fare .q-det{font-size:15px;font-weight:600;color:#A3A3A3}
+.qhero .continue-btn{height:50px;min-height:50px;width:100%;background:#FFFFFF;color:#14100B;font-size:17px;border-radius:999px;border:0;font-weight:800;cursor:pointer}
+.qhero .continue-btn:hover{background:#E8E8E8}
+.qhero .continue-btn:active{transform:scale(.98)}
+#qzFlightField[hidden]{display:none}
+.guide-note{grid-column:1/-1;background:#F3ECD9;border:1px solid #E3D9C2;border-radius:10px;padding:8px 12px;font-size:14px;font-weight:600;color:#14100B}
+.guide-note.slim{padding:4px 10px;font-size:13px;line-height:18px;margin-top:6px}
+.field.dia-side{margin-top:-2px}
+.dia-side-row{display:flex;align-items:center;gap:10px}
+.dia-side-row .flabel{margin:0;white-space:nowrap}
+.dia-side-row select{flex:1;min-width:0;height:44px;min-height:44px}
+/* vehicle strip under the widget (slideshow name/desc + registry gallery) */
+.qveh-strip{padding:16px 14px 0}
+.qveh-strip .qveh-name{color:#FFFFFF;font-size:17px}
+.qveh-strip .qveh-desc{color:#DADADA}
+.qveh-strip .qgal-card{background:#141414;border-color:#333333}
+.qveh-strip .qgal-cap{color:#DADADA}
+/* booking sheet: hidden until Continue opens it (XYZ book-open pattern) */
+#book{display:none}
+body.book-open #book{display:block}
+.sum-card{background:var(--surface2);border-radius:16px;padding:11px 13px}
+.sum-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+.sum-lbl{display:block;font-size:12px;font-weight:700;letter-spacing:.01em;color:var(--muted)}
+.sum-amt{display:block;font-family:Urbanist;font-size:32px;font-weight:800;line-height:1.04}
+.sum-svc{font-weight:700;font-size:14px;text-align:right;padding-top:3px;max-width:46%}
+.sum-route{margin-top:7px;font-weight:700;font-size:15px;line-height:1.3}
+.sum-meta{margin-top:2px;color:var(--muted);font-size:14px;font-weight:600}
+.suv-banner{display:block;width:100%;height:120px;object-fit:cover;border-radius:18px;margin-top:10px}
+.note-line{margin-top:10px;background:var(--amber-soft);border-radius:12px;padding:8px 12px;font-size:13px;line-height:1.35;color:var(--ink)}
+.recap{background:var(--surface2);border-radius:12px;padding:8px 12px;font-size:12.5px;line-height:1.4}
+.cancel-line{font-size:12.5px;color:var(--muted);margin:8px 0 0;line-height:1.4}
+.book-card .bstep .flabel{font-size:12.5px;margin-bottom:4px}
+.progress span{min-width:0}
+/* DIA airline picker (XYZ sheet, verbatim values) */
+.airline-overlay{position:fixed;inset:0;z-index:100200;background:rgba(20,16,11,.62);display:none;align-items:center;justify-content:center;padding:14px}
+.airline-overlay.open{display:flex}
+.airline-card{width:100%;max-width:440px;background:#FBF7EC;border:1px solid #453B2C;border-radius:18px;max-height:92vh;max-height:92dvh;display:flex;flex-direction:column;overflow:hidden;color:#14100B}
+.airline-head{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;border-bottom:1px solid #E3D9C2;gap:8px}
+.airline-title{font-size:19px;font-weight:800;flex:1;text-align:center}
+.airline-nav{background:#EFE7D0;border:1px solid #D8C9A3;color:#14100B;border-radius:20px;padding:7px 13px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+.airline-search{flex-shrink:0;padding:12px 18px}
+.airline-search input{width:100%;box-sizing:border-box;background:#fff;border:1px solid #D8C9A3;border-radius:22px;padding:12px 16px;font-size:16px;color:#14100B;font-family:inherit;outline:none}
+.airline-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.airline-item{display:flex;align-items:center;gap:14px;width:100%;padding:15px 18px;border:0;border-bottom:1px solid #EDE4CC;background:none;cursor:pointer;font-size:17px;font-weight:600;color:#14100B;font-family:inherit;text-align:left}
+.airline-badge{width:42px;height:42px;border-radius:12px;background:#fff;border:1px solid #E3D9C2;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
+.airline-badge img{width:36px;height:36px;object-fit:contain;display:block}
+.airline-group{font-size:14px;font-weight:700;color:#8A7B5C;padding:10px 18px 6px;letter-spacing:.05em}
+.airline-none{padding:24px 18px;color:#8A7B5C;font-size:15px}
+body.airline-open{overflow:hidden}
+.pac-container{z-index:100050 !important;font-family:inherit}
+</style>
+
 </head>
 <body class="qpage">
 <div style="background:#14150f;color:#f2f3f0;text-align:center;padding:8px 12px;font:600 13px/1.4 Inter,system-ui,sans-serif">PREVIEW — Boulder Black Line demo. Requests are saved on this device only: no booking, text, email, or payment is sent.</div>
 <header class="site">
   <div class="wrap nav">
-    <a class="brand" href="/index.html">Boulder <span>Black Car Service</span><small>Private SUV Service · Denver Metro, CO</small></a>
-    <nav class="navlinks" aria-label="Main">
-      <a href="/index.html#services">Services</a><a href="/index.html#suv">Our SUV</a><a href="/index.html#how">How It Works</a>
-    </nav>
-    <a class="btn btn-ghost callbtn" href="tel:+17203264652"><span class="call-full">Call (720) 326-4652</span><span class="call-short">Call now</span><span class="call-plain">Call</span></a>
-    <a class="btn btn-amber" href="/index.html">Book Now</a>
+    <a class="brand" href="/index.html">Boulder <span>Black Line</span></a>
+    <div class="auth-area">
+      <a class="btn btn-ghost" href="/owner.html">Log In</a>
+      <a class="btn btn-ghost callbtn" href="tel:+17203264652"><span class="call-full">Call (720) 326-4652</span><span class="call-short">Call now</span><span class="call-plain">Call</span></a>
+      <a class="btn btn-amber" href="#quickForm">Book Now</a>
+    </div>
   </div>
-</header>
+</header></header>
 
 <main id="top">
-<section style="padding:4px 0 48px">
-  <div class="wrap qwrap">
-    <div class="qcard">
-      <div class="qid">
-        <span class="qid-co">Boulder Black Line</span>
-        <span class="qid-owner">Owner: <span data-bbl-owner>Boulder Black Line</span></span>
-        <p class="qcontact"><a href="tel:+17203264652">(720) 326-4652</a> <span aria-hidden="true">·</span> <a href="mailto:info@boulderblackline.com">info@boulderblackline.com</a></p>
+<!-- HERO (XYZ layout): photo band with headline, then the booking widget:
+     map panel, mode toggle, service, route fields, fare, Continue. -->
+<section class="qhero">
+  <div class="qband">
+    <div class="qshow" id="qShow" role="region" aria-roledescription="carousel" aria-label="2026 Cadillac Escalade ESV photos">
+      <div class="qshow-track" id="qShowTrack">
+      <img id="qVehImg" data-bbl-veh="vehicle" src="bbl-suv-1.jpg" alt="2026 Cadillac Escalade ESV, front three-quarter view">
+      <img src="bbl-suv-2.jpg" alt="2026 Cadillac Escalade ESV, rear three-quarter view" loading="lazy">
+      <img src="bbl-suv-3.jpg" alt="2026 Cadillac Escalade ESV, front cabin with black leather interior" loading="lazy">
+      <img src="bbl-suv-4.jpg" alt="2026 Cadillac Escalade ESV, rear passenger seats with black leather interior" loading="lazy">
+      <img src="bbl-suv-5.jpg" alt="2026 Cadillac Escalade ESV, front three-quarter view showing the vertical LED headlights" loading="lazy">
       </div>
-      <div class="qmapwrap"><div class="qmap" id="qMap" role="img" aria-label="Map of your route"></div><div class="qmap-note" id="qMapNote">Loading map.</div></div>
-      <form id="quoteForm" novalidate>
-        <div class="qform">
-          <div class="field"><label class="flabel" for="qzName">Your name</label><input id="qzName" type="text" autocomplete="name" placeholder="Full name"><div class="err">Please enter your name.</div></div>
-          <div class="qduo">
-            <div class="field"><label class="flabel" for="qzDate">Date</label><input id="qzDate" type="date"><div class="err">Please pick the date of your ride.</div></div>
-            <div class="field"><label class="flabel" for="qzTime">Time</label><input id="qzTime" type="time"><div class="err">Please pick the time of your ride.</div></div>
-          </div>
-          <div class="field"><label class="flabel" for="qzPickup">Pickup location</label><input id="qzPickup" type="text" placeholder="Start typing an address" autocomplete="off"><div class="err">Please enter your pickup location.</div></div>
-          <div class="field" id="qzFlightField" hidden><label class="flabel" for="qzFlight">Flight number (optional)</label><input id="qzFlight" type="text" autocomplete="off" placeholder="e.g. UA 1234"><div class="err"></div></div>
-          <div class="field"><label class="flabel" for="qzDropoff">Drop-off location</label><input id="qzDropoff" type="text" placeholder="Start typing an address" autocomplete="off"><div class="err">Please enter your drop-off location.</div></div>
-          <div class="qfare" id="qFare" hidden></div>
-          <div class="qduo">
-            <div class="field"><label class="flabel" for="qzPhone">Your phone</label><input id="qzPhone" type="tel" autocomplete="tel" placeholder="Your mobile number"><div class="err">Please enter a valid phone number.</div></div>
-            <div class="field"><label class="flabel" for="qzPax">Passengers</label><select id="qzPax"><option value="1">1 passenger</option><option value="2">2 passengers</option><option value="3">3 passengers</option><option value="4">4 passengers</option><option value="5">5 passengers</option><option value="6">6 passengers</option></select><div class="err">Please pick how many passengers.</div></div>
-          </div>
-          <div class="field"><label class="flabel" for="qzNotes">Notes (optional)</label><textarea id="qzNotes" placeholder="Flight number, bags, child seats, anything the driver should know"></textarea><div class="err"></div></div>
-          <button class="btn btn-amber btn-block" type="submit" style="min-height:48px;font-size:16px">Send quote request</button>
-          <p style="margin:0;color:var(--muted);font-size:12px;line-height:1.4;text-align:center">Preview: your request is saved on this device only. No text or email is sent.</p>
+      <button class="qshow-btn qshow-prev" id="qShowPrev" type="button" aria-label="Previous photo">&#8249;</button>
+      <button class="qshow-btn qshow-next" id="qShowNext" type="button" aria-label="Next photo">&#8250;</button>
+      <div class="qshow-dots" id="qShowDots">
+      <button type="button" class="qshow-dot is-on" data-i="0" aria-label="Photo 1 of 5"></button>
+      <button type="button" class="qshow-dot" data-i="1" aria-label="Photo 2 of 5"></button>
+      <button type="button" class="qshow-dot" data-i="2" aria-label="Photo 3 of 5"></button>
+      <button type="button" class="qshow-dot" data-i="3" aria-label="Photo 4 of 5"></button>
+      <button type="button" class="qshow-dot" data-i="4" aria-label="Photo 5 of 5"></button>
+      </div>
+    </div>
+    <div class="qband-shade" aria-hidden="true"></div>
+    <div class="qband-in"><h1>Your private SUV. Book in minutes.</h1></div>
+  </div>
+  <form class="appbook" id="quickForm" novalidate aria-label="Check your ride">
+    <div class="map-panel qmap">
+      <div id="qMap" role="img" aria-label="Map of your route"></div>
+      <div class="qmap-note" id="qMapNote">Loading map.</div>
+      <span class="map-credit" id="mapCredit">Denver area</span>
+    </div>
+    <div class="app-panel">
+      <div class="mode-toggle" role="group" aria-label="Ride type">
+        <button type="button" id="modeP2P" class="on" aria-pressed="true">Point To Point</button>
+        <button type="button" id="modeHourly" aria-pressed="false">Hourly</button>
+      </div>
+      <div class="field"><label class="flabel" for="qService">Service</label>
+        <select id="qService"><option value="" selected>Please select the service</option><option value="airport">Airport Pickup / Drop-off</option><option value="business">Business Pickup</option><option value="special">Special Occasions</option><option value="wedding">Wedding &amp; Ceremony</option><option value="concert">Concert &amp; Events</option><option value="mountain">Mountain Rides</option><option value="hourly">Hourly Reservation</option></select>
+        <div class="err">Please choose a service.</div></div>
+      <div class="route-wrap">
+        <div class="route-fields">
+          <div class="field route-field"><span class="mk mk-dot"></span><input id="qPickup" type="text" placeholder="Pickup location" autocomplete="street-address" aria-label="Pickup location"><button class="fld-clear" type="button" id="clear-qPickup" aria-label="Clear pickup" tabindex="-1"></button><div class="err">Please enter where we pick you up.</div></div>
+          <div class="field route-field"><span class="mk mk-sq"></span><input id="qDropoff" type="text" placeholder="Where to?" aria-label="Drop-off location"><button class="fld-clear fld-clear-p" type="button" id="clear-qDropoff" aria-label="Clear drop-off" tabindex="-1"></button><button class="add-stop" type="button" id="addStop">Add stop</button><div class="err"></div></div>
         </div>
+        <button class="swap" type="button" id="swapBtn" aria-label="Swap pickup and drop-off">Swap</button>
+      </div>
+      <div class="field route-field stop-row" id="stopRow" hidden><span class="mk mk-stop"></span><input id="qStop" type="text" placeholder="Add a stop" aria-label="Stop"><button class="fld-clear fld-clear-p" type="button" id="clear-qStop" aria-label="Clear stop" tabindex="-1"></button><button class="add-stop" type="button" id="removeStop">Remove stop</button><div class="err"></div></div>
+      <div class="field" id="qzFlightField" hidden><label class="flabel" for="qzFlight">Flight number (optional)</label><input id="qzFlight" type="text" autocomplete="off" placeholder="e.g. UA 1234"><div class="err"></div></div>
+      <div class="grid g2 dt-row">
+        <div class="field"><label class="flabel" for="qDate">Date</label><input id="qDate" type="date"><div class="err">Please pick a date for your ride.</div></div>
+        <div class="field"><label class="flabel" for="qTime">Time</label><input id="qTime" type="time"><div class="err">Please pick a pickup time.</div></div>
+      </div>
+      <div class="field cond dia-side" id="qDiaSideField"><div class="dia-side-row"><label class="flabel" for="qDiaSide">DIA pickup side</label><select id="qDiaSide"><option value="west">West</option><option value="east">East</option></select></div><div class="guide-note slim" id="qDiaGuide"></div></div>
+      <div class="q-fare" id="qFare" hidden></div>
+      <button class="continue-btn" type="submit">Continue</button>
+      <p style="margin:0;color:#A3A3A3;font-size:12px;line-height:1.4;text-align:center">Preview: your request is saved on this device only. No text or email is sent.</p>
+    </div>
+  </form>
+  <div class="qveh-strip" id="qVeh">
+    <div class="qveh-skel" id="qVehSkel" aria-hidden="true"></div>
+    <div class="qveh-txt">
+      <div class="qveh-name" id="qVehName">2026 Cadillac Escalade ESV</div>
+      <p class="qveh-desc" id="qVehDesc">Black outside, black inside, black leather throughout, finished with gloss-black premium wheels and blacked-out trim.</p>
+    </div>
+    <div class="qgal" id="qVehGallery" hidden></div>
+  </div>
+</section>
+
+<!-- BOOKING (XYZ steps, opened by Continue as a sheet) -->
+<section id="book">
+  <div class="wrap">
+    <div class="kicker">Reserve</div>
+    <h2 class="sec">Book your ride</h2>
+    <p class="secsub">Your flat rate is confirmed before you book. Nothing is charged now; you pay your driver at the ride.</p>
+
+    <div class="book-card">
+      <div class="progress" id="progress" aria-hidden="true">
+        <span data-p="1" class="on">1 · Price &amp; ride details</span><span data-p="2">2 · Your details &amp; review</span>
+      </div>
+
+      <form id="bookForm" novalidate>
+      <!-- STEP 1: PRICE, SUV AND RIDE DETAILS (ride facts come from the widget) -->
+      <div class="bstep on" data-step="1">
+        <div class="sum-card" id="priceSummary"></div>
+        <img class="suv-banner" src="bbl-suv-2.jpg" alt="2026 Cadillac Escalade ESV, rear three-quarter view — the SUV that will pick you up">
+        <div class="note-line">One SUV, one ride at a time. Your time is yours.</div>
+        <div class="grid g2" style="margin-top:12px">
+          <div class="field"><label class="flabel" for="bPax">Passengers *</label><select id="bPax"><option value="">Select…</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select><div class="err">Please select how many passengers (max 6).</div></div>
+          <div class="field"><label class="flabel" for="bBags">Bags</label><select id="bBags"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10+">10+</option></select><div class="err"></div></div>
+          <div class="field cond" id="flightField"><label class="flabel" for="bFlight">Flight number</label><input id="bFlight" type="text" placeholder="e.g. UA1234, we track it and adjust for delays"><div class="err"></div></div>
+          <div class="field cond" id="diaSideField"><label class="flabel" for="bDiaSide">DIA terminal side</label><select id="bDiaSide"><option value="west">West</option><option value="east">East</option></select><div class="err"></div></div>
+          <div class="guide-note" id="diaPickupGuide" hidden></div>
+          <div class="field cond" id="airlineField"><label class="flabel" for="bAirline">Airline</label><select id="bAirline"><option value="">Choose your airline</option></select><div class="err"></div></div>
+          <div class="guide-note" id="diaDropoffGuide" hidden></div>
+          <div class="field cond" id="tailFieldPickup"><label class="flabel" for="bTailPickup">Flight or tail number (pickup airport)</label><input id="bTailPickup" type="text" placeholder="e.g. N12345 on a private plane"><div class="err"></div></div>
+          <div class="field cond" id="fboFieldPickup"><label class="flabel" for="bFboPickup">FBO / facility (pickup airport)</label><select id="bFboPickup"><option value="">Select…</option><option value="Signature Aviation">Signature Aviation</option><option value="Other">Other</option></select><div class="err"></div></div>
+          <div class="field cond" id="fboOtherFieldPickup"><label class="flabel" for="bFboOtherPickup">Facility name (pickup airport)</label><input id="bFboOtherPickup" type="text" placeholder="Name of the facility"><div class="err"></div></div>
+          <div class="field cond" id="tailFieldDropoff"><label class="flabel" for="bTailDropoff">Flight or tail number (drop-off airport)</label><input id="bTailDropoff" type="text" placeholder="e.g. N12345 on a private plane"><div class="err"></div></div>
+          <div class="field cond" id="fboFieldDropoff"><label class="flabel" for="bFboDropoff">FBO / facility (drop-off airport)</label><select id="bFboDropoff"><option value="">Select…</option><option value="Signature Aviation">Signature Aviation</option><option value="Other">Other</option></select><div class="err"></div></div>
+          <div class="field cond" id="fboOtherFieldDropoff"><label class="flabel" for="bFboOtherDropoff">Facility name (drop-off airport)</label><input id="bFboOtherDropoff" type="text" placeholder="Name of the facility"><div class="err"></div></div>
+          <div class="field cond" id="hoursField"><label class="flabel" for="bHours">Hours needed *</label><select id="bHours"><option value="">Select…</option><option value="3">3 hours (minimum)</option><option value="4">4 hours</option><option value="5">5 hours</option><option value="6">6 hours</option><option value="8">8 hours</option></select><div class="err">Please choose how many hours (3-hour minimum).</div></div>
+          <div class="field cond" id="stopsField" style="grid-column:1/-1"><label class="flabel" for="bStops">Your stops</label><textarea id="bStops" placeholder="e.g. Ceremony at [venue], photos at [park], reception at [hall]. Add times if you have them."></textarea><div class="err"></div></div>
+        </div>
+        <div class="booknav"><button type="button" class="btn btn-ghost" id="bookExit">Back</button><button type="button" class="btn btn-amber" id="toStep3">Continue</button></div>
+      </div>
+
+      <!-- STEP 2: YOUR DETAILS AND REVIEW -->
+      <div class="bstep" data-step="2">
+        <div class="recap" id="reviewSummary"></div>
+        <div class="grid g2" style="margin-top:10px">
+          <div class="field"><label class="flabel" for="bName">Full name *</label><input id="bName" type="text" autocomplete="name" placeholder="e.g. Alex Morgan"><div class="err">Please enter your full name.</div></div>
+          <div class="field"><label class="flabel" for="bPhone">Mobile phone *</label><input id="bPhone" type="tel" autocomplete="tel" placeholder="(555) 123-4567"><div class="err">Please enter a valid phone number (at least 10 digits).</div></div>
+          <div class="field" style="grid-column:1/-1"><label class="flabel" for="bEmail">Email *</label><input id="bEmail" type="email" autocomplete="email" placeholder="you@example.com"><div class="err">Please enter a valid email address.</div></div>
+          <div class="field" style="grid-column:1/-1"><label class="flabel" for="bNotes">Notes for your driver <span style="color:var(--muted);font-weight:500">(optional)</span></label><textarea id="bNotes" placeholder="Gate code, child seat, extra luggage…"></textarea><div class="err"></div></div>
+          <div class="field" id="consentField" style="grid-column:1/-1">
+            <div class="consent-box"><input type="checkbox" id="bConsent"><label for="bConsent"><b>Text me about this ride.</b> I agree to receive booking, reminder and driver-arrival texts at the number above. Msg &amp; data rates may apply. Reply STOP to opt out. Email confirmations are always sent.</label></div>
+            <div class="err">Please check the box so we can text you ride updates, or go back and we'll confirm by email only.</div>
+          </div>
+        </div>
+        <div style="margin-top:10px"><div class="field" id="payField">
+          <div class="radio-row">
+            <label class="radio-card"><input type="radio" name="pay" value="later" checked><span><b>Pay driver later</b><span>You pay your driver directly at the ride, by card, cash, Venmo or Zelle. Your booking is confirmed instantly.</span></span></label>
+          </div>
+          <div class="err">Please choose how you will pay.</div>
+        </div>
+        </div>
+        <p class="cancel-line">*Free cancellation up to 60 minutes before pickup.</p>
+        <div class="booknav"><button type="button" class="btn btn-ghost" data-back="1">Back</button><button type="button" class="btn btn-amber" id="confirmBtn">Confirm booking</button></div>
+      </div>
       </form>
-      <div class="qveh" id="qVeh">
-        <div class="qveh-skel" id="qVehSkel" aria-hidden="true"></div>
-                <div class="qshow" id="qShow" role="region" aria-roledescription="carousel" aria-label="2026 Cadillac Escalade ESV photos">
-          <div class="qshow-track" id="qShowTrack">
-          <img id="qVehImg" data-bbl-veh="vehicle" src="bbl-suv-1.jpg" alt="2026 Cadillac Escalade ESV, front three-quarter view">
-          <img src="bbl-suv-2.jpg" alt="2026 Cadillac Escalade ESV, rear three-quarter view" loading="lazy">
-          <img src="bbl-suv-3.jpg" alt="2026 Cadillac Escalade ESV, front cabin with black leather interior" loading="lazy">
-          <img src="bbl-suv-4.jpg" alt="2026 Cadillac Escalade ESV, rear passenger seats with black leather interior" loading="lazy">
-          <img src="bbl-suv-5.jpg" alt="2026 Cadillac Escalade ESV, front three-quarter view showing the vertical LED headlights" loading="lazy">
-          </div>
-          <button class="qshow-btn qshow-prev" id="qShowPrev" type="button" aria-label="Previous photo">&#8249;</button>
-          <button class="qshow-btn qshow-next" id="qShowNext" type="button" aria-label="Next photo">&#8250;</button>
-          <div class="qshow-dots" id="qShowDots">
-          <button type="button" class="qshow-dot is-on" data-i="0" aria-label="Photo 1 of 5"></button>
-          <button type="button" class="qshow-dot" data-i="1" aria-label="Photo 2 of 5"></button>
-          <button type="button" class="qshow-dot" data-i="2" aria-label="Photo 3 of 5"></button>
-          <button type="button" class="qshow-dot" data-i="3" aria-label="Photo 4 of 5"></button>
-          <button type="button" class="qshow-dot" data-i="4" aria-label="Photo 5 of 5"></button>
-          </div>
-        </div>
-        <div class="qveh-txt">
-          <div class="qveh-name" id="qVehName">2026 Cadillac Escalade ESV</div>
-          <p class="qveh-desc" id="qVehDesc">Black outside, black inside, black leather throughout, finished with gloss-black premium wheels and blacked-out trim.</p>
-        </div>
-      </div>
-      <div class="qgal" id="qVehGallery" hidden></div>
-      <div class="success" id="quoteDone">
+
+      <!-- SUCCESS -->
+      <div class="success" id="successBox" aria-live="polite">
         <div class="big" aria-hidden="true">✓</div>
-        <h2 style="font-size:24px;font-weight:700;margin:0 0 8px">Quote request sent</h2>
-        <p class="sc-code">Reference code <code id="qRef">QR-0000</code></p>
-        <p style="color:var(--ink2);margin:10px 0 0">Thank you. The owner has your request and will reach out to confirm your ride and your flat fare.</p>
+        <h3 style="font-size:24px;font-weight:700;margin:0 0 8px">You are booked</h3>
+        <p class="sc-code">Confirmation code <code id="confCode">BK-0000</code></p>
         <div class="summary" id="qSummary" style="text-align:left"></div>
-        <div style="margin-top:16px"><button class="btn btn-ghost" type="button" id="qAgain">Send another request</button></div>
+        <div class="duo">
+          <div class="panel recv" style="grid-column:1/-1"><h3>What you will receive</h3><ul class="tl"><li><span class="dot"></span><div><b>Right away</b><span>Booking confirmation by text and email.</span></div></li>
+          <li><span class="dot"></span><div><b>When your driver is assigned</b><span>A welcome text with the driver information: driver name, vehicle and plate.</span></div></li>
+          <li><span class="dot"></span><div><b>Before your ride</b><span>An email reminder 24 hours before pickup, and a text reminder 12 hours before pickup.</span></div></li></ul><div class="msg" style="margin-top:0"><b>Sample confirmation text:</b> <span id="riderMsg"></span></div></div>
+        </div>
+        <div style="margin-top:16px"><button class="btn btn-amber" id="bookAnother" type="button">Book another ride</button></div>
       </div>
     </div>
   </div>
 </section>
-</main>
+
+<!-- DIA AIRLINE PICKER (XYZ sheet) -->
+<div class="airline-overlay" id="airlinePicker" role="dialog" aria-modal="true" aria-label="Choose your airline">
+  <div class="airline-card">
+    <div class="airline-head">
+      <button type="button" class="airline-nav" id="airlineBack">Back</button>
+      <div class="airline-title">Which airline?</div>
+      <button type="button" class="airline-nav" id="airlineSkip">Skip</button>
+    </div>
+    <div class="airline-search"><input id="airlineSearch" type="text" placeholder="Search by airline name" autocomplete="off"></div>
+    <div class="airline-list" id="airlineList"></div>
+  </div>
+</div>
+</main></main>
 
 <footer>
   <div class="wrap">
@@ -503,6 +714,12 @@ body.xyz-edit-on .ticker{margin-top:64px}
 <script src="bbl-backend.js"></script>
 <script>
 "use strict";
+/* Boulder Black Line quote + booking flow. Layout, flow and behavior
+   mirror the XYZ main page widget and booking steps (user order
+   2026-11-17: identical to XYZ except names, contacts, backend).
+   Pricing comes ONLY from bbl-pricing.js (this site's snapshot);
+   records save ONLY to this site's demo backend (bbl-backend.js)
+   and this page's own local lists. Nothing leaves the device. */
 var $=function(id){return document.getElementById(id)};
 function fmtMoney(n){return n%1?((+n).toFixed(2)):(""+n)}
 /* field-error helper (standing pattern) */
@@ -513,35 +730,42 @@ function fmtTime(t){if(!t)return"";var p=t.split(":"),h=+p[0],m=p[1],ap=h>=12?"P
 function fmtDate(d){if(!d)return"";var dt=new Date(d+"T12:00:00");return dt.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})}
 function escHtml(t){return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
 function flagMsg(el,msg,focusIt){var f=el.closest(".field");if(f){var e=f.querySelector(".err");if(e&&msg)e.textContent=msg}flagField(el,!!focusIt)}
-var FARE_CONFIG = window.BBL_PRICING; /* Boulder Black Line pricing: snapshot in bbl-pricing.js — this site's only pricing source. */
-/* No link-set fare overrides on this site: pricing comes only from bbl-pricing.js (Boulder Black Line's own pricing config). */
+var FARE_CONFIG = window.BBL_PRICING; /* Boulder Black Line pricing snapshot — this site's only pricing source. */
+/* BBL home area: the fresh-load map opens here, zoomed in like the
+   reference page's local view, with a pin on it. */
+var BBL_HOME = { lat: 40.0150, lng: -105.2705 }; /* Boulder, CO */
 var DIA_CANON_ADDR = "Denver International Airport, 8500 Peña Blvd, Denver, CO 80249, USA";
-/* Airline code to DIA terminal side. Follows the reference guest
-   booking handling, where the airline decides the terminal and the
-   endpoint is rewritten to that terminal and its coordinates. */
+/* Airline code to DIA terminal side (same table the reference pages ship). */
 var DIA_AIRLINE_SIDE = {
   UA: "west", DL: "west", NK: "west", AM: "west", AF: "west", BA: "west", LH: "west", WK: "west",
   WN: "east", F9: "east", AA: "east", AS: "east", B6: "east", AC: "east", EI: "east", DE: "east",
   IB: "east", JL: "east", KL: "east", N0: "east", SY: "east", Y4: "east", WS: "east"
 };
 /* One way point to point services get route fares. Hourly is priced
-   per hour, and wedding, concert and mountain keep their flat
-   package and round trip prices. */
+   per hour from the snapshot, and wedding, concert and mountain keep
+   their flat package prices. */
 var ROUTE_SERVICES = { airport: 1, business: 1, special: 1 };
+var SERVICES = {
+  airport: { name: "Airport Pickup / Drop-off", base: 110 },
+  business: { name: "Business Pickup", base: 95 },
+  special: { name: "Special Occasions", base: 395 },
+  wedding: { name: "Wedding & Ceremony", base: 395 },
+  concert: { name: "Concert & Events", base: 135 },
+  mountain: { name: "Mountain Rides", base: 285 },
+  hourly: { name: "Hourly Reservation", base: 95 }
+};
+var state = { service: "", price: 0 };
+/* The booking ride facts, copied from the widget on Continue. The
+   booking screens never re-ask them. diaManual is the rider's DIA
+   terminal pick. */
+var bk = { pickup: "", dropoff: "", date: "", time: "" };
+var diaManual = null;
 
-function computedFare(miles, hasAirport) {
-  var rt = FARE_CONFIG.rates[FARE_CONFIG.tier];
-  var fare = rt.base + miles * rt.ratePerMile;
-  if (hasAirport) fare += FARE_CONFIG.airportSurcharge[FARE_CONFIG.tier] || 0;
-  if (miles > FARE_CONFIG.longHaulAfterMiles) {
-    fare += (miles - FARE_CONFIG.longHaulAfterMiles) * (FARE_CONFIG.longHaulPerMile[FARE_CONFIG.tier] || 0);
-  }
-  return Math.round(fare * 100) / 100;
-}
+function computedFare(miles, hasAirport) { return FARE_CONFIG.computeFare(miles, hasAirport); }
 
 /* ---------- map and route state ---------- */
 var mapsReady = false;
-var gMap = null, dirRenderer = null, mkA = null, mkB = null;
+var gMap = null, qzMap = null, dirRenderer = null, mkA = null, mkB = null;
 var placeById = { qPickup: null, qDropoff: null, qStop: null };
 var routeQuote = null; /* {fromText, toText, stopText, miles, mins, fare, hasAirport} */
 var routeSeq = 0, routeFailed = false;
@@ -574,11 +798,11 @@ function snapDIA(p) {
   p.lat = s.lat; p.lng = s.lng; p.isAirport = true;
   return p;
 }
-/* Same normalization the reference pages use: a picked place becomes
-   address, name and coordinates read from its geometry. A DIA pick
-   snaps to the terminal coordinates, and if the picked text does not
-   name the airport, the field shows the one canonical DIA address
-   while routing still uses the snapped coordinates. */
+/* A picked place becomes address, name and coordinates read from its
+   geometry. A DIA pick snaps to the terminal coordinates, and if the
+   picked text does not name the airport, the field shows the one
+   canonical DIA address while routing still uses the snapped
+   coordinates. */
 function normPlace(input, place) {
   if (!place || !place.geometry || !place.geometry.location) return null;
   var p = {
@@ -596,6 +820,7 @@ function normPlace(input, place) {
     }
   }
   if ((p.types && p.types.indexOf("airport") !== -1) || /airport/i.test(p.name + " " + p.address)) p.isAnyAirport = true;
+  p.display = p.address;
   return p;
 }
 
@@ -619,202 +844,739 @@ function runRoute(pickup, stop, dropoff, done) {
   });
 }
 
-
-/* Services and saved preferences, same values as the booking pages. The
-   quote form prices point-to-point rides from the route configuration;
-   package services are never quoted here. */
-var SERVICES = { airport: { base: 110 }, business: { base: 95 }, special: { base: 395 }, wedding: { base: 395 }, concert: { base: 135 }, mountain: { base: 285 } };
-var PREF_KEY = "nbu_prefs_v1";
-function loadPrefs(){ try { return JSON.parse(localStorage.getItem(PREF_KEY) || "{}") || {}; } catch(e){ return {}; } }
-function lsGet(k, d){ try { var v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch(e){ return d; } }
-function lsSet(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
-
-/* ===================== BBL QUOTE REQUEST (preview) ===================== */
-/* Simple quote page: one form, flat fare estimate from the same configuration
-   as the booking pages, and the request saved on this device only, in the
-   same local list the owner preview reads. No texts, no emails, no accounts,
-   no payment, nothing leaves the device. */
-var QZ_LS = "bbl_quotes_v1";
-var QZ_LS_BOOKS = "bbl_bookings_v1";
-var qzPlaces = { pickup: null, dropoff: null };
-var qzMap = null, qzLine = null, qzFare = null, qzRouteMeta = null;
-function qz$(id){ return document.getElementById(id); }
-function qzSetMin(){
-  var el = qz$("qzDate"); if(!el) return;
-  var now = new Date();
-  function p(n){ return (n < 10 ? "0" : "") + n; }
-  el.min = now.getFullYear() + "-" + p(now.getMonth() + 1) + "-" + p(now.getDate());
+function setMarker(slot, place) {
+  var cur = slot === "a" ? mkA : mkB;
+  if (cur) { cur.setMap(null); cur = null; }
+  if (place && gMap) cur = new google.maps.Marker({ map: gMap, position: mkLatLng(place.lat, place.lng) });
+  if (slot === "a") mkA = cur; else mkB = cur;
 }
-function qzWidget(){
-  var w = qz$("qFare");
-  if(!qzPlaces.pickup || !qzPlaces.dropoff){ w.hidden = true; return; }
-  runRoute(qzPlaces.pickup, null, qzPlaces.dropoff, function(rq){
-    if(!rq){ qzNullFare(); return; }
-    var hasAir = !!(qzPlaces.pickup.isAnyAirport || qzPlaces.pickup.isAirport || qzPlaces.dropoff.isAnyAirport || qzPlaces.dropoff.isAirport);
-    qzFare = computedFare(rq.miles, hasAir);
-    qzRouteMeta = { miles: rq.miles, mins: rq.mins };
-    w.innerHTML = "<span class='q-lbl'>Optional: Your fare:</span><span class='q-amt'>$" + fmtMoney(qzFare) + "</span><span class='q-det'>" + rq.miles.toFixed(1) + " mi - ~" + Math.round(rq.mins) + " min</span>";
-    w.hidden = false;
+function widgetPoints() {
+  var pts = [];
+  if (placeById.qPickup) pts.push(placeById.qPickup);
+  if (!$("stopRow").hidden && placeById.qStop) pts.push(placeById.qStop);
+  if (placeById.qDropoff) pts.push(placeById.qDropoff);
+  return pts;
+}
+/* Route painting mirrors the reference widget: the DirectionsRenderer
+   keeps Google's own styling (the standard blue route line and the
+   A / B lettered pins) — no custom polyline, no suppressed markers.
+   Framing stays this page's standing fix: preserveViewport on the
+   renderer plus ONE explicit fitBounds of the route's own bounds
+   with 32px padding, so the whole route sits in the map box with
+   surrounding area and the renderer never reframes on its own. */
+function paintMap(result) {
+  if (!gMap) return;
+  if (dirRenderer) { dirRenderer.setMap(null); dirRenderer = null; }
+  if (result) {
+    setMarker("a", null); setMarker("b", null);
+    dirRenderer = new google.maps.DirectionsRenderer({ map: gMap, preserveViewport: true });
+    dirRenderer.setDirections(result);
+    var rb = result.routes && result.routes[0] && result.routes[0].bounds;
+    if (rb) { gMap.fitBounds(rb, 32); }
+    else {
+      var bb = new google.maps.LatLngBounds();
+      widgetPoints().forEach(function (p) { bb.extend(mkLatLng(p.lat, p.lng)); });
+      gMap.fitBounds(bb, 32);
+    }
+    return;
+  }
+  var pts = widgetPoints();
+  setMarker("a", pts.length ? pts[0] : null);
+  setMarker("b", pts.length > 1 ? pts[pts.length - 1] : null);
+  if (pts.length === 1) {
+    gMap.setCenter(mkLatLng(pts[0].lat, pts[0].lng));
+    gMap.setZoom(12);
+  } else if (pts.length > 1) {
+    var b = new google.maps.LatLngBounds();
+    pts.forEach(function (p) { b.extend(mkLatLng(p.lat, p.lng)); });
+    gMap.fitBounds(b, 32);
+  }
+}
+
+/* ---------- widget fare line (reference format) ---------- */
+function refreshWidgetFare() {
+  var el = $("qFare");
+  if (!el) return;
+  var svc = $("qService").value;
+  if (svc === "hourly") {
+    el.hidden = false;
+    el.textContent = "Hourly rate: $" + FARE_CONFIG.hourlyRate + " per hour, 3 hour minimum. Your total is set by the hours you pick in booking.";
+    return;
+  }
+  if (!ROUTE_SERVICES[svc]) {
+    if (svc) { el.hidden = false; el.textContent = "Not priced yet"; return; }
+    el.hidden = true; el.textContent = "";
+    return;
+  }
+  if (quoteMatches(routeQuote, $("qPickup").value, $("qDropoff").value)) {
+    el.hidden = false;
+    el.innerHTML = '<span class="q-lbl">Your fare:</span> <span class="q-amt">$' + fmtMoney(routeQuote.fare) + '</span> <span class="q-det">· ' + routeQuote.miles.toFixed(1) + ' mi · about ' + Math.max(1, Math.round(routeQuote.mins)) + ' min</span>';
+    return;
+  }
+  if (!routeFailed && placeById.qPickup && placeById.qDropoff) {
+    el.hidden = false;
+    el.textContent = "Calculating your fare...";
+    return;
+  }
+  el.hidden = true;
+  el.textContent = "";
+}
+
+function routeWidget() {
+  if (!mapsReady) { refreshWidgetFare(); return; }
+  refreshFlightFields();
+  var p = placeById.qPickup, d = placeById.qDropoff;
+  var stop = !$("stopRow").hidden ? placeById.qStop : null;
+  if (!p || !d) {
+    routeQuote = null; routeFailed = false;
+    paintMap(null);
+    refreshWidgetFare();
+    return;
+  }
+  var seq = ++routeSeq;
+  runRoute(p, stop, d, function (rq) {
+    if (seq !== routeSeq) return;
+    if (!rq) { routeQuote = null; routeFailed = true; paintMap(null); refreshWidgetFare(); return; }
+    routeFailed = false;
+    var hasAir = !!(p.isAnyAirport || p.isAirport || d.isAnyAirport || d.isAirport || (stop && (stop.isAnyAirport || stop.isAirport)));
+    routeQuote = {
+      fromText: $("qPickup").value, toText: $("qDropoff").value,
+      stopText: stop ? $("qStop").value : "",
+      miles: rq.miles, mins: rq.mins,
+      fare: computedFare(rq.miles, hasAir), hasAirport: hasAir
+    };
+    paintMap(rq.result);
+    refreshWidgetFare();
+    updatePrice();
   });
 }
-function qzTrimMap(){
-  try {
-    if(!mapsReady || !qzMap || !qzPlaces.pickup || !qzPlaces.dropoff) return;
-    var svc = new google.maps.DirectionsService();
-    svc.route({ origin: mkLatLng(qzPlaces.pickup.lat, qzPlaces.pickup.lng), destination: mkLatLng(qzPlaces.dropoff.lat, qzPlaces.dropoff.lng), travelMode: google.maps.TravelMode.DRIVING }, function(res, st){
-      if(st === "OK" && res && res.routes && res.routes[0]){
-        if(qzLine) qzLine.setMap(null);
-        /* preserveViewport: the framing is done explicitly below, once, from
-           the route's own bounds with a small padding that fits the map box.
-           The old code called fitBounds(bounds, 56) up front: 56px of padding
-           on the 100px-tall map left a negative viewport height, collapsed
-           the zoom to near-world level, and shrank the route line to a few
-           pixels beside the Denver pin. */
-        qzLine = new google.maps.DirectionsRenderer({ map: qzMap, suppressMarkers: true, preserveViewport: true, polylineOptions: { strokeColor: "#c2922e", strokeWeight: 5 } });
-        qzLine.setDirections(res);
-        var rb = res.routes[0].bounds;
-        if(rb){ qzMap.fitBounds(rb, 32); }
-        else { var b = new google.maps.LatLngBounds(); b.extend(mkLatLng(qzPlaces.pickup.lat, qzPlaces.pickup.lng)); b.extend(mkLatLng(qzPlaces.dropoff.lat, qzPlaces.dropoff.lng)); qzMap.fitBounds(b, 32); }
-      }
-    });
-  } catch(e){}
+function widgetRouteReady() {
+  if (!ROUTE_SERVICES[state.service]) return true;
+  return quoteMatches(routeQuote, $("qPickup").value, $("qDropoff").value);
 }
-function qzRoute(){ qzWidget(); qzTrimMap(); }
-/* Flight number field: visible only while the SELECTED pickup place is
-   an airport. Detection rides on the flags normPlace already sets for
-   ANY airport, not just DEN: isAnyAirport when the place's Google types
-   include "airport" or its name/address says airport, and isAirport
-   when a DIA pick snapped to a terminal point. Based on the selected
-   place only, never on raw typed text. Hiding clears the value, so a
-   stale flight number can never ride along on a later request. The
-   field is optional: an airport pickup submits fine without it. */
-function qzPickupIsAirport(){
-  var p = qzPlaces.pickup;
+function clearRouteState() {
+  placeById = { qPickup: null, qDropoff: null, qStop: null };
+  routeQuote = null;
+  routeFailed = false;
+  routeSeq++;
+  paintMap(null);
+  refreshWidgetFare();
+}
+
+/* ---------- service + mode toggle ---------- */
+function setMode(hourly) {
+  var p = $("modeP2P"), h = $("modeHourly");
+  if (!p || !h) return;
+  p.classList.toggle("on", !hourly); p.setAttribute("aria-pressed", hourly ? "false" : "true");
+  h.classList.toggle("on", hourly); h.setAttribute("aria-pressed", hourly ? "true" : "false");
+}
+function setService(k) {
+  state.service = k;
+  var qs = $("qService"); if (qs && qs.value !== k) qs.value = k;
+  setMode(k === "hourly");
+  refreshFlightFields();
+  var hf = $("hoursField"); if (hf) hf.classList.toggle("show", k === "hourly");
+  var sf = $("stopsField"); if (sf) sf.classList.toggle("show", k === "wedding" || k === "hourly" || k === "concert");
+  clearField($("bHours"));
+  updatePrice();
+  refreshWidgetFare();
+}
+$("modeP2P").addEventListener("click", function () { setService(state.service === "hourly" ? "airport" : state.service); });
+$("modeHourly").addEventListener("click", function () { setService("hourly"); });
+$("qService").addEventListener("change", function () { setService($("qService").value); });
+
+/* ---------- swap + stop + clear ---------- */
+$("swapBtn").addEventListener("click", function () {
+  var a = $("qPickup").value;
+  $("qPickup").value = $("qDropoff").value;
+  $("qDropoff").value = a;
+  var pa = placeById.qPickup;
+  placeById.qPickup = placeById.qDropoff;
+  placeById.qDropoff = pa;
+  clearField($("qPickup")); clearField($("qDropoff"));
+  qzFlightSync();
+  refreshFlightFields();
+  routeWidget();
+  airlineGatePickup();
+});
+$("addStop").addEventListener("click", function () { $("stopRow").hidden = false; $("qStop").focus(); routeWidget(); });
+$("removeStop").addEventListener("click", function () {
+  $("stopRow").hidden = true;
+  $("qStop").value = "";
+  placeById.qStop = null;
+  routeWidget();
+});
+function wireClear(btnId, inputId, key) {
+  var b = $(btnId); if (!b) return;
+  b.addEventListener("click", function () {
+    var inp = $(inputId);
+    inp.value = "";
+    placeById[key] = null;
+    if (key === "qPickup") qzFlightSync();
+    refreshFlightFields();
+    routeWidget();
+    inp.focus();
+  });
+}
+wireClear("clear-qPickup", "qPickup", "qPickup");
+wireClear("clear-qDropoff", "qDropoff", "qDropoff");
+wireClear("clear-qStop", "qStop", "qStop");
+
+/* ---------- airport / flight / airline state ---------- */
+function pickupAirport() {
+  try {
+    var names = ["denver international", "centennial airport", "rocky mountain metro", "colorado air and space", "boulder municipal", "erie municipal"];
+    function hit(txt) {
+      txt = (txt || "").toLowerCase();
+      if (txt.indexOf("airport") !== -1) return true;
+      for (var i = 0; i < names.length; i++) if (txt.indexOf(names[i]) !== -1) return true;
+      return false;
+    }
+    function placeHit(p) {
+      if (!p) return false;
+      if (p.isAnyAirport) return true;
+      if (p.types && p.types.indexOf("airport") !== -1) return true;
+      return hit((p.name || "") + " " + (p.address || ""));
+    }
+    function diaHit(p, txt) {
+      if (p && isDIAPlace(p)) return true;
+      return (txt || "").toLowerCase().indexOf("denver international") !== -1;
+    }
+    var pl = placeById.qPickup, dl = placeById.qDropoff;
+    var pTxt = $("qPickup") ? $("qPickup").value : "";
+    var dTxt = $("qDropoff") ? $("qDropoff").value : "";
+    var pDia = diaHit(pl, pTxt), dDia = diaHit(dl, dTxt);
+    var pAir = placeHit(pl) || hit(pTxt), dAir = placeHit(dl) || hit(dTxt);
+    return { diaPickup: pDia, diaDropoff: dDia, diaAny: pDia || dDia, pickupAirport: pAir, dropoffAirport: dAir };
+  } catch (e) { return { diaPickup: false, diaDropoff: false, diaAny: false, pickupAirport: false, dropoffAirport: false }; }
+}
+function endSide(id) {
+  try {
+    var pl = placeById[id];
+    if (!pl) return "West";
+    var e = FARE_CONFIG.diaEast;
+    return (pl.lat === e.lat && pl.lng === e.lng) ? "East" : "West";
+  } catch (e) { return "West"; }
+}
+function toggleEndFields(end, show) {
+  var t = $("tailField" + end); if (t) t.classList.toggle("show", !!show);
+  var f = $("fboField" + end); if (f) f.classList.toggle("show", !!show);
+  var sel = $("bFbo" + end);
+  var o = $("fboOtherField" + end); if (o) o.classList.toggle("show", !!show && !!sel && sel.value === "Other");
+}
+function refreshFlightFields() {
+  var info = pickupAirport();
+  var ff = $("flightField"); if (ff) ff.classList.toggle("show", !!info.diaPickup);
+  var sf = $("diaSideField"); if (sf) sf.classList.toggle("show", !!info.diaPickup);
+  var qf = $("qDiaSideField"); if (qf) qf.classList.toggle("show", !!info.diaPickup);
+  var qg = $("qDiaGuide"); if (qg) qg.textContent = info.diaPickup ? ("DIA pickup: Level 5, Island 2, " + endSide("qPickup") + " side") : "";
+  var af = $("airlineField"); if (af) af.classList.toggle("show", !!info.diaAny);
+  var pg = $("diaPickupGuide");
+  if (pg) { pg.hidden = !info.diaPickup; if (info.diaPickup) pg.textContent = "DIA pickup: Level 5, Island 2, " + endSide("qPickup") + " side"; }
+  var dg = $("diaDropoffGuide");
+  if (dg) { dg.hidden = !info.diaDropoff; if (info.diaDropoff) dg.textContent = "DIA drop-off: Level 6, " + endSide("qDropoff") + " side"; }
+  toggleEndFields("Pickup", info.pickupAirport && !info.diaPickup);
+  toggleEndFields("Dropoff", info.dropoffAirport && !info.diaDropoff);
+  refreshDiaSideUI();
+  syncAirlineUI();
+}
+function refreshDiaSideUI() {
+  try { var sel = $("bDiaSide"); if (sel) sel.value = diaSide(); } catch (e) {}
+  try { var q = $("qDiaSide"); if (q) q.value = diaSide(); } catch (e) {}
+}
+function syncAirlineUI() {
+  var sel = $("bAirline");
+  if (sel) sel.value = diaAirline || "";
+}
+function resnapDIAPlaces() {
+  if (!placeById) return;
+  var changed = false;
+  var pl = placeById.qPickup;
+  if (pl && pl.isAirport) {
+    var b1 = pl.lat + "," + pl.lng;
+    snapDIA(pl);
+    if (b1 !== pl.lat + "," + pl.lng) changed = true;
+  }
+  var dl = placeById.qDropoff;
+  if (dl && dl.isAirport && diaAirline) {
+    var t = GA_TERM[diaAirline] === "east" ? FARE_CONFIG.diaEast : FARE_CONFIG.diaWest;
+    if (dl.lat !== t.lat || dl.lng !== t.lng) { dl.lat = t.lat; dl.lng = t.lng; changed = true; }
+  }
+  if (changed) { routeWidget(); updatePrice(); }
+}
+function applyDiaDropoff(side, name) {
+  var pl = placeById.qDropoff;
+  if (!pl) return;
+  var t = side === "east" ? FARE_CONFIG.diaEast : FARE_CONFIG.diaWest;
+  pl.lat = t.lat; pl.lng = t.lng; pl.isAirport = true;
+  var addr = (side === "east"
+    ? "Denver International Airport Terminal East Level 6, 8500 Peña Blvd, Denver, CO 80249"
+    : "Denver International Airport Terminal West Level 6, 8500 Peña Blvd, Denver, CO 80249") + (name ? " · " + name : "");
+  pl.address = addr;
+  $("qDropoff").value = addr;
+  if (bk.dropoff) bk.dropoff = addr;
+  routeWidget();
+  updatePrice();
+  refreshFlightFields();
+}
+
+/* Flight number field (widget): visible only while the SELECTED
+   pickup place is an airport — the flags normPlace sets for ANY
+   airport (isAnyAirport / isAirport), never raw typed text. Hiding
+   clears the value, so a stale flight number can never ride along.
+   The step-1 flight field mirrors the same value. */
+function qzPickupIsAirport() {
+  var p = placeById.qPickup;
   return !!(p && (p.isAnyAirport || p.isAirport));
 }
-function qzFlightSync(){
-  var wrap = qz$("qzFlightField"); if(!wrap) return;
+function qzFlightSync() {
+  var wrap = $("qzFlightField"); if (!wrap) return;
   var show = qzPickupIsAirport();
   wrap.hidden = !show;
-  if(!show){ var inp = qz$("qzFlight"); if(inp) inp.value = ""; }
+  if (!show) {
+    var inp = $("qzFlight"); if (inp) inp.value = "";
+    var bf = $("bFlight"); if (bf) bf.value = "";
+  }
 }
-function qzNullFare(){ qzFare = null; qzRouteMeta = null; qz$("qFare").hidden = true; }
-function qzAutoc(id, key){
-  var inp = qz$(id); if(!inp) return;
-  var ac = new google.maps.places.Autocomplete(inp, { bounds: new google.maps.LatLngBounds(new google.maps.LatLng(39.30, -105.45), new google.maps.LatLng(40.20, -104.40)), componentRestrictions: { country: "us" }, fields: ["formatted_address", "geometry", "name", "types"] });
-  ac.addListener("place_changed", function(){
-    var p = ac.getPlace();
-    if(p){ inp.value = p.formatted_address || p.name || inp.value; }
-    clearField(inp);
-    qzPlaces[key] = normPlace(inp, p);
-    qzFlightSync();
-    qzRoute();
+$("qzFlight").addEventListener("input", function () { var bf = $("bFlight"); if (bf) bf.value = $("qzFlight").value; });
+$("bFlight").addEventListener("input", function () { var qf = $("qzFlight"); if (qf) qf.value = $("bFlight").value; });
+
+/* ---------- DIA airline picker (reference sheet, verbatim data) ---------- */
+var GA_ALL = ['Aer Lingus','Aeromexico','Air Canada','Air France','Alaska Airlines','American Airlines','British Airways','Condor','Delta','Edelweiss','Frontier Airlines','Iberia','Japan Airlines','KLM','Lufthansa','Norse Atlantic','Southwest Airlines','Spirit Airlines','Sun Country','United Airlines','Volaris','WestJet'];
+var GA_POPULAR = ['Delta','Southwest Airlines','Frontier Airlines','United Airlines','American Airlines','Alaska Airlines'];
+var GA_LOGO = {'Aer Lingus':'EI','Aeromexico':'AM','Air Canada':'AC','Air France':'AF','Alaska Airlines':'AS','American Airlines':'AA','British Airways':'BA','Condor':'DE','Delta':'DL','Edelweiss':'WK','Frontier Airlines':'F9','Iberia':'IB','Japan Airlines':'JL','KLM':'KL','Lufthansa':'LH','Norse Atlantic':'N0','Southwest Airlines':'WN','Spirit Airlines':'NK','Sun Country':'SY','United Airlines':'UA','Volaris':'Y4','WestJet':'WS'};
+var GA_TERM = { 'Alaska Airlines':'east','American Airlines':'east','Air Canada':'east','Aer Lingus':'east','Condor':'east','Frontier Airlines':'east','Iberia':'east','Japan Airlines':'east','JetBlue':'east','KLM':'east','Norse Atlantic':'east','Southwest Airlines':'east','Sun Country':'east','Volaris':'east','WestJet':'east','Aeromexico':'west','Air France':'west','British Airways':'west','Delta':'west','Edelweiss':'west','Lufthansa':'west','Spirit Airlines':'west','United Airlines':'west' };
+var diaAirline = null, diaAirlineSkipped = false;
+/* Set once Continue has asked about the airline for the current
+   address picks, so a Skip at Continue lets the next Continue
+   through (the reference behavior: skipping dismisses the sheet
+   until Continue, which asks once more). */
+var diaGateDone = false;
+function gaRender(q) {
+  var el = $("airlineList");
+  if (!el) return;
+  q = (q || "").toLowerCase().trim();
+  function item(n) {
+    var code = GA_LOGO[n] || '';
+    var logo = code ? '<img src="https://www.gstatic.com/flights/airline_logos/70px/' + code + '.png" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '';
+    return '<button type="button" class="airline-item" data-airline="' + n + '"><span class="airline-badge">' + logo + '</span><span>' + n + '</span></button>';
+  }
+  var out = "";
+  if (!q) {
+    out += '<div class="airline-group">POPULAR AIRLINES</div>';
+    GA_POPULAR.forEach(function (n) { out += item(n); });
+    var last = "";
+    GA_ALL.forEach(function (n) {
+      var L = n.charAt(0).toUpperCase();
+      if (L !== last) { last = L; out += '<div class="airline-group">' + L + '</div>'; }
+      out += item(n);
+    });
+  } else {
+    var hits = GA_ALL.filter(function (n) { return n.toLowerCase().indexOf(q) >= 0; });
+    out = hits.length ? hits.map(item).join("") : '<div class="airline-none">No airline matches that search. Tap Skip to continue without one.</div>';
+  }
+  el.innerHTML = out;
+}
+function gaShow() {
+  var p = $("airlinePicker");
+  if (!p) return;
+  var s = $("airlineSearch");
+  if (s) s.value = "";
+  gaRender("");
+  p.classList.add("open");
+  document.body.classList.add("airline-open");
+}
+function gaClose() {
+  var p = $("airlinePicker");
+  if (p) p.classList.remove("open");
+  document.body.classList.remove("airline-open");
+}
+function gaSelect(name) {
+  diaAirline = name;
+  diaAirlineSkipped = false;
+  diaGateDone = true;
+  var info = pickupAirport();
+  if (info.diaDropoff) applyDiaDropoff(GA_TERM[name] || "east", name);
+  if (info.diaPickup) { diaManual = GA_TERM[name] || "east"; resnapDIAPlaces(); }
+  syncAirlineUI();
+  refreshFlightFields();
+  gaClose();
+}
+$("airlineList").addEventListener("click", function (e) {
+  var b = e.target && e.target.closest ? e.target.closest("[data-airline]") : null;
+  if (b) gaSelect(b.getAttribute("data-airline"));
+});
+$("airlineSearch").addEventListener("input", function () { gaRender($("airlineSearch").value); });
+$("airlineSkip").addEventListener("click", function () { diaAirlineSkipped = true; gaClose(); });
+$("airlineBack").addEventListener("click", function () { diaAirlineSkipped = true; gaClose(); });
+$("bAirline").addEventListener("change", function () {
+  var v = $("bAirline").value;
+  diaAirline = v || null;
+  if (v) {
+    var info = pickupAirport();
+    if (info.diaDropoff) applyDiaDropoff(GA_TERM[v] || "east", v);
+    else if (info.diaPickup) { diaManual = GA_TERM[v] || "east"; resnapDIAPlaces(); }
+  }
+  refreshFlightFields();
+});
+$("bFboPickup").addEventListener("change", function () { refreshFlightFields(); });
+$("bFboDropoff").addEventListener("change", function () { refreshFlightFields(); });
+(function () {
+  var sel = $("bAirline");
+  if (sel) sel.innerHTML = '<option value="">Choose your airline</option>' + GA_ALL.map(function (n) { return '<option value="' + n + '">' + n + '</option>'; }).join("");
+})();
+/* The airline sheet asks when an airport pickup is chosen (this
+   page's standing trigger — the same detection that shows the
+   flight-number field) and, mirroring the reference, when a DIA
+   drop-off is chosen. Skipping dismisses it until Continue, which
+   asks again. */
+function airlineGatePickup() {
+  if (document.body.classList.contains("book-open")) return;
+  if (qzPickupIsAirport()) {
+    if (!diaAirline && !diaAirlineSkipped && !diaGateDone) gaShow();
+  } else {
+    if (diaAirline) { diaAirline = null; syncAirlineUI(); }
+    diaAirlineSkipped = false;
+    diaGateDone = false;
+  }
+}
+function airlineGateDropoff() {
+  if (document.body.classList.contains("book-open")) return;
+  var d = placeById.qDropoff;
+  if (d && isDIAPlace(d)) {
+    if (!diaAirline && !diaAirlineSkipped && !diaGateDone) gaShow();
+  }
+}
+["qDiaSide", "bDiaSide"].forEach(function (id) {
+  var el = $(id);
+  if (el) el.addEventListener("change", function () {
+    diaManual = el.value;
+    resnapDIAPlaces();
+    refreshFlightFields();
   });
-  inp.addEventListener("input", function(){ qzPlaces[key] = null; qzNullFare(); qzFlightSync(); });
+});
+
+/* ---------- price + steps ---------- */
+function calcPrice() {
+  var s = SERVICES[state.service];
+  if (!s) return 0;
+  if (state.service === "hourly") { var h = parseInt($("bHours").value || "3", 10); return FARE_CONFIG.hourlyRate * h; }
+  if (ROUTE_SERVICES[state.service]) {
+    var rq = quoteMatches(routeQuote, bk.pickup, bk.dropoff) ? routeQuote : null;
+    return rq ? rq.fare : 0;
+  }
+  return s.base;
 }
-window.__qzInitMaps = function(){
+function shortPlace(txt, endId) {
+  txt = (txt || "").trim();
+  if (!txt) return "-";
+  if (txt.toLowerCase().indexOf("denver international") > -1) {
+    var m = txt.match(/Terminal (West|East)/i);
+    var side = m ? (m[1].charAt(0).toUpperCase() + m[1].slice(1).toLowerCase()) : (endId ? endSide(endId) : "West");
+    return "Denver International Airport, Terminal " + side;
+  }
+  if (endId) {
+    try {
+      var inp = document.getElementById(endId);
+      var pl = placeById[endId];
+      if (pl && pl.name && inp && normText(inp.value) === normText(pl.address)) return pl.name.trim();
+    } catch (e) {}
+  }
+  var i = txt.indexOf(",");
+  return i > 0 ? txt.slice(0, i) : txt;
+}
+function updatePrice() {
+  state.price = calcPrice();
+  var s = SERVICES[state.service];
+  var ps = $("priceSummary"), rs = $("reviewSummary");
+  if (!ps || !rs) return;
+  if (!s) {
+    ps.innerHTML = '<div class="sum-top"><div><span class="sum-lbl">Flat total</span><b class="sum-amt">Not priced yet</b></div><div class="sum-svc"></div></div><div class="sum-route"></div><div class="sum-meta">Your fare is set once your route is priced.</div>';
+    rs.innerHTML = '<b>Not priced yet</b>';
+    return;
+  }
+  var rq = quoteMatches(routeQuote, bk.pickup, bk.dropoff) ? routeQuote : null;
+  var meta = fmtDate(bk.date) + (bk.time ? " · " + fmtTime(bk.time) : "");
+  if (state.service === "hourly") { meta += " · " + ($("bHours").value || "3") + " hours"; }
+  else if (rq) { meta += " · " + rq.miles.toFixed(1) + " mi · about " + Math.max(1, Math.round(rq.mins)) + " min"; }
+  var unpriced = !!ROUTE_SERVICES[state.service] && !rq && !routeFailed && mapsReady;
+  var amtTxt = unpriced ? "Not priced yet" : ("$" + fmtMoney(state.price));
+  var metaTxt = unpriced ? "Your fare is set once your route is priced. Go back and pick your addresses from the list." : meta;
+  ps.innerHTML = '<div class="sum-top"><div><span class="sum-lbl">Flat total</span><b class="sum-amt">' + amtTxt + '</b></div><div class="sum-svc">' + s.name + '</div></div><div class="sum-route">' + escHtml(shortPlace(bk.pickup, "qPickup")) + ' to ' + escHtml(shortPlace(bk.dropoff, "qDropoff")) + '</div><div class="sum-meta">' + escHtml(metaTxt) + '</div>';
+  rs.innerHTML = '<b>' + amtTxt + '</b> · ' + escHtml(shortPlace(bk.pickup, "qPickup")) + ' to ' + escHtml(shortPlace(bk.dropoff, "qDropoff")) + ' · ' + escHtml(fmtDate(bk.date) + (bk.time ? ", " + fmtTime(bk.time) : ""));
+}
+$("bPax").addEventListener("change", function () { updatePrice(); });
+$("bBags").addEventListener("change", function () { updatePrice(); });
+$("bHours").addEventListener("change", function () { updatePrice(); });
+
+function goStep(n) {
+  var steps = document.querySelectorAll(".bstep");
+  for (var i = 0; i < steps.length; i++) {
+    steps[i].classList.toggle("on", steps[i].getAttribute("data-step") === String(n));
+  }
+  var spans = document.querySelectorAll("#progress span");
+  for (var j = 0; j < spans.length; j++) {
+    var p = parseInt(spans[j].getAttribute("data-p"), 10);
+    spans[j].classList.toggle("on", p === n);
+    spans[j].classList.toggle("done", p < n);
+  }
+  var bkEl = $("book");
+  if (bkEl) bkEl.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+function openBookView() {
+  var v = $("book"); if (!v) return;
+  var hd = document.querySelector("header.site");
+  v.style.top = (hd && typeof hd.offsetHeight === "number" ? hd.offsetHeight : 0) + "px";
+  document.body.classList.add("book-open");
+  goStep(1);
+  updatePrice();
+}
+function closeBookView() {
+  document.body.classList.remove("book-open");
+  var top = $("quickForm");
+  if (top) top.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+/* ---------- widget Continue ---------- */
+$("quickForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+  var bad = null;
+  if (!$("qService").value) { flagField($("qService"), false); bad = $("qService"); }
+  ["qPickup", "qDate", "qTime"].forEach(function (id) {
+    var el = $(id);
+    if (!el.value) { flagField(el, false); if (!bad) bad = el; }
+  });
+  if (!$("qDropoff").value) {
+    flagMsg($("qDropoff"), "Please enter your drop-off, for hourly, you can write “Multiple stops”.", false);
+    if (!bad) bad = $("qDropoff");
+  }
+  if (bad) { flagField(bad, true); return; }
+  if (qzPickupIsAirport() && !diaAirline && !diaGateDone) { diaGateDone = true; gaShow(); return; }
+  if (placeById.qDropoff && isDIAPlace(placeById.qDropoff) && !diaAirline && !diaGateDone) { diaGateDone = true; gaShow(); return; }
+  if (!widgetRouteReady()) {
+    if (placeById.qPickup && placeById.qDropoff) { flagMsg($("qDropoff"), "We are still pricing your route. Give it a moment, then tap Continue again.", false); flagField($("qDropoff"), true); }
+    else if (!placeById.qPickup) { flagMsg($("qPickup"), "Please pick your pickup from the address list so we can price your ride.", false); flagField($("qPickup"), true); }
+    else { flagMsg($("qDropoff"), "Please pick your drop-off from the address list so we can price your ride.", false); flagField($("qDropoff"), true); }
+    return;
+  }
+  bk.pickup = $("qPickup").value;
+  bk.dropoff = $("qDropoff").value;
+  bk.date = $("qDate").value;
+  bk.time = $("qTime").value;
+  openBookView();
+});
+
+/* ---------- step navigation + confirm ---------- */
+function validateSUV(advance) {
+  var bad = null;
+  if (!$("bPax").value) { flagField($("bPax"), false); bad = $("bPax"); }
+  if (state.service === "hourly" && !$("bHours").value) { flagField($("bHours"), false); if (!bad) bad = $("bHours"); }
+  if (bad) { if (advance !== "quiet") flagField(bad, true); return false; }
+  return true;
+}
+$("toStep3").addEventListener("click", function () {
+  if (!validateSUV()) return;
+  updatePrice();
+  goStep(2);
+});
+$("bookExit").addEventListener("click", function () { closeBookView(); });
+var backBtns = document.querySelectorAll("[data-back]");
+for (var bi = 0; bi < backBtns.length; bi++) {
+  backBtns[bi].addEventListener("click", function () { goStep(1); });
+}
+
+var QZ_LS = "bbl_quotes_v1";
+var QZ_LS_BOOKS = "bbl_bookings_v1";
+$("bookForm").addEventListener("submit", function (e) { e.preventDefault(); });
+$("confirmBtn").addEventListener("click", function () {
+  var bad = null;
+  function need(el, ok, msg) {
+    if (ok) { clearField(el); return; }
+    if (msg) flagMsg(el, msg); else flagField(el);
+    if (!bad) bad = el;
+  }
+  var name = $("bName"), phone = $("bPhone"), email = $("bEmail");
+  need(name, (name.value || "").trim().length >= 2, "Please enter your full name.");
+  need(phone, (phone.value || "").replace(/\D/g, "").length >= 10, "Please enter a valid phone number (at least 10 digits).");
+  need(email, /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((email.value || "").trim()), "Please enter a valid email address.");
+  need($("bConsent"), !!$("bConsent").checked, "Please check the box so we can text you ride updates, or go back and we'll confirm by email only.");
+  if (bad) { flagField(bad, true); return; }
+  updatePrice();
+  var code = "BK-" + (1000 + Math.floor(Math.random() * 9000));
+  var flightNumber = "";
+  if (qzPickupIsAirport()) { var flEl = $("qzFlight"); if (flEl) flightNumber = (flEl.value || "").trim().toUpperCase(); }
+  var rq = quoteMatches(routeQuote, bk.pickup, bk.dropoff) ? routeQuote : null;
+  var stopText = !$("stopRow").hidden ? $("qStop").value : "";
+  var rec = {
+    id: "q" + Date.now().toString(36),
+    kind: "quote",
+    code: code,
+    rider: (name.value || "").trim(),
+    phone: (phone.value || "").trim(),
+    email: (email.value || "").trim(),
+    pickup: bk.pickup,
+    dropoff: bk.dropoff,
+    stop: stopText,
+    date: bk.date, time: bk.time,
+    service: state.service,
+    serviceName: SERVICES[state.service] ? SERVICES[state.service].name : "",
+    mode: state.service === "hourly" ? "hourly" : "point-to-point",
+    passengers: parseInt($("bPax").value, 10) || 1,
+    bags: $("bBags").value,
+    notes: ($("bNotes").value || "").trim(),
+    fare: state.price,
+    miles: rq ? rq.miles : null,
+    mins: rq ? rq.mins : null,
+    hours: state.service === "hourly" ? (parseInt($("bHours").value, 10) || 3) : null,
+    createdAt: new Date().toISOString()
+  };
+  if (flightNumber) rec.flightNumber = flightNumber;
+  if (diaAirline) rec.airline = diaAirline;
   try {
-    mapsReady = true;
-    var el = qz$("qMap");
-    if(el){
-      qzMap = new google.maps.Map(el, { center: mkLatLng(FARE_CONFIG.denverCenter.lat, FARE_CONFIG.denverCenter.lng), zoom: 10, mapTypeControl: false, streetViewControl: false, fullscreenControl: false });
-      new google.maps.Marker({ position: mkLatLng(FARE_CONFIG.denverCenter.lat, FARE_CONFIG.denverCenter.lng), map: qzMap });
-      var mn = qz$("qMapNote"); if (mn) mn.style.display = "none";
-    }
-    qzAutoc("qzPickup", "pickup");
-    qzAutoc("qzDropoff", "dropoff");
-  } catch(e){}
-};
-setTimeout(function(){
-  if(!mapsReady){ var qmn = qz$("qMapNote"); if(qmn){ qmn.textContent = "Map could not load."; qmn.classList.add("qmap-failed"); } }
-}, 10000);
-(function(){
-  qzSetMin();
-  qzFlightSync();
-  var form = qz$("quoteForm"); if(!form) return;
-  form.addEventListener("submit", function(ev){
-    ev.preventDefault();
-    var bad = null;
-    function need(el, ok, msg){
-      if(ok){ clearField(el); return; }
-      if(msg) flagMsg(el, msg); else flagField(el);
-      if(!bad) bad = el;
-    }
-    var pickup = qz$("qzPickup"), dropoff = qz$("qzDropoff"), date = qz$("qzDate"), time = qz$("qzTime"), name = qz$("qzName"), phone = qz$("qzPhone");
-    need(name, (name.value || "").trim().length >= 2, "Please enter your name.");
-    need(date, !!(date.value || "").trim(), "Please pick the date of your ride.");
-    need(time, !!(time.value || "").trim(), "Please pick the time of your ride.");
-    need(pickup, !!qzPlaces.pickup, "Please pick your pickup location from the suggestions.");
-    need(dropoff, !!qzPlaces.dropoff, "Please pick your drop-off location from the suggestions.");
-    need(phone, (phone.value || "").replace(/\D/g, "").length >= 10, "Please enter a valid phone number.");
-    if(bad){ bad.focus(); return; }
-    var flightNumber = "";
-    if(qzPickupIsAirport()){ var flEl = qz$("qzFlight"); if(flEl) flightNumber = (flEl.value || "").trim().toUpperCase(); }
-    var code = "QR-" + (1000 + Math.floor(Math.random() * 9000));
-    var rec = {
-      id: "q" + Date.now().toString(36),
-      kind: "quote",
-      code: code,
-      rider: (name.value || "").trim(),
-      phone: (phone.value || "").trim(),
-      pickup: qzPlaces.pickup ? (qzPlaces.pickup.wasSnapped ? qzPlaces.pickup.address : qzPlaces.pickup.display) : (pickup.value || "").trim(),
-      dropoff: qzPlaces.dropoff ? (qzPlaces.dropoff.wasSnapped ? qzPlaces.dropoff.address : qzPlaces.dropoff.display) : (dropoff.value || "").trim(),
-      date: date.value, time: time.value,
-      passengers: parseInt(qz$("qzPax").value, 10) || 1,
-      notes: (qz$("qzNotes").value || "").trim(),
-      fare: qzFare, miles: qzRouteMeta ? qzRouteMeta.miles : null, mins: qzRouteMeta ? qzRouteMeta.mins : null,
-      createdAt: new Date().toISOString()
+    var all = []; try { all = JSON.parse(localStorage.getItem(QZ_LS) || "[]"); } catch (e) { all = []; }
+    if (!Array.isArray(all)) all = [];
+    all.push(rec); localStorage.setItem(QZ_LS, JSON.stringify(all));
+    if (window.BBL_BACKEND) { try { BBL_BACKEND.recordQuote(rec); } catch (e) {} }
+  } catch (e) {}
+  try {
+    var books = [];
+    try { books = JSON.parse(localStorage.getItem(QZ_LS_BOOKS) || "[]"); } catch (e) { books = []; }
+    if (!Array.isArray(books)) books = [];
+    var fareDetail = null;
+    if (rq) { fareDetail = { kind: "route", fare: rec.fare, miles: rec.miles, minutes: rec.mins }; }
+    else if (state.service === "hourly") { fareDetail = { kind: "hourly", fare: rec.fare, hours: rec.hours }; }
+    var bkRec = {
+      id: rec.id, kind: "booking", code: code, service: rec.service, serviceName: rec.serviceName,
+      date: rec.date, time: rec.time, pickup: rec.pickup, dropoff: rec.dropoff, stop: rec.stop,
+      price: rec.fare, pay: "later", paymentMethod: "pay-driver",
+      paymentStatus: "Pay driver later", paymentConfirmed: false, owner: "guest",
+      rider: rec.rider, phone: rec.phone, email: rec.email, pax: rec.passengers,
+      passengers: rec.passengers, bags: rec.bags, notes: rec.notes, status: "confirmed",
+      fareDetail: fareDetail, createdAt: rec.createdAt, quote: false
     };
-    if(flightNumber) rec.flightNumber = flightNumber;
-    try {
-      var all = []; try { all = JSON.parse(localStorage.getItem(QZ_LS) || "[]"); } catch(e){ all = []; }
-      if(!Array.isArray(all)) all = [];
-      all.push(rec); localStorage.setItem(QZ_LS, JSON.stringify(all));
-      if (window.BBL_BACKEND) { try { BBL_BACKEND.recordQuote(rec); } catch(e){} }
-    } catch(e){}
-    try {
-      var books = [];
-      try { books = JSON.parse(localStorage.getItem(QZ_LS_BOOKS) || "[]"); } catch(e){ books = []; }
-      if(!Array.isArray(books)) books = [];
-      var fareDetail = null;
-      if(rec.fare != null && rec.miles != null){ fareDetail = { kind: "route", fare: rec.fare, miles: rec.miles, minutes: rec.mins }; }
-      books.push({
-        id: rec.id, kind: "quote", code: code, service: "quote", serviceName: "Quote request",
-        date: rec.date, time: rec.time, pickup: rec.pickup, dropoff: rec.dropoff,
-        price: rec.fare != null ? rec.fare : 0, pay: "later", paymentMethod: "quote-request",
-        paymentStatus: "Quote requested", paymentConfirmed: false, owner: "guest",
-        rider: rec.rider, phone: rec.phone, pax: rec.passengers,
-        passengers: rec.passengers, notes: rec.notes, status: "requested",
-        fareDetail: fareDetail, createdAt: rec.createdAt, quote: true
+    if (flightNumber) bkRec.flightNumber = flightNumber;
+    if (diaAirline) bkRec.airline = diaAirline;
+    books.push(bkRec);
+    localStorage.setItem(QZ_LS_BOOKS, JSON.stringify(books));
+    if (window.BBL_BACKEND) { try { BBL_BACKEND.recordBooking(bkRec); } catch (e) {} }
+  } catch (e) {}
+  var rows = [
+    ["When", fmtDate(rec.date) + " at " + fmtTime(rec.time)],
+    ["Pickup", rec.pickup]
+  ];
+  if (rec.stop) rows.push(["Stop", rec.stop]);
+  rows.push(["Drop-off", rec.dropoff]);
+  if (rec.flightNumber) rows.push(["Flight", rec.flightNumber]);
+  if (rec.airline) rows.push(["Airline", rec.airline]);
+  rows.push(["Passengers", String(rec.passengers)]);
+  if (rec.fare != null) rows.push(["Your fare", "$" + fmtMoney(rec.fare) + (rec.miles != null ? " (" + rec.miles.toFixed(1) + " mi)" : "")]);
+  if (rec.notes) rows.push(["Notes", rec.notes]);
+  $("qSummary").innerHTML = rows.map(function (r) { return "<div class='srow'><span>" + escHtml(r[0]) + "</span><b>" + escHtml(r[1]) + "</b></div>"; }).join("");
+  $("confCode").textContent = code;
+  $("riderMsg").textContent = "Boulder Black Line: You are booked " + fmtDate(rec.date) + ", " + fmtTime(rec.time) + ", " + shortPlace(rec.pickup, "qPickup") + " to " + shortPlace(rec.dropoff, "qDropoff") + ". Questions? Call (720) 326-4652.";
+  $("bookForm").style.display = "none";
+  var done = $("successBox");
+  done.classList.add("show");
+  done.scrollIntoView({ behavior: "smooth", block: "center" });
+});
+$("bookAnother").addEventListener("click", function () {
+  /* Hand back the page exactly as it first loaded: blank widget,
+     idle map over Boulder, top of page. */
+  var qf = $("quickForm"); if (qf) qf.reset();
+  var bf = $("bookForm"); if (bf) { bf.reset(); bf.style.display = ""; }
+  var sb = $("successBox"); if (sb) sb.classList.remove("show");
+  var sr = $("stopRow"); if (sr) sr.hidden = true;
+  diaManual = null;
+  diaAirline = null; diaAirlineSkipped = false; diaGateDone = false;
+  bk.pickup = ""; bk.dropoff = ""; bk.date = ""; bk.time = "";
+  setService("");
+  clearRouteState();
+  qzFlightSync();
+  refreshFlightFields();
+  closeBookView();
+  if (gMap) {
+    gMap.setCenter(mkLatLng(BBL_HOME.lat, BBL_HOME.lng));
+    gMap.setZoom(12);
+    setMarker("a", null); setMarker("b", null);
+    new google.maps.Marker({ position: mkLatLng(BBL_HOME.lat, BBL_HOME.lng), map: gMap });
+  }
+  window.scrollTo(0, 0);
+});
+
+/* ---------- maps load ---------- */
+function qzMapsFailed() {
+  if (mapsReady) return;
+  var qmn = $("qMapNote");
+  if (qmn) { qmn.textContent = "Map could not load."; qmn.classList.add("qmap-failed"); }
+}
+window.gm_authFailure = function () { qzMapsFailed(); };
+function bindAc(id, key) {
+  var inp = $(id); if (!inp) return;
+  var ac = new google.maps.places.Autocomplete(inp, {
+    bounds: new google.maps.LatLngBounds(mkLatLng(39.30, -105.45), mkLatLng(40.20, -104.40)),
+    componentRestrictions: { country: "us" },
+    fields: ["formatted_address", "geometry", "name", "types"]
+  });
+  ac.addListener("place_changed", function () {
+    var p = ac.getPlace();
+    if (p) { inp.value = p.formatted_address || p.name || inp.value; }
+    clearField(inp);
+    placeById[key] = normPlace(inp, p);
+    if (key === "qPickup" && qzPickupIsAirport()) diaGateDone = false;
+    if (key === "qDropoff" && placeById.qDropoff && isDIAPlace(placeById.qDropoff)) diaGateDone = false;
+    if (key === "qPickup") qzFlightSync();
+    refreshFlightFields();
+    routeWidget();
+    if (key === "qPickup") airlineGatePickup();
+    if (key === "qDropoff") airlineGateDropoff();
+  });
+  inp.addEventListener("input", function () {
+    placeById[key] = null;
+    if (key === "qPickup") qzFlightSync();
+    refreshFlightFields();
+    routeWidget();
+  });
+}
+window.__qzInitMaps = function () {
+  try {
+    if (!window.google || !google.maps || !google.maps.places) { qzMapsFailed(); return; }
+    mapsReady = true;
+    var el = $("qMap");
+    if (el) {
+      /* Fresh load: zoomed-in local view of this site's home area
+         (Boulder) with a pin — the reference page's local-view
+         behavior — never a wide metro view. Route framing takes
+         over only once both addresses are picked. */
+      gMap = new google.maps.Map(el, {
+        center: mkLatLng(BBL_HOME.lat, BBL_HOME.lng),
+        zoom: 12,
+        disableDefaultUI: true,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false,
+        zoomControl: false
       });
-      if(flightNumber) books[books.length - 1].flightNumber = flightNumber;
-      localStorage.setItem(QZ_LS_BOOKS, JSON.stringify(books));
-      if (window.BBL_BACKEND) { try { BBL_BACKEND.recordBooking(books[books.length-1]); } catch(e){} }
-    } catch(e){}
-    var rows = [
-      ["When", fmtDate(rec.date) + " at " + fmtTime(rec.time)],
-      ["Pickup", rec.pickup],
-      ["Drop-off", rec.dropoff],
-      ["Passengers", String(rec.passengers)]
-    ];
-    if(rec.flightNumber) rows.splice(2, 0, ["Flight", rec.flightNumber]);
-    if(rec.fare != null) rows.push(["Your fare", "$" + fmtMoney(rec.fare) + " (" + rec.miles.toFixed(1) + " mi)"]);
-    if(rec.notes) rows.push(["Notes", rec.notes]);
-    qz$("qSummary").innerHTML = rows.map(function(r){ return "<div class='srow'><span>" + r[0] + "</span><b>" + r[1] + "</b></div>"; }).join("");
-    qz$("qRef").textContent = code;
-    form.style.display = "none";
-    var done = qz$("quoteDone");
-    done.style.display = "block";
-    done.scrollIntoView({ behavior: "smooth", block: "center" });
-  });
-  qz$("qAgain").addEventListener("click", function(){
-    qz$("quoteDone").style.display = "none";
-    form.reset(); form.style.display = "";
-    qzPlaces = { pickup: null, dropoff: null };
-    qzNullFare(); qzSetMin();
-    qzFlightSync();
-    qz$("qMap").scrollIntoView({ behavior: "smooth", block: "center" });
-  });
+      qzMap = gMap;
+      new google.maps.Marker({ position: mkLatLng(BBL_HOME.lat, BBL_HOME.lng), map: gMap });
+      var mn = $("qMapNote"); if (mn) mn.style.display = "none";
+    }
+    bindAc("qPickup", "qPickup");
+    bindAc("qDropoff", "qDropoff");
+    bindAc("qStop", "qStop");
+    paintMap(null);
+    refreshWidgetFare();
+  } catch (e) { qzMapsFailed(); }
+};
+setTimeout(function () { if (!mapsReady) qzMapsFailed(); }, 10000);
+(function () {
+  var el = $("qDate");
+  if (el) {
+    var now = new Date();
+    function p(n) { return (n < 10 ? "0" : "") + n; }
+    el.min = now.getFullYear() + "-" + p(now.getMonth() + 1) + "-" + p(now.getDate());
+  }
+  qzFlightSync();
+  refreshFlightFields();
 })();
 </script>
 <script>
