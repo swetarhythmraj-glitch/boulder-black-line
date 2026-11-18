@@ -908,6 +908,48 @@ main{animation:bblPagein .35s ease-out}
 .rv{opacity:0;transform:translateY(10px);transition:opacity .5s ease,transform .5s ease}
 .rv.in{opacity:1;transform:none}
 @media (prefers-reduced-motion: reduce){main{animation:none}#bblSkel{transition:none}.rv{opacity:1;transform:none;transition:none}}
+<style>
+/* ---------- Suggestions + booking view (user, 2026-11-18
+   11:00-11:04 MST, phone screenshots + voice call) ----------
+   FIX 1: the Google Places suggestion list gets a solid,
+   readable card — opaque white ground, full-size dark rows —
+   and the watcher in the maps script pins it inside the
+   visible area while typing, so no row is dimmed, covered or
+   cut off by the keyboard. (Its z-index and font still come
+   from the standing .pac-container rule above.)
+   FIX 2: the booking view (body.bk-on, switched by the fare
+   line — see the fare script). While a fare is on screen the
+   rider is booking, not browsing: the headline steps aside,
+   the hero's top air tightens (20 -> 6px; the first-view
+   budget follows, 76 -> 62), and the form takes a compact
+   tier — the same step the short screens already use — so
+   headline -> map -> form -> Continue again totals exactly
+   one screen with Continue resting 10px above the floating
+   Call/Text bar, the vehicle slideshow fully below the fold,
+   and the map (still the flex absorber) taking the freed
+   space: at 430x932 it grows from its 224px floor to ~282px
+   with the whole route line framed inside it. Every field,
+   label and line of copy is unchanged; fresh load is
+   untouched (bk-on is absent until a fare shows). The
+   booking sheet is not affected (its selectors are #book-
+   scoped and none of these rules reach it). */
+.pac-container{background:#FFFFFF !important;border:1px solid #D8C9A3;border-radius:14px;box-shadow:0 16px 38px rgba(0,0,0,.5);padding:4px 0;overflow-y:auto}
+.pac-item{font-size:15px;line-height:1.4;padding:10px 14px;color:#14100B;border-top:1px solid #EFE7D0;background:#FFFFFF;cursor:pointer}
+.pac-item:first-child{border-top:0}
+.pac-item-query{font-size:15px;color:#14100B}
+.pac-item:hover,.pac-item-selected{background:#F3ECD9}
+body.qpage.bk-on .qheadline{display:none}
+body.qpage.bk-on .qhero{padding-top:calc(6px + env(safe-area-inset-top,0px))}
+body.qpage.bk-on .qhero .appbook{min-height:calc(100vh - 6px - env(safe-area-inset-top,0px) - 56px - env(safe-area-inset-bottom,0px));min-height:calc(100svh - 6px - env(safe-area-inset-top,0px) - 56px - env(safe-area-inset-bottom,0px))}
+body.qpage.bk-on .qhero .app-panel{padding:6px 14px;gap:5px}
+@media(min-width:561px){body.qpage.bk-on .qhero .app-panel{padding:6px 18px}}
+body.qpage.bk-on .qhero .route-fields{gap:5px}
+body.qpage.bk-on #quickForm input,body.qpage.bk-on #quickForm select{height:39px;min-height:39px}
+body.qpage.bk-on .qhero .mode-toggle button{height:38px;min-height:38px}
+body.qpage.bk-on .qhero .app-panel .flabel{margin-bottom:2px}
+body.qpage.bk-on .guide-note.slim{margin-top:4px;padding:1px 10px}
+body.qpage.bk-on .qhero .q-fare .q-amt{font-size:27px}
+body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
 </style>
 </head>
 <body class="qpage">
@@ -1422,6 +1464,21 @@ function refreshWidgetFare() {
   el.hidden = true;
   el.textContent = "";
 }
+
+/* ---------- booking view (user, 2026-11-18 11:03 MST) ----------
+   While a fare is on screen the rider is booking, not browsing:
+   the page switches to the booking view (body.bk-on — headline
+   aside, tighter top air, compact form tier, the map takes the
+   freed space; see the layout style block). The fare line's
+   hidden flag is the single source of truth, watched here so
+   no fare code path has to know about the layout. */
+(function () {
+  var qf = $("qFare");
+  if (!qf) return;
+  var bkSync = function () { document.body.classList.toggle("bk-on", !qf.hidden); };
+  if (window.MutationObserver) { new MutationObserver(bkSync).observe(qf, { attributes: true, attributeFilter: ["hidden"] }); }
+  bkSync();
+})();
 
 /* Geometry-only pricing, resolved the moment both places are
    picked — no Directions round-trip. In the snapshot the mountain
@@ -2341,6 +2398,68 @@ function bindAc(id, key) {
     routeWidget();
   });
 }
+/* ---------- address suggestions: keep the whole list visible
+   while typing (user, 2026-11-18 11:01 MST) ----------
+   Google's dropdown is placed in document coordinates under
+   the field and simply hangs past the bottom of the visible
+   area; when the keyboard opens, the visible area shrinks and
+   the lower rows end up under the keyboard and the browser's
+   own form bar (his screenshot: the DEN row dimmed behind a
+   translucent pill, the rows below cut off). While an address
+   field is active, pin the open list to the field in viewport
+   coordinates and cap its height to the space the rider can
+   actually see — flipping it above the field when below is
+   tighter. Re-fits on typing, on keyboard-driven viewport
+   changes, and whenever Google re-places the list. */
+(function () {
+  var pacIds = ["qPickup", "qDropoff", "qStop"];
+  var pacActive = null, pacSig = "", pacTimer = 0;
+  function pacOpen() {
+    var cs = document.querySelectorAll(".pac-container");
+    for (var i = 0; i < cs.length; i++) { if (cs[i].style && cs[i].style.display !== "none" && cs[i].offsetHeight > 0) return cs[i]; }
+    return null;
+  }
+  function pacFit() {
+    var vv = window.visualViewport;
+    if (!vv || !pacActive) return;
+    var pac = pacOpen(); if (!pac) return;
+    var r = pacActive.getBoundingClientRect();
+    if (!r || !r.width) return;
+    var below = vv.height - r.bottom - 8, above = r.top - 8;
+    var need = pac.scrollHeight || 230;
+    var top, maxH;
+    if (below >= Math.min(need, 150) || below >= above) { maxH = Math.max(110, Math.floor(below)); top = r.bottom + vv.offsetTop + 4; }
+    else { maxH = Math.max(110, Math.floor(Math.min(need, above))); top = r.top + vv.offsetTop - maxH - 4; }
+    var sig = top + "|" + maxH + "|" + r.left + "|" + r.width;
+    if (sig === pacSig) return;
+    pacSig = sig;
+    pac.style.position = "fixed";
+    pac.style.top = top + "px";
+    pac.style.left = (r.left + vv.offsetLeft) + "px";
+    pac.style.width = r.width + "px";
+    pac.style.maxHeight = maxH + "px";
+    pac.style.overflowY = "auto";
+    pac.style.marginTop = "0";
+  }
+  function pacSoon() {
+    if (pacTimer) return;
+    pacTimer = setTimeout(function () { pacTimer = 0; pacFit(); }, 40);
+  }
+  pacIds.forEach(function (id) {
+    var inp = document.getElementById(id);
+    if (!inp) return;
+    inp.addEventListener("focus", function () { pacActive = inp; pacSig = ""; setTimeout(pacFit, 320); pacSoon(); });
+    inp.addEventListener("input", pacSoon);
+    inp.addEventListener("blur", function () { setTimeout(function () { if (document.activeElement !== inp) { pacActive = null; pacSig = ""; } }, 200); });
+  });
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", pacSoon);
+    window.visualViewport.addEventListener("scroll", pacSoon);
+  }
+  if (window.MutationObserver && document.body) {
+    new MutationObserver(pacSoon).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["style"] });
+  }
+})();
 window.__qzInitMaps = function () {
   try {
     if (!window.google || !google.maps || !google.maps.places) { qzMapsFailed(); return; }
