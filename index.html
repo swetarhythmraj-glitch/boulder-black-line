@@ -1065,13 +1065,22 @@ function refreshFlightFields() {
   var sf = $("diaSideField"); if (sf) sf.classList.toggle("show", !!info.diaPickup);
   var qf = $("qDiaSideField"); if (qf) qf.classList.toggle("show", !!info.diaPickup);
   var qg = $("qDiaGuide"); if (qg) qg.textContent = info.diaPickup ? ("DIA pickup: Level 5, Island 2, " + endSide("qPickup") + " side") : "";
-  var af = $("airlineField"); if (af) af.classList.toggle("show", !!info.diaAny);
+  /* The step-1 airline select obeys the same airport-PICKUP-only
+     rule as the sheet and the flight field (user, 2026-11-17):
+     shown only while the selected pickup place is an airport. */
+  var af = $("airlineField"); if (af) af.classList.toggle("show", qzPickupIsAirport());
   var pg = $("diaPickupGuide");
   if (pg) { pg.hidden = !info.diaPickup; if (info.diaPickup) pg.textContent = "DIA pickup: Level 5, Island 2, " + endSide("qPickup") + " side"; }
   var dg = $("diaDropoffGuide");
   if (dg) { dg.hidden = !info.diaDropoff; if (info.diaDropoff) dg.textContent = "DIA drop-off: Level 6, " + endSide("qDropoff") + " side"; }
   toggleEndFields("Pickup", info.pickupAirport && !info.diaPickup);
   toggleEndFields("Dropoff", info.dropoffAirport && !info.diaDropoff);
+  /* Airline state lives only in the airport-pickup flow: whenever
+     the pickup is not an airport, a held airline is cleared here —
+     this funnel runs on every pickup change (pick, typing, clear,
+     swap), including while the booking sheet is open, where the
+     sheet gate deliberately stays out of the way. */
+  if (!qzPickupIsAirport() && diaAirline) clearAirline();
   refreshDiaSideUI();
   syncAirlineUI();
 }
@@ -1113,6 +1122,32 @@ function applyDiaDropoff(side, name) {
   routeWidget();
   updatePrice();
   refreshFlightFields();
+}
+
+/* Airline clearing, shared by every surface (sheet gate, step-1
+   select, field refresh): the chosen airline is dropped, the
+   step-1 select re-syncs, and a terminal snap that the airline
+   choice applied to a DIA drop-off is reverted to the page's
+   default no-airline handling — snapDIA() (the diaSide() snap)
+   and the canonical DIA address, exactly what a plain DIA pick
+   produces. A drop-off whose address carries no airline suffix
+   was never airline-snapped and is left exactly as picked. */
+function clearAirline() {
+  var name = diaAirline;
+  diaAirline = null;
+  if (name) revertDiaDropoffSnap(name);
+  syncAirlineUI();
+}
+function revertDiaDropoffSnap(name) {
+  var pl = placeById.qDropoff;
+  if (!pl || !isDIAPlace(pl)) return;
+  if ((pl.address || "").indexOf(" · " + name) === -1) return;
+  snapDIA(pl);
+  pl.address = DIA_CANON_ADDR;
+  var inp = $("qDropoff"); if (inp) inp.value = DIA_CANON_ADDR;
+  if (bk.dropoff) bk.dropoff = DIA_CANON_ADDR;
+  routeWidget();
+  updatePrice();
 }
 
 /* Flight number field (widget): visible only while the SELECTED
@@ -1209,6 +1244,10 @@ $("airlineSearch").addEventListener("input", function () { gaRender($("airlineSe
 $("airlineSkip").addEventListener("click", function () { diaAirlineSkipped = true; gaClose(); });
 $("airlineBack").addEventListener("click", function () { diaAirlineSkipped = true; gaClose(); });
 $("bAirline").addEventListener("change", function () {
+  /* Same guard as gaSelect: outside the airport-pickup flow a
+     change here records nothing (the field is hidden then); the
+     refresh clears any held airline instead. */
+  if (!qzPickupIsAirport()) { refreshFlightFields(); return; }
   var v = $("bAirline").value;
   diaAirline = v || null;
   if (v) {
