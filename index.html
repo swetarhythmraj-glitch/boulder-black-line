@@ -1,0 +1,1131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<style>
+/* BBL preview: layout-neutral helper styles. Hides the static server
+   sample-text panel on the rider preview (the live script rewrites it
+   with the preview identity on load; hiding avoids a flash of the
+   server identity). */
+#welcomePanel .samplebox{display:none!important}
+</style>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Request a flat fare quote: send the owner your pickup, drop-off and time. No account, no payment.">
+<meta name="theme-color" content="#17130E">
+<title>Book your ride with Boulder Black Line</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>try{if(new URLSearchParams(location.search).get("look")==="app")document.documentElement.classList.add("look-app");}catch(e){}</script>
+<script>try{var v=new URLSearchParams(location.search).get("veh");if(v&&/^[a-z0-9][a-z0-9-]{0,40}$/.test(v)&&v!=="black-suv"){document.documentElement.classList.add("veh-pending");document.addEventListener("DOMContentLoaded",function(){var ds=document.getElementById("qVehDesc"),nm=document.getElementById("qVehName");if(ds)ds.textContent="Loading vehicle photo.";if(nm)nm.textContent="";});}}catch(e){}</script>
+<style>
+:root{
+  --bg:#FAF7F1; --surface:#FFFFFF; --surface2:#F3EEE4; --ink:#17130E; --ink2:#4A4236; --muted:#6E6353;
+  --line:#E4DCCB; --amber:#A8741A; --amber-strong:#8F5F0E; --amber-soft:#F7EAD0; --dark:#17130E; --dark2:#221C14;
+  --red:#C0392B; --red-bg:#FDF0EE; --green:#1E7A3C; --green-bg:#EAF6EE;
+  --radius:18px; --shadow:0 10px 30px rgba(23,19,14,.10);
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#13100C; --surface:#1D1914; --surface2:#262017; --ink:#F5EFE3; --ink2:#D8CDB8; --muted:#A99C83; --line:#3A3226; --amber:#E0A83E; --amber-strong:#EFB954; --amber-soft:#33270F; --red:#FF8A7A; --red-bg:#3A1D18; --green:#7BD99A; --green-bg:#173324; --shadow:0 10px 30px rgba(0,0,0,.45);}
+}
+*{box-sizing:border-box} html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,.disp{font-family:Urbanist,Inter,sans-serif;line-height:1.08;letter-spacing:-.01em;margin:0}
+img{max-width:100%;display:block} a{color:var(--amber-strong)}
+button{font:inherit;cursor:pointer} :focus-visible{outline:3px solid var(--amber);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+.preview-strip{background:var(--dark);color:#F2E7CF;text-align:center;font-size:13px;font-weight:600;padding:9px 16px;letter-spacing:.02em}
+.preview-strip b{color:#EFB954}
+header.site{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;gap:18px;min-height:64px}
+header.site .btn{white-space:nowrap}
+.brand{font-family:Urbanist;font-weight:800;font-size:40px;line-height:1.05;color:var(--ink);text-decoration:none;white-space:nowrap;background:var(--amber-soft);padding:4px 10px;border-radius:10px;box-shadow:inset 0 0 0 1px var(--line)}
+.brand span{color:var(--amber)} .brand small{display:block;font-family:Inter;font-weight:600;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.navlinks{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+.navlinks a{color:var(--ink2);text-decoration:none;font-weight:600;font-size:14px;padding:10px 12px;border-radius:999px}
+.navlinks a:hover{background:var(--surface2)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:12px 22px;border-radius:999px;border:1px solid transparent;font-weight:700;text-decoration:none;transition:transform .15s ease, background .15s ease}
+.btn:active{transform:scale(.97)}
+.btn-amber{background:var(--amber);color:#fff} @media(prefers-color-scheme:dark){.btn-amber{color:#1A1408}}
+.btn-amber:hover{background:var(--amber-strong)}
+.btn-ghost{background:transparent;border-color:var(--line);color:var(--ink)} .btn-ghost:hover{background:var(--surface2)}
+.btn-dark{background:var(--dark);color:#F7EEDB} .btn-block{width:100%}
+.callbtn{white-space:nowrap}
+.call-short{display:none}
+@media(max-width:760px){.navlinks{display:none}.nav{gap:6px;flex-wrap:wrap}.brand{font-size:31px;flex:1 1 100%}.brand small{display:none}.auth-area{order:2}.callbtn{order:3;margin-left:0;padding:9px 7px;font-size:12px;min-height:42px}.call-full{display:none}.call-short{display:inline}header .btn-amber{order:4;padding:9px 7px;font-size:12px;min-height:42px;white-space:nowrap}header.site .wrap{padding-left:10px;padding-right:10px}}
+@media(max-width:359px){.brand{font-size:26px}}
+/* HERO */
+.hero{position:relative;color:#FFF8EA}
+.hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,11,6,.58),rgba(15,11,6,.72) 60%,rgba(15,11,6,.88))}
+.hero-in{position:relative;z-index:2;padding:12px 0 30px}
+.hero .tag{display:inline-block;background:rgba(255,248,234,.14);border:1px solid rgba(255,248,234,.35);padding:7px 14px;border-radius:999px;font-size:13px;font-weight:700;letter-spacing:.04em}
+.hero h1{font-size:clamp(34px,6vw,58px);font-weight:800;max-width:720px;margin:0 0 8px}
+.hero p.lede{font-size:clamp(16px,2.4vw,19px);max-width:620px;color:#EFE6D2;margin:0 0 8px}
+.ticker{background:var(--dark);color:#F2E7CF;overflow:hidden}
+.ticker-track{display:flex;width:max-content;animation:tickerscroll 35s linear infinite}
+.ticker-set{display:flex;align-items:center;gap:26px;padding-right:26px;white-space:nowrap;font-size:14px;font-weight:700;letter-spacing:.02em;padding-top:9px;padding-bottom:9px}
+.ticker-dot{color:var(--amber);font-weight:700}
+@keyframes tickerscroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.ticker-track{animation:none}}
+.quick{background:var(--surface);color:var(--ink);border-radius:22px;padding:20px;box-shadow:var(--shadow);max-width:1020px}
+.quick h2{font-size:20px;margin-bottom:4px}.quick p{margin:0 0 14px;color:var(--muted);font-size:14px}
+/* app-style booking widget (reference app layout) */
+.appbook{padding:0;overflow:hidden;background:#14100B;border-radius:24px;color:#F5EFE3;max-width:1020px}
+.map-panel{position:relative;height:320px;overflow:hidden;background:#E7EDE3;scroll-margin-top:84px}
+.map-panel svg{width:100%;height:100%;display:block}
+#mapZoom{transform-origin:center;transform-box:fill-box;transition:transform .3s ease}
+.map-zoom{position:absolute;right:14px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;background:#fff;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.28);overflow:hidden;z-index:3}
+.map-zoom button{min-width:76px;height:40px;padding:0 10px;border:0;background:#fff;font-size:13px;font-weight:700;line-height:1;color:#333;cursor:pointer}
+.map-zoom button+button{border-top:1px solid #DDD}
+.map-credit{position:absolute;left:10px;bottom:8px;font-size:11px;font-weight:600;color:#5C6656;background:rgba(255,255,255,.75);padding:2px 8px;border-radius:999px;z-index:3}
+.app-panel{padding:18px;display:grid;gap:14px}
+.mode-toggle{display:flex;background:#262019;border:1px solid #453B2C;border-radius:999px;padding:4px}
+.mode-toggle button{flex:1;min-height:48px;border:0;border-radius:999px;background:transparent;color:#A99C83;font-weight:700;font-size:16px;cursor:pointer}
+.mode-toggle button.on{background:#fff;color:#14100B}
+.app-panel .flabel{color:#B7A888}
+.app-panel input,.app-panel select{background:#262019;border:1.5px solid #453B2C;color:#F5EFE3;border-radius:999px;min-height:54px;color-scheme:dark}
+.app-panel input::placeholder{color:#9A8C6E}
+.app-panel .field.invalid input,.app-panel .field.invalid select{border-color:#FF8A7A;background:#3A1D18;box-shadow:0 0 0 4px rgba(255,138,122,.25)}
+.app-panel .field .err{color:#FF9A8A}
+.route-wrap{position:relative}
+.route-fields{display:grid;gap:12px}
+.route-field{position:relative}
+.route-field input{padding-left:46px;padding-right:118px}
+.mk{position:absolute;left:19px;top:23px;transform:translateY(-50%);z-index:2;pointer-events:none}
+.mk-dot{width:11px;height:11px;border-radius:50%;background:#F5EFE3}
+.mk-sq{width:11px;height:11px;border-radius:2px;background:#F5EFE3}
+.mk-stop{width:9px;height:9px;border-radius:50%;border:2px solid #B7A888}
+.add-stop{position:absolute;right:8px;top:23px;transform:translateY(-50%);width:auto;height:38px;padding:0 12px;border-radius:999px;border:1.5px solid #8A7B5F;background:transparent;color:#F5EFE3;font-size:13px;font-weight:700;line-height:1;display:grid;place-items:center;z-index:2;white-space:nowrap}
+.fld-clear{position:absolute;right:10px;top:23px;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;border:0;background:rgba(38,32,25,.92);cursor:pointer;z-index:3;display:none;padding:0}
+.book-card .fld-clear{top:22px}
+.fld-clear-p{right:100px}
+.route-field input:not(:placeholder-shown)~.fld-clear{display:block}
+.fld-clear::before,.fld-clear::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:2px;margin:-1px 0 0 -6px;border-radius:2px;background:#F5EFE3}
+.fld-clear::before{transform:rotate(45deg)}
+.fld-clear::after{transform:rotate(-45deg)}
+.swap{position:absolute;left:50%;right:auto;top:50px;transform:translate(-50%,-50%);width:auto;height:34px;padding:0 12px;border-radius:999px;background:#262019;border:1px solid #453B2C;color:#F5EFE3;font-size:13px;font-weight:700;line-height:1;display:grid;place-items:center;z-index:3;white-space:nowrap}
+.stop-row[hidden]{display:none}
+.app-panel .dt-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+.app-panel .dt-row .field{min-width:0;overflow:hidden}
+.app-panel .dt-row input{width:100%;min-width:0;max-width:100%;box-sizing:border-box;padding-left:10px;padding-right:10px}
+#qDate,#qTime{-webkit-appearance:none;appearance:none}
+.continue-btn{width:100%;background:#fff;color:#14100B;min-height:58px;font-size:17px;border-radius:999px;border:0;font-weight:800;cursor:pointer}
+.continue-btn:hover{background:#F1E8D2}
+.continue-btn:active{transform:scale(.98)}
+@media(max-width:560px){.map-panel{height:320px}.app-panel{padding:14px}}
+.grid{display:grid;gap:14px}.g4{grid-template-columns:repeat(4,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:900px){.g4,.g3{grid-template-columns:repeat(2,1fr)}} @media(max-width:560px){.g4,.g3,.g2{grid-template-columns:1fr}}
+label.flabel{display:block;font-weight:700;font-size:13.5px;margin-bottom:6px}
+input,select,textarea{width:100%;min-height:48px;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);font:inherit}
+textarea{min-height:84px;resize:vertical}
+.field{margin:0}.field .err{display:none;color:var(--red);font-size:13.5px;font-weight:600;margin-top:6px}
+.field.invalid input,.field.invalid select,.field.invalid textarea{border-color:var(--red);box-shadow:0 0 0 4px color-mix(in srgb,var(--red) 22%,transparent);background:var(--red-bg)}
+.field.invalid .err{display:block}
+.field.invalid .consent-box{border-color:var(--red);box-shadow:0 0 0 4px color-mix(in srgb,var(--red) 22%,transparent);background:var(--red-bg)}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .32s ease}
+@media(prefers-reduced-motion:reduce){.shake{animation:none}html{scroll-behavior:auto}*{transition:none!important}}
+section{padding:64px 0} .alt{background:var(--surface2)}
+.kicker{font-size:12.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:10px}
+h2.sec{font-size:clamp(26px,4vw,38px);font-weight:800;margin-bottom:10px}
+p.secsub{color:var(--ink2);max-width:680px;margin:0 0 30px}
+/* services */
+.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:960px){.svc-grid{grid-template-columns:repeat(2,1fr)}} @media(max-width:600px){.svc-grid{grid-template-columns:1fr}}
+.svc{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column}
+.svc img{width:100%;aspect-ratio:16/10;object-fit:cover;object-position:50% 50%}
+.svc-feature img{aspect-ratio:3/2}
+.svc-pano img{aspect-ratio:21/9}
+.svc-split{flex-direction:row}
+.svc-split img{width:58%;flex:none;aspect-ratio:3/4}
+.svc-split-r{flex-direction:row-reverse}
+@media(min-width:601px){.svc-pano{grid-column:span 2}.svc-split{align-self:start}}
+.svc-split .svc-body{justify-content:center}
+.svc-split .svc-body p{flex:none}
+.svc-split .btn{white-space:nowrap}
+.svc-k-airport img{object-position:65% 50%}
+.svc-k-special img{object-position:50% 50%}
+.svc-k-wedding img{object-position:50% 62%}
+.svc-k-concert img{object-position:50% 48%}
+.svc-k-mountain img{object-position:100% 50%}
+.svc-k-hourly img{object-position:50% 55%}
+.svc-body{padding:18px;display:flex;flex-direction:column;gap:8px;flex:1}
+.svc h3{font-size:20px}.svc p{margin:0;color:var(--ink2);font-size:14.5px;flex:1}
+.svc-meta{display:flex;justify-content:space-between;align-items:center;margin-top:6px}
+.price{font-weight:800;font-family:Urbanist;font-size:18px}.price small{display:block;font-family:Inter;font-weight:600;font-size:11.5px;color:var(--muted)}
+.svc .btn{min-height:44px;padding:9px 16px;font-size:14px}
+/* suv */
+.suv-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:26px;align-items:start}
+@media(max-width:860px){.suv-grid{grid-template-columns:1fr}}
+.suv-grid img{border-radius:22px;height:100%;min-height:280px;object-fit:cover}
+.spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.spec{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+.spec b{display:block;font-family:Urbanist;font-size:19px}.spec span{font-size:13px;color:var(--muted);font-weight:600}
+.feat{list-style:none;padding:0;margin:18px 0 0;display:grid;gap:9px}
+.feat li{color:var(--ink2)}
+/* rates */
+.rate-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media(max-width:960px){.rate-grid{grid-template-columns:repeat(2,1fr)}} @media(max-width:540px){.rate-grid{grid-template-columns:1fr}}
+.rate{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.rate h3{font-size:17px;margin-bottom:6px}.rate .amt{font-family:Urbanist;font-size:30px;font-weight:800}.rate p{color:var(--muted);font-size:13.5px;margin:6px 0 0}
+.note{background:var(--amber-soft);border-radius:14px;padding:16px 18px;margin-top:20px;color:var(--ink);font-size:14.5px}
+/* steps + notifications */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media(max-width:900px){.steps{grid-template-columns:repeat(2,1fr)}} @media(max-width:540px){.steps{grid-template-columns:1fr}}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.step .n{width:38px;height:38px;border-radius:50%;background:var(--dark);color:#F2D492;display:grid;place-items:center;font-family:Urbanist;font-weight:800;margin-bottom:12px}
+.step h3{font-size:17px;margin-bottom:6px}.step p{margin:0;color:var(--ink2);font-size:14px}
+.notif{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:800px){.notif{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+.panel h3{font-size:19px;margin-bottom:14px}
+.tl{list-style:none;padding:0;margin:0;display:grid;gap:0}
+.tl li{display:flex;gap:12px;padding:10px 0;border-top:1px dashed var(--line)} .tl li:first-child{border-top:0}
+.dot{flex:0 0 auto;width:11px;height:11px;border-radius:50%;background:var(--amber);margin-top:6px}
+.tl b{display:block;font-size:14.5px}.tl span{font-size:13.5px;color:var(--muted)}
+.msg{background:var(--surface2);border-radius:12px;padding:12px 14px;font-size:13.5px;margin-top:14px;color:var(--ink2)}
+.msg b{color:var(--ink)}
+/* booking */
+.book-card{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:26px;box-shadow:var(--shadow)}
+.progress{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+.progress span{flex:1;min-width:120px;text-align:center;padding:10px 8px;border-radius:999px;background:var(--surface2);color:var(--muted);font-weight:700;font-size:13px}
+.progress span.on{background:var(--dark);color:#F2D492}.progress span.done{background:var(--amber-soft);color:var(--amber-strong)}
+.bstep{display:none}.bstep.on{display:block}
+.bstep h3{font-size:22px;margin-bottom:6px}.bstep .sub{color:var(--muted);margin:0 0 18px;font-size:14.5px}
+.pills{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:18px}
+.pill{min-height:46px;padding:10px 16px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);font-weight:700;font-size:14px}
+.pill[aria-pressed="true"]{background:var(--dark);color:#F2D492;border-color:var(--dark)}
+.cond{display:none}.cond.show{display:block}
+.booknav{display:flex;gap:12px;justify-content:space-between;margin-top:22px;flex-wrap:wrap}
+.summary{background:var(--surface2);border-radius:16px;padding:18px;display:grid;gap:8px;font-size:14.5px}
+.summary div{display:flex;justify-content:space-between;gap:16px}.summary span{color:var(--muted)}
+.summary .total{border-top:1px solid var(--line);padding-top:10px;font-family:Urbanist;font-size:20px;font-weight:800}.summary .total span{color:var(--ink)}
+.q-fare .q-lbl{font-size:15px;font-weight:700;color:var(--ink)}
+.q-fare .q-amt{font-size:28px;font-weight:800;color:var(--amber-strong);line-height:1.02}
+.q-fare .q-det{font-size:14px;font-weight:600;color:var(--muted)}
+.total b{font-size:24px}
+.big-price{font-size:1.3em;font-weight:800}
+#quickForm{scroll-margin-top:112px}
+html.book-open,body.book-open{overflow:hidden}
+body.book-open #book{position:fixed;left:0;right:0;bottom:0;z-index:40;overflow-y:auto;overscroll-behavior:contain;background:var(--bg);padding:16px 0 44px}
+body.book-open #book .kicker,body.book-open #book h2.sec,body.book-open #book .secsub{display:none}
+body.book-open header.site{position:fixed;top:0;left:0;right:0}
+.alert{display:none;border-radius:14px;padding:14px 16px;font-size:14.5px;margin-top:14px}
+.alert.show{display:block}
+.alert-warn{background:#FFF4D6;color:#5C4300;border:1px solid #E8C96A} @media(prefers-color-scheme:dark){.alert-warn{background:#3A2E0D;color:#F5D98A}}
+.alert-warn button{margin:6px 8px 0 0;min-height:44px;padding:8px 14px;border-radius:999px;border:1px solid #B98A1D;background:#fff;color:#5C4300;font-weight:700}
+.consent-box{display:flex;gap:12px;align-items:flex-start;border:1.5px solid var(--line);border-radius:14px;padding:14px;background:var(--surface)}
+.consent-box input{width:24px;height:24px;min-height:24px;flex:0 0 auto;margin-top:2px;accent-color:var(--amber)}
+.consent-box label{font-size:14px;color:var(--ink2)}
+.radio-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:560px){.radio-row{grid-template-columns:1fr}}
+.radio-card{border:1.5px solid var(--line);border-radius:14px;padding:16px;display:flex;gap:12px;align-items:flex-start;cursor:pointer}
+.radio-card input{width:22px;height:22px;min-height:22px;accent-color:var(--amber);flex:0 0 auto}
+.radio-card b{display:block}.radio-card span{font-size:13.5px;color:var(--muted)}
+.qcard .success{padding:4px 0}
+.qcard .success .big{width:56px;height:56px;font-size:28px;margin:0 auto 10px}
+.qcard .summary{margin-top:16px!important}
+.success{display:none;text-align:center;padding:10px 0}
+.success.show{display:block}
+.success .big{width:72px;height:72px;border-radius:50%;background:var(--green-bg);color:var(--green);display:grid;place-items:center;font-size:34px;margin:0 auto 14px}
+.success code{background:var(--surface2);padding:4px 12px;border-radius:8px;font-size:17px;font-weight:700}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:16px;text-align:left;margin-top:20px}@media(max-width:700px){.duo{grid-template-columns:1fr}}
+footer{background:var(--dark);color:#D9CFB8;padding:52px 0 30px}
+footer h3{color:#FFF6E0;font-size:19px;margin-bottom:10px} footer a{color:#EFB954}
+.f-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}@media(max-width:760px){.f-grid{grid-template-columns:1fr}}
+.fine{border-top:1px solid #3A3226;margin-top:30px;padding-top:18px;font-size:13px;color:#9A8C6E}
+.ph{border-bottom:1px dashed #B98A1D}
+
+/* ---------- BBL quote page additions ---------- */
+.qwrap{max-width:760px}
+.qcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:8px 16px 16px;box-shadow:var(--shadow)}
+.qcard .kicker{font-size:13px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--muted);line-height:1.25;margin-bottom:0}
+.qcard h1{font-size:clamp(24px,5vw,34px);font-weight:700;line-height:1.1;margin:0}
+.qsub{color:var(--ink2);margin:0 0 4px;font-size:14px;line-height:1.35}
+.qveh{display:flex;gap:12px;align-items:center;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.qveh img{width:118px;height:88px;object-fit:cover;border-radius:12px;flex:0 0 auto}
+.qveh-name{font-weight:700;font-size:16px;color:var(--ink)}
+.qveh-desc{margin:4px 0 0;color:var(--ink2);font-size:13.5px;line-height:1.45}
+.qgal{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.qgal[hidden]{display:none}
+@media(max-width:560px){.qgal{grid-template-columns:1fr}}
+.qgal-card{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.qgal-card img{width:100%;height:180px;object-fit:cover}
+.qgal-cap{padding:9px 12px;font-size:13.5px;font-weight:600;color:var(--ink2)}
+.qveh{flex-direction:column;align-items:stretch}
+.qshow{position:relative;border-radius:12px;overflow:hidden;background:var(--surface2)}
+.qshow-track{display:flex;transition:transform .45s ease}
+.qshow-track img{flex:0 0 100%;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;border-radius:0;display:block}
+.qshow-btn{position:absolute;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;border:1px solid rgba(245,239,227,.4);background:rgba(19,16,12,.55);color:#F5EFE3;font-size:22px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.qshow-prev{left:8px}
+.qshow-next{right:8px}
+.qshow-dots{position:absolute;left:0;right:0;bottom:8px;display:flex;gap:6px;justify-content:center}
+.qshow-dot{width:9px;height:9px;border-radius:50%;border:0;background:rgba(245,239,227,.45);padding:0;cursor:pointer}
+.qshow-dot.is-on{background:var(--amber)}
+@media (prefers-reduced-motion: reduce){.qshow-track{transition:none}}
+.qcontact{margin:0 0 4px;font-size:14px;line-height:1.3;color:var(--ink2)}
+.qcontact a{color:var(--amber-strong);font-weight:600;text-decoration:none;white-space:nowrap}
+.qcontact a:hover{text-decoration:underline}
+.qid{margin:2px 0 6px}
+.qid-co{display:block;font-size:15px;font-weight:700;color:var(--ink);line-height:1.25}
+.qid-owner{display:block;font-size:13.5px;color:var(--ink2);line-height:1.3;margin-top:1px}
+.qid .qcontact{margin:3px 0 0}
+.qveh-skel{display:none;width:118px;height:88px;border-radius:12px;flex:0 0 auto;background:linear-gradient(100deg,var(--surface2) 40%,var(--line) 50%,var(--surface2) 60%);background-size:200% 100%;animation:qskel 1.2s infinite}
+html.veh-pending .qveh-skel{display:block}
+html.veh-pending #qVehImg{display:none}
+@keyframes qskel{to{background-position:-200% 0}}
+.qmapwrap{position:relative;margin:0 0 6px}
+.qmap-note{position:absolute;inset:0;border-radius:12px;display:grid;place-items:center;font-size:13px;font-weight:600;color:#5C6656;background:linear-gradient(100deg,#E7EDE3 40%,#F4F7F0 50%,#E7EDE3 60%);background-size:200% 100%;animation:qskel 1.2s infinite;z-index:2}
+.qmap-note.qmap-failed{animation:none;background:#E7EDE3}
+html.look-app .qmap-note{color:#B9B9B9;background:linear-gradient(100deg,#161616 40%,#202020 50%,#161616 60%);background-size:200% 100%}
+html.look-app .qmap-note.qmap-failed{background:#161616}
+@media (prefers-reduced-motion: reduce){.qveh-skel,.qmap-note{animation:none}}
+.qmap{position:relative;height:100px;border-radius:12px;overflow:hidden;background:#E7EDE3;margin:0}
+.qfare{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;background:var(--surface2);border-radius:12px;padding:12px 16px;margin:0 0 8px}
+.qfare[hidden]{display:none}
+.qfare .q-lbl{font-size:15px;font-weight:600;color:var(--ink)}
+.qfare .q-amt{font-size:24px;font-weight:700;color:var(--amber-strong);line-height:1}
+.qfare .q-det{font-size:14px;font-weight:600;color:var(--muted)}
+.qform{display:grid;gap:6px}
+.qduo{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.qduo .field{min-width:0}
+.qform label.flabel{font-size:13px;line-height:1.3;margin-bottom:0}
+.qform button[type="submit"]{padding-top:10px;padding-bottom:10px}
+.qform input,.qform select{padding:10px 12px}
+.qform textarea{min-height:72px;padding:10px 12px}
+.qform .field .err{font-size:13px;margin-top:4px}
+.qform input[type="date"],.qform input[type="time"]{-webkit-appearance:none;appearance:none;width:100%;min-width:0;max-width:100%;height:48px;padding-top:0;padding-bottom:0}
+</style>
+<style>
+<style>
+/* BBL preview: layout-neutral helper styles. Hides the static server
+   sample-text panel on the rider preview (the live script rewrites it
+   with the preview identity on load; hiding avoids a flash of the
+   server identity). */
+#welcomePanel .samplebox{display:none!important}
+</style>
+</style>
+<style>
+/* BBL preview logo tile: styled text only, never an image file. The
+   tiles are created by the identity runtime when the share link
+   carries logo=1. */
+.bbl-logo-tile{display:inline-flex;align-items:center;justify-content:center;background:#000;color:#fff;border:1px solid rgba(255,255,255,.35);font-family:Urbanist,Inter,sans-serif;font-weight:800;letter-spacing:.03em;flex:0 0 auto}
+.bbl-logo-head{width:36px;height:36px;font-size:15px;border-radius:9px}
+.bbl-logo-foot{width:130px;height:130px;font-size:46px;border-radius:22px;margin:0 auto}
+@media (min-width:761px){.bbl-logo-foot{width:160px;height:160px;font-size:56px}}
+/* With a tile beside it, the wordmark may shrink and clip instead of
+   pushing the header actions off the row (the compact header pattern
+   the page already uses when space is tight). Only applies when a
+   tile is actually present, so logo-off pages are untouched. */
+.bbl-logo-head + .brand{min-width:0;overflow:hidden}
+body.qpage header.site{background:#17130E;border-bottom:1px solid #3A3226;backdrop-filter:none;-webkit-backdrop-filter:none;padding-top:env(safe-area-inset-top)}
+body.qpage .brand{background:transparent;box-shadow:none;color:#FFFFFF}
+body.qpage .brand span{color:#FFFFFF}
+body.qpage .brand small{color:#A99C83}
+body.qpage .navlinks a{color:#E8E2D2}
+body.qpage .navlinks a:hover{background:rgba(255,255,255,.08)}
+body.qpage header.site .btn-amber{background:#FFFFFF;color:#17130E}
+body.qpage header.site .btn-amber:hover{background:#EDEDED}
+body.qpage header.site .btn-ghost{background:transparent;border-color:rgba(255,255,255,.45);color:#FFFFFF}
+body.qpage header.site .btn-ghost:hover{background:rgba(255,255,255,.08)}
+body.qpage header.site :focus-visible{outline-color:#FFFFFF}
+body.qpage .call-plain{display:none}
+@media(max-width:760px){
+  body.qpage header.site{padding-top:calc(12px + env(safe-area-inset-top))}
+  body.qpage header.site .nav{min-height:46px;flex-wrap:nowrap;gap:6px}
+  body.qpage .brand{font-size:16px;flex:0 1 auto;min-width:0;padding:2px 6px;border-radius:8px;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  body.qpage header.site .btn{min-height:44px;padding:8px 12px;font-size:13px}
+  body.qpage .foot-crest img{width:96px;height:96px}
+  body.qpage .bbl-logo-foot{width:96px;height:96px;font-size:36px;border-radius:16px}
+  body.qpage footer{padding:32px 0 calc(24px + env(safe-area-inset-bottom))}
+  body.qpage .f-grid{gap:16px}
+  body.qpage .fine{margin-top:20px;padding-top:16px}
+}
+@media(max-width:374px){
+  body.qpage header.site .call-full,body.qpage header.site .call-short{display:none}
+  body.qpage header.site .call-plain{display:inline}
+}
+</style>
+<style>
+/* BBL page look option (Raju order Nov 6, 2026): with look=app in the
+   quote link, the whole quote page wears the reference rider app face:
+   black page, dark card surfaces, white text, fields on dark surfaces,
+   the send button a white pill with black text, and the confirmation
+   face dark to match. The header band was already black and stays. The
+   rider face is a dark face, so this look pins the page dark in both
+   system color schemes; with no look parameter nothing in this block
+   applies and the page renders exactly as before. */
+html.look-app{color-scheme:dark;
+  --bg:#000000; --surface:#141414; --surface2:#1C1C1C; --ink:#FFFFFF; --ink2:#DADADA; --muted:#A3A3A3;
+  --line:#333333; --amber:#FFFFFF; --amber-strong:#FFFFFF; --amber-soft:#1C1C1C; --dark:#000000; --dark2:#141414;
+  --red:#FF8A7A; --red-bg:#3A1D18; --green:#7BD99A; --green-bg:#173324;
+  --shadow:0 10px 30px rgba(0,0,0,.45);}
+html.look-app .btn-amber{background:#FFFFFF;color:#000000}
+html.look-app .btn-amber:hover{background:#E8E8E8}
+html.look-app .btn-ghost{background:#000000;border-color:#4D4D4D;color:#FFFFFF}
+html.look-app .btn-ghost:hover{background:#1C1C1C}
+html.look-app .qmap{background:#111111}
+html.look-app .qfare .q-amt{color:#FFFFFF}
+html.look-app .qform input,html.look-app .qform select,html.look-app .qform textarea{background:#1C1C1C;border-color:#3A3A3A;color:#FFFFFF}
+html.look-app .qform input::placeholder,html.look-app .qform textarea::placeholder{color:#8E8E8E}
+html.look-app .qform .field.invalid input,html.look-app .qform .field.invalid select,html.look-app .qform .field.invalid textarea{background:#3A1D18;border-color:#FF8A7A}
+html.look-app body.qpage .brand small{color:#A3A3A3}
+html.look-app body.qpage .navlinks a{color:#EDEDED}
+html.look-app footer{color:#DADADA}
+html.look-app footer h3{color:#FFFFFF}
+html.look-app footer a{color:#FFFFFF}
+html.look-app .fine{border-top-color:#333333;color:#A3A3A3}
+html.look-app .ph{border-bottom-color:#4D4D4D}
+</style><style>
+/* BBL Back to edit button (Raju order Nov 6, 2026): rendered only when the
+   page URL carries edit=1, which only the admin panel Open buttons add.
+   The share link a prospect receives never carries it, so the button never
+   renders for a prospect. Fixed below the sticky site header so it stays
+   visible without scrolling and clear of the header row and hero controls. */
+#xyzBackEdit{position:fixed;top:calc(env(safe-area-inset-top,0px) + 76px);right:max(12px,env(safe-area-inset-right,0px));z-index:80;display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 18px;border-radius:999px;border:1px solid rgba(255,255,255,.55);background:#17130E;color:#FFFFFF;font-family:Inter,system-ui,sans-serif;font-size:15px;font-weight:700;line-height:1;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.30);-webkit-tap-highlight-color:transparent}
+#xyzBackEdit:active{transform:scale(.97)}
+#xyzBackEdit:focus-visible{outline:3px solid #FFFFFF;outline-offset:2px;box-shadow:0 0 0 5px rgba(0,0,0,.55)}
+@media (max-width:760px){
+  #xyzBackEdit{top:calc(env(safe-area-inset-top,0px) + 60px)}
+  body.qpage #xyzBackEdit{top:calc(env(safe-area-inset-top,0px) + 72px)}
+}
+/* Flagged mode only (the runtime adds .xyz-edit-on to the body, and only
+   when edit=1 is present): on the preview page the ticker and hero shift
+   down so the fixed button floats in the freed band over the page
+   background instead of covering the ticker text or the hero headline.
+   The unflagged page never gets the class, so it renders exactly as
+   before. The quote page has no ticker; its button already clears the
+   card heading and the form. */
+body.xyz-edit-on .ticker{margin-top:64px}
+@media (max-width:760px){
+  body.xyz-edit-on .ticker{margin-top:64px}
+}
+</style>
+</head>
+<body class="qpage">
+<div style="background:#14150f;color:#f2f3f0;text-align:center;padding:8px 12px;font:600 13px/1.4 Inter,system-ui,sans-serif">PREVIEW — Boulder Black Line demo. Requests are saved on this device only: no booking, text, email, or payment is sent.</div>
+<header class="site">
+  <div class="wrap nav">
+    <a class="brand" href="/index.html">Boulder <span>Black Car Service</span><small>Private SUV Service · Denver Metro, CO</small></a>
+    <nav class="navlinks" aria-label="Main">
+      <a href="/index.html#services">Services</a><a href="/index.html#suv">Our SUV</a><a href="/index.html#how">How It Works</a>
+    </nav>
+    <a class="btn btn-ghost callbtn" href="tel:+17203264652"><span class="call-full">Call (720) 326-4652</span><span class="call-short">Call now</span><span class="call-plain">Call</span></a>
+    <a class="btn btn-amber" href="/index.html">Book Now</a>
+  </div>
+</header>
+
+<main id="top">
+<section style="padding:4px 0 48px">
+  <div class="wrap qwrap">
+    <div class="qcard">
+      <div class="kicker">Quote request</div>
+      <h1>Book your ride with Boulder Black Line</h1>
+      <div class="qid">
+        <span class="qid-co">Boulder Black Line</span>
+        <span class="qid-owner">Owner: <span data-bbl-owner>Boulder Black Line</span></span>
+        <p class="qcontact"><a href="tel:+17203264652">(720) 326-4652</a> <span aria-hidden="true">·</span> <a href="mailto:info@boulderblackline.com">info@boulderblackline.com</a></p>
+      </div>
+      <div class="qmapwrap"><div class="qmap" id="qMap" role="img" aria-label="Map of your route"></div><div class="qmap-note" id="qMapNote">Loading map.</div></div>
+      <form id="quoteForm" novalidate>
+        <div class="qform">
+          <div class="field"><label class="flabel" for="qzName">Your name</label><input id="qzName" type="text" autocomplete="name" placeholder="Full name"><div class="err">Please enter your name.</div></div>
+          <div class="qduo">
+            <div class="field"><label class="flabel" for="qzDate">Date</label><input id="qzDate" type="date"><div class="err">Please pick the date of your ride.</div></div>
+            <div class="field"><label class="flabel" for="qzTime">Time</label><input id="qzTime" type="time"><div class="err">Please pick the time of your ride.</div></div>
+          </div>
+          <div class="field"><label class="flabel" for="qzPickup">Pickup location</label><input id="qzPickup" type="text" placeholder="Start typing an address" autocomplete="off"><div class="err">Please enter your pickup location.</div></div>
+          <div class="field"><label class="flabel" for="qzDropoff">Drop-off location</label><input id="qzDropoff" type="text" placeholder="Start typing an address" autocomplete="off"><div class="err">Please enter your drop-off location.</div></div>
+          <div class="qfare" id="qFare" hidden></div>
+          <div class="qduo">
+            <div class="field"><label class="flabel" for="qzPhone">Your phone</label><input id="qzPhone" type="tel" autocomplete="tel" placeholder="Your mobile number"><div class="err">Please enter a valid phone number.</div></div>
+            <div class="field"><label class="flabel" for="qzPax">Passengers</label><select id="qzPax"><option value="1">1 passenger</option><option value="2">2 passengers</option><option value="3">3 passengers</option><option value="4">4 passengers</option><option value="5">5 passengers</option><option value="6">6 passengers</option></select><div class="err">Please pick how many passengers.</div></div>
+          </div>
+          <div class="field"><label class="flabel" for="qzNotes">Notes (optional)</label><textarea id="qzNotes" placeholder="Flight number, bags, child seats, anything the driver should know"></textarea><div class="err"></div></div>
+          <button class="btn btn-amber btn-block" type="submit" style="min-height:48px;font-size:16px">Send quote request</button>
+          <p style="margin:0;color:var(--muted);font-size:12px;line-height:1.4;text-align:center">Preview: your request is saved on this device only. No text or email is sent.</p>
+        </div>
+      </form>
+      <div class="qveh" id="qVeh">
+        <div class="qveh-skel" id="qVehSkel" aria-hidden="true"></div>
+                <div class="qshow" id="qShow" role="region" aria-roledescription="carousel" aria-label="2026 Cadillac Escalade ESV photos">
+          <div class="qshow-track" id="qShowTrack">
+          <img id="qVehImg" data-bbl-veh="vehicle" src="bbl-suv-1.jpg" alt="2026 Cadillac Escalade ESV, front three-quarter view">
+          <img src="bbl-suv-2.jpg" alt="2026 Cadillac Escalade ESV, rear three-quarter view" loading="lazy">
+          <img src="bbl-suv-3.jpg" alt="2026 Cadillac Escalade ESV, front cabin with black leather interior" loading="lazy">
+          <img src="bbl-suv-4.jpg" alt="2026 Cadillac Escalade ESV, rear passenger seats with black leather interior" loading="lazy">
+          <img src="bbl-suv-5.jpg" alt="2026 Cadillac Escalade ESV, side profile showing the extended-length body" loading="lazy">
+          </div>
+          <button class="qshow-btn qshow-prev" id="qShowPrev" type="button" aria-label="Previous photo">&#8249;</button>
+          <button class="qshow-btn qshow-next" id="qShowNext" type="button" aria-label="Next photo">&#8250;</button>
+          <div class="qshow-dots" id="qShowDots">
+          <button type="button" class="qshow-dot is-on" data-i="0" aria-label="Photo 1 of 5"></button>
+          <button type="button" class="qshow-dot" data-i="1" aria-label="Photo 2 of 5"></button>
+          <button type="button" class="qshow-dot" data-i="2" aria-label="Photo 3 of 5"></button>
+          <button type="button" class="qshow-dot" data-i="3" aria-label="Photo 4 of 5"></button>
+          <button type="button" class="qshow-dot" data-i="4" aria-label="Photo 5 of 5"></button>
+          </div>
+        </div>
+        <div class="qveh-txt">
+          <div class="qveh-name" id="qVehName">2026 Cadillac Escalade ESV</div>
+          <p class="qveh-desc" id="qVehDesc">Black outside, black inside, black leather throughout, finished with gloss-black premium wheels and blacked-out trim.</p>
+        </div>
+      </div>
+      <div class="qgal" id="qVehGallery" hidden></div>
+      <div class="success" id="quoteDone">
+        <div class="big" aria-hidden="true">✓</div>
+        <h2 style="font-size:24px;font-weight:700;margin:0 0 8px">Quote request sent</h2>
+        <p class="sc-code">Reference code <code id="qRef">QR-0000</code></p>
+        <p style="color:var(--ink2);margin:10px 0 0">Thank you. The owner has your request and will reach out to confirm your ride and your flat fare.</p>
+        <div class="summary" id="qSummary" style="text-align:left"></div>
+        <div style="margin-top:16px"><button class="btn btn-ghost" type="button" id="qAgain">Send another request</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-crest"><span class="bbl-logo-tile bbl-logo-foot" style="display:none" aria-hidden="true"></span></div>
+    <div class="f-grid">
+      <div><h3>Boulder Black Line</h3><p>Private black SUV service by reservation.<br>Denver Metro, CO</p></div>
+      <div><h3>Contact</h3><p>Call / text: <a href="tel:+17203264652">(720) 326-4652</a><br>Email: <a href="mailto:info@boulderblackline.com">info@boulderblackline.com</a></p></div>
+      <div><h3>Good to know</h3><p>Licensed &amp; insured · <span class="ph">[Permit / PUC #]</span><br>One SUV, one driver, rides are first-booked, first-served.<br>Airport pickups include flight tracking.</p></div>
+    </div>
+    <div class="fine">© 2026 Boulder Black Line · <a href="/privacy.html">Privacy Policy</a> · <a href="/terms.html">Terms of Service</a> · Preview build · Quote requests in this preview are saved on this device only.</div>
+  </div>
+</footer>
+
+<script src="bbl-pricing.js"></script>
+<script src="bbl-backend.js"></script>
+<script>
+"use strict";
+var $=function(id){return document.getElementById(id)};
+function fmtMoney(n){return n%1?((+n).toFixed(2)):(""+n)}
+/* field-error helper (standing pattern) */
+function flagField(el,focusIt){var f=el.closest(".field");if(!f)return;f.classList.add("invalid");var box=f.querySelector("input,select,textarea,.consent-box,.radio-row");if(box){box.classList.remove("shake");void box.offsetWidth;box.classList.add("shake")}if(focusIt){f.scrollIntoView({behavior:"smooth",block:"center"});setTimeout(function(){el.focus({preventScroll:true})},250)}}
+function clearField(el){var f=el&&el.closest?el.closest(".field"):null;if(f)f.classList.remove("invalid")}
+document.addEventListener("input",function(e){clearField(e.target)});document.addEventListener("change",function(e){clearField(e.target)});
+function fmtTime(t){if(!t)return"";var p=t.split(":"),h=+p[0],m=p[1],ap=h>=12?"PM":"AM";h=h%12||12;return h+":"+m+" "+ap}
+function fmtDate(d){if(!d)return"";var dt=new Date(d+"T12:00:00");return dt.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})}
+function escHtml(t){return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+function flagMsg(el,msg,focusIt){var f=el.closest(".field");if(f){var e=f.querySelector(".err");if(e&&msg)e.textContent=msg}flagField(el,!!focusIt)}
+var FARE_CONFIG = window.BBL_PRICING; /* Boulder Black Line pricing: snapshot in bbl-pricing.js — this site's only pricing source. */
+/* No link-set fare overrides on this site: pricing comes only from bbl-pricing.js (Boulder Black Line's own pricing config). */
+var DIA_CANON_ADDR = "Denver International Airport, 8500 Peña Blvd, Denver, CO 80249, USA";
+/* Airline code to DIA terminal side. Follows the reference guest
+   booking handling, where the airline decides the terminal and the
+   endpoint is rewritten to that terminal and its coordinates. */
+var DIA_AIRLINE_SIDE = {
+  UA: "west", DL: "west", NK: "west", AM: "west", AF: "west", BA: "west", LH: "west", WK: "west",
+  WN: "east", F9: "east", AA: "east", AS: "east", B6: "east", AC: "east", EI: "east", DE: "east",
+  IB: "east", JL: "east", KL: "east", N0: "east", SY: "east", Y4: "east", WS: "east"
+};
+/* One way point to point services get route fares. Hourly is priced
+   per hour, and wedding, concert and mountain keep their flat
+   package and round trip prices. */
+var ROUTE_SERVICES = { airport: 1, business: 1, special: 1 };
+
+function computedFare(miles, hasAirport) {
+  var rt = FARE_CONFIG.rates[FARE_CONFIG.tier];
+  var fare = rt.base + miles * rt.ratePerMile;
+  if (hasAirport) fare += FARE_CONFIG.airportSurcharge[FARE_CONFIG.tier] || 0;
+  if (miles > FARE_CONFIG.longHaulAfterMiles) {
+    fare += (miles - FARE_CONFIG.longHaulAfterMiles) * (FARE_CONFIG.longHaulPerMile[FARE_CONFIG.tier] || 0);
+  }
+  return Math.round(fare * 100) / 100;
+}
+
+/* ---------- map and route state ---------- */
+var mapsReady = false;
+var gMap = null, dirRenderer = null, mkA = null, mkB = null;
+var placeById = { qPickup: null, qDropoff: null, qStop: null };
+var routeQuote = null; /* {fromText, toText, stopText, miles, mins, fare, hasAirport} */
+var routeSeq = 0, routeFailed = false;
+
+/* The one place genuine LatLng objects are made. Markers, bounds,
+   route endpoints and waypoints all go through here, so no Google
+   service ever receives a homemade coordinate object. */
+function mkLatLng(lat, lng) { return new google.maps.LatLng(lat, lng); }
+
+function normText(v) { return (v || "").trim().toLowerCase(); }
+function quoteMatches(q, fromText, toText) {
+  return !!q && normText(q.fromText) === normText(fromText) && normText(q.toText) === normText(toText);
+}
+
+function diaSide() {
+  if (typeof diaManual !== "undefined" && diaManual) return diaManual;
+  var f = $("bFlight") ? $("bFlight").value.trim().toUpperCase() : "";
+  return DIA_AIRLINE_SIDE[f.slice(0, 2)] || "west";
+}
+function isDIAPlace(p) {
+  if (!p) return false;
+  var a = ((p.name || "") + " " + (p.address || "")).toLowerCase();
+  if (a.indexOf("denver international airport") !== -1) return true;
+  if (a.indexOf("jeppesen terminal") !== -1) return true;
+  var b = FARE_CONFIG.diaBounds;
+  return typeof p.lat === "number" && p.lat >= b.latMin && p.lat <= b.latMax && p.lng >= b.lngMin && p.lng <= b.lngMax;
+}
+function snapDIA(p) {
+  var s = diaSide() === "east" ? FARE_CONFIG.diaEast : FARE_CONFIG.diaWest;
+  p.lat = s.lat; p.lng = s.lng; p.isAirport = true;
+  return p;
+}
+/* Same normalization the reference pages use: a picked place becomes
+   address, name and coordinates read from its geometry. A DIA pick
+   snaps to the terminal coordinates, and if the picked text does not
+   name the airport, the field shows the one canonical DIA address
+   while routing still uses the snapped coordinates. */
+function normPlace(input, place) {
+  if (!place || !place.geometry || !place.geometry.location) return null;
+  var p = {
+    name: place.name || "",
+    address: place.formatted_address || place.name || input.value,
+    lat: place.geometry.location.lat(),
+    lng: place.geometry.location.lng(),
+    types: place.types || []
+  };
+  if (isDIAPlace(p)) {
+    snapDIA(p);
+    if (p.address.toLowerCase().indexOf("denver international airport") === -1) {
+      p.address = DIA_CANON_ADDR;
+      try { input.value = DIA_CANON_ADDR; } catch (e) {}
+    }
+  }
+  if ((p.types && p.types.indexOf("airport") !== -1) || /airport/i.test(p.name + " " + p.address)) p.isAnyAirport = true;
+  return p;
+}
+
+/* ---------- routing ---------- */
+function runRoute(pickup, stop, dropoff, done) {
+  var ds = new google.maps.DirectionsService();
+  var req = {
+    origin: mkLatLng(pickup.lat, pickup.lng),
+    destination: mkLatLng(dropoff.lat, dropoff.lng),
+    travelMode: google.maps.TravelMode.DRIVING
+  };
+  if (stop) req.waypoints = [{ location: mkLatLng(stop.lat, stop.lng), stopover: true }];
+  ds.route(req, function (result, status) {
+    if (status !== "OK" || !result || !result.routes || !result.routes[0]) { done(null); return; }
+    var miles = 0, mins = 0;
+    result.routes[0].legs.forEach(function (lg) {
+      miles += lg.distance.value / 1609.344;
+      mins += lg.duration.value / 60;
+    });
+    done({ miles: miles, mins: mins, result: result });
+  });
+}
+
+
+/* Services and saved preferences, same values as the booking pages. The
+   quote form prices point-to-point rides from the route configuration;
+   package services are never quoted here. */
+var SERVICES = { airport: { base: 110 }, business: { base: 95 }, special: { base: 395 }, wedding: { base: 395 }, concert: { base: 135 }, mountain: { base: 285 } };
+var PREF_KEY = "nbu_prefs_v1";
+function loadPrefs(){ try { return JSON.parse(localStorage.getItem(PREF_KEY) || "{}") || {}; } catch(e){ return {}; } }
+function lsGet(k, d){ try { var v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch(e){ return d; } }
+function lsSet(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+
+/* ===================== BBL QUOTE REQUEST (preview) ===================== */
+/* Simple quote page: one form, flat fare estimate from the same configuration
+   as the booking pages, and the request saved on this device only, in the
+   same local list the owner preview reads. No texts, no emails, no accounts,
+   no payment, nothing leaves the device. */
+var QZ_LS = "bbl_quotes_v1";
+var QZ_LS_BOOKS = "bbl_bookings_v1";
+var qzPlaces = { pickup: null, dropoff: null };
+var qzMap = null, qzLine = null, qzFare = null, qzRouteMeta = null;
+function qz$(id){ return document.getElementById(id); }
+function qzSetMin(){
+  var el = qz$("qzDate"); if(!el) return;
+  var now = new Date();
+  function p(n){ return (n < 10 ? "0" : "") + n; }
+  el.min = now.getFullYear() + "-" + p(now.getMonth() + 1) + "-" + p(now.getDate());
+}
+function qzWidget(){
+  var w = qz$("qFare");
+  if(!qzPlaces.pickup || !qzPlaces.dropoff){ w.hidden = true; return; }
+  runRoute(qzPlaces.pickup, null, qzPlaces.dropoff, function(rq){
+    if(!rq){ qzNullFare(); return; }
+    var hasAir = !!(qzPlaces.pickup.isAnyAirport || qzPlaces.pickup.isAirport || qzPlaces.dropoff.isAnyAirport || qzPlaces.dropoff.isAirport);
+    qzFare = computedFare(rq.miles, hasAir);
+    qzRouteMeta = { miles: rq.miles, mins: rq.mins };
+    w.innerHTML = "<span class='q-lbl'>Optional: Your fare:</span><span class='q-amt'>$" + fmtMoney(qzFare) + "</span><span class='q-det'>" + rq.miles.toFixed(1) + " mi - ~" + Math.round(rq.mins) + " min</span>";
+    w.hidden = false;
+  });
+}
+function qzTrimMap(){
+  try {
+    if(!mapsReady || !qzMap || !qzPlaces.pickup || !qzPlaces.dropoff) return;
+    var b = new google.maps.LatLngBounds();
+    b.extend(mkLatLng(qzPlaces.pickup.lat, qzPlaces.pickup.lng)); b.extend(mkLatLng(qzPlaces.dropoff.lat, qzPlaces.dropoff.lng));
+    qzMap.fitBounds(b, 56);
+    var svc = new google.maps.DirectionsService();
+    svc.route({ origin: mkLatLng(qzPlaces.pickup.lat, qzPlaces.pickup.lng), destination: mkLatLng(qzPlaces.dropoff.lat, qzPlaces.dropoff.lng), travelMode: google.maps.TravelMode.DRIVING }, function(res, st){
+      if(st === "OK" && res){ if(qzLine) qzLine.setMap(null); qzLine = new google.maps.DirectionsRenderer({ map: qzMap, suppressMarkers: true, polylineOptions: { strokeColor: "#c2922e", strokeWeight: 5 } }); qzLine.setDirections(res); }
+    });
+  } catch(e){}
+}
+function qzRoute(){ qzWidget(); qzTrimMap(); }
+function qzNullFare(){ qzFare = null; qzRouteMeta = null; qz$("qFare").hidden = true; }
+function qzAutoc(id, key){
+  var inp = qz$(id); if(!inp) return;
+  var ac = new google.maps.places.Autocomplete(inp, { bounds: new google.maps.LatLngBounds(new google.maps.LatLng(39.30, -105.45), new google.maps.LatLng(40.20, -104.40)), componentRestrictions: { country: "us" }, fields: ["formatted_address", "geometry", "name", "types"] });
+  ac.addListener("place_changed", function(){
+    var p = ac.getPlace();
+    if(p){ inp.value = p.formatted_address || p.name || inp.value; }
+    clearField(inp);
+    qzPlaces[key] = normPlace(inp, p);
+    qzRoute();
+  });
+  inp.addEventListener("input", function(){ qzPlaces[key] = null; qzNullFare(); });
+}
+window.__qzInitMaps = function(){
+  try {
+    mapsReady = true;
+    var el = qz$("qMap");
+    if(el){
+      qzMap = new google.maps.Map(el, { center: mkLatLng(FARE_CONFIG.denverCenter.lat, FARE_CONFIG.denverCenter.lng), zoom: 10, mapTypeControl: false, streetViewControl: false, fullscreenControl: false });
+      new google.maps.Marker({ position: mkLatLng(FARE_CONFIG.denverCenter.lat, FARE_CONFIG.denverCenter.lng), map: qzMap });
+      var mn = qz$("qMapNote"); if (mn) mn.style.display = "none";
+    }
+    qzAutoc("qzPickup", "pickup");
+    qzAutoc("qzDropoff", "dropoff");
+  } catch(e){}
+};
+setTimeout(function(){
+  if(!mapsReady){ var qmn = qz$("qMapNote"); if(qmn){ qmn.textContent = "Map could not load."; qmn.classList.add("qmap-failed"); } }
+}, 10000);
+(function(){
+  qzSetMin();
+  var form = qz$("quoteForm"); if(!form) return;
+  form.addEventListener("submit", function(ev){
+    ev.preventDefault();
+    var bad = null;
+    function need(el, ok, msg){
+      if(ok){ clearField(el); return; }
+      if(msg) flagMsg(el, msg); else flagField(el);
+      if(!bad) bad = el;
+    }
+    var pickup = qz$("qzPickup"), dropoff = qz$("qzDropoff"), date = qz$("qzDate"), time = qz$("qzTime"), name = qz$("qzName"), phone = qz$("qzPhone");
+    need(name, (name.value || "").trim().length >= 2, "Please enter your name.");
+    need(date, !!(date.value || "").trim(), "Please pick the date of your ride.");
+    need(time, !!(time.value || "").trim(), "Please pick the time of your ride.");
+    need(pickup, !!qzPlaces.pickup, "Please pick your pickup location from the suggestions.");
+    need(dropoff, !!qzPlaces.dropoff, "Please pick your drop-off location from the suggestions.");
+    need(phone, (phone.value || "").replace(/\D/g, "").length >= 10, "Please enter a valid phone number.");
+    if(bad){ bad.focus(); return; }
+    var code = "QR-" + (1000 + Math.floor(Math.random() * 9000));
+    var rec = {
+      id: "q" + Date.now().toString(36),
+      kind: "quote",
+      code: code,
+      rider: (name.value || "").trim(),
+      phone: (phone.value || "").trim(),
+      pickup: qzPlaces.pickup ? (qzPlaces.pickup.wasSnapped ? qzPlaces.pickup.address : qzPlaces.pickup.display) : (pickup.value || "").trim(),
+      dropoff: qzPlaces.dropoff ? (qzPlaces.dropoff.wasSnapped ? qzPlaces.dropoff.address : qzPlaces.dropoff.display) : (dropoff.value || "").trim(),
+      date: date.value, time: time.value,
+      passengers: parseInt(qz$("qzPax").value, 10) || 1,
+      notes: (qz$("qzNotes").value || "").trim(),
+      fare: qzFare, miles: qzRouteMeta ? qzRouteMeta.miles : null, mins: qzRouteMeta ? qzRouteMeta.mins : null,
+      createdAt: new Date().toISOString()
+    };
+    try {
+      var all = []; try { all = JSON.parse(localStorage.getItem(QZ_LS) || "[]"); } catch(e){ all = []; }
+      if(!Array.isArray(all)) all = [];
+      all.push(rec); localStorage.setItem(QZ_LS, JSON.stringify(all));
+      if (window.BBL_BACKEND) { try { BBL_BACKEND.recordQuote(rec); } catch(e){} }
+    } catch(e){}
+    try {
+      var books = [];
+      try { books = JSON.parse(localStorage.getItem(QZ_LS_BOOKS) || "[]"); } catch(e){ books = []; }
+      if(!Array.isArray(books)) books = [];
+      var fareDetail = null;
+      if(rec.fare != null && rec.miles != null){ fareDetail = { kind: "route", fare: rec.fare, miles: rec.miles, minutes: rec.mins }; }
+      books.push({
+        id: rec.id, kind: "quote", code: code, service: "quote", serviceName: "Quote request",
+        date: rec.date, time: rec.time, pickup: rec.pickup, dropoff: rec.dropoff,
+        price: rec.fare != null ? rec.fare : 0, pay: "later", paymentMethod: "quote-request",
+        paymentStatus: "Quote requested", paymentConfirmed: false, owner: "guest",
+        rider: rec.rider, phone: rec.phone, pax: rec.passengers,
+        passengers: rec.passengers, notes: rec.notes, status: "requested",
+        fareDetail: fareDetail, createdAt: rec.createdAt, quote: true
+      });
+      localStorage.setItem(QZ_LS_BOOKS, JSON.stringify(books));
+      if (window.BBL_BACKEND) { try { BBL_BACKEND.recordBooking(books[books.length-1]); } catch(e){} }
+    } catch(e){}
+    var rows = [
+      ["When", fmtDate(rec.date) + " at " + fmtTime(rec.time)],
+      ["Pickup", rec.pickup],
+      ["Drop-off", rec.dropoff],
+      ["Passengers", String(rec.passengers)]
+    ];
+    if(rec.fare != null) rows.push(["Your fare", "$" + fmtMoney(rec.fare) + " (" + rec.miles.toFixed(1) + " mi)"]);
+    if(rec.notes) rows.push(["Notes", rec.notes]);
+    qz$("qSummary").innerHTML = rows.map(function(r){ return "<div class='srow'><span>" + r[0] + "</span><b>" + r[1] + "</b></div>"; }).join("");
+    qz$("qRef").textContent = code;
+    form.style.display = "none";
+    var done = qz$("quoteDone");
+    done.style.display = "block";
+    done.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+  qz$("qAgain").addEventListener("click", function(){
+    qz$("quoteDone").style.display = "none";
+    form.reset(); form.style.display = "";
+    qzPlaces = { pickup: null, dropoff: null };
+    qzNullFare(); qzSetMin();
+    qz$("qMap").scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+})();
+</script>
+<script>
+/* BBL preview identity runtime. One contained block, added to the XYZ
+   preview pages only. It reads the share-link identity (?co= owner= ph=
+   em= veh= logo=), length-caps every value, and renders values as PLAIN TEXT
+   only (textContent / attribute writes, never innerHTML). With no link
+   parameters it renders the Boulder Black Line identity. Fare parameters
+   are never read: pricing stays exactly Boulder's. */
+(function () {
+  var DEF = { co: "Boulder Black Line", owner: "Boulder Black Line", ph: "(720) 326-4652", em: "info@boulderblackline.com", veh: "black-suv" };
+  var CAP = { co: 60, owner: 60, ph: 32, em: 80 };
+  var q = {};
+  try { q = Object.fromEntries(new URLSearchParams(window.location.search).entries()); } catch (e) { q = {}; }
+  function val(k) { return DEF[k]; }
+  var ID = { co: val("co"), owner: val("owner"), ph: val("ph"), em: val("em"), veh: (typeof q.veh === "string" && /^[a-z0-9][a-z0-9-]{0,40}$/.test(q.veh)) ? q.veh : DEF.veh };
+  ID.logo = (q.logo === "1");
+  ID.icon = (q.icon === "1");
+  ID.look = (q.look === "app");
+  window.__bblId = ID;
+  /* Propagate the identity to the other preview pages (the pages are
+     separate documents; the share-link identity would otherwise be lost
+     on the first tap). Only the five keys, only same-site preview links. */
+  var LINKS = { "/": 1, "/index.html": 1, "/owner.html": 1, "/privacy.html": 1, "/terms.html": 1 };
+  function carryAll() {
+    var as = document.querySelectorAll("a[href]");
+    for (var i = 0; i < as.length; i++) {
+      var a = as[i], href = a.getAttribute("href") || "";
+      try {
+        var u = new URL(href, window.location.origin);
+        if (u.origin === window.location.origin && LINKS[u.pathname]) {
+          var sp = new URLSearchParams(u.search);
+          ["co", "owner", "ph", "em", "veh"].forEach(function (k) { sp.set(k, ID[k]); });
+          if (typeof q.logo === "string") sp.set("logo", ID.logo ? "1" : "0");
+          if (typeof q.icon === "string") sp.set("icon", ID.icon ? "1" : "0");
+          if (ID.look) sp.set("look", "app");
+          a.setAttribute("href", u.pathname + "?" + sp.toString());
+        }
+      } catch (e) {}
+    }
+  }
+  function apply() {
+    var co = ID.co, ph = ID.ph, em = ID.em, owner = ID.owner;
+    var phDigits = ph.replace(/[^0-9]/g, ""); if (phDigits.length === 10) phDigits = "1" + phDigits; if (phDigits) phDigits = "+" + phDigits;
+    var changed = false;
+    function subText(root) {
+      var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      var nodes = [], n;
+      while ((n = w.nextNode())) nodes.push(n);
+      nodes.forEach(function (node) {
+        var v = node.nodeValue; if (!v) return;
+        var nv = v.split("Boulder Black Line").join(co)
+                  .split("(720) 326-4652").join(ph)
+                  .split("info@boulderblackline.com").join(em);
+        if (nv !== v) { node.nodeValue = nv; changed = true; }
+      });
+    }
+    subText(document.body);
+    /* Wordmark: the brand name is split across nodes ("Boulder " + a span
+       "Black Car Service"), so the full-name pass cannot see it. Rebuild
+       the wordmark from its own parts wearing the link company: the
+       leading word becomes the company's first word and the span keeps
+       the remainder of the company name when it reads like the original
+       short name, else the full company name. Plain text via
+       textContent-built nodes only. */
+    var brands = document.querySelectorAll("a.brand, .brand");
+    for (var bi = 0; bi < brands.length; bi++) {
+      var b = brands[bi];
+      if (b.getAttribute("data-bbl-brand") === ID.co) continue;
+      var span = b.querySelector("span"), small = b.querySelector("small");
+      if (!span) continue;
+      var words = ID.co.split(/\s+/).filter(Boolean);
+      var first = words.length ? words[0] : ID.co;
+      var rest = words.slice(1).join(" ");
+      var frag = document.createDocumentFragment();
+      frag.appendChild(document.createTextNode(first + " "));
+      var sp2 = document.createElement("span");
+      sp2.textContent = rest || "Black Car Service";
+      frag.appendChild(sp2);
+      if (small) { var sm2 = document.createElement("small"); sm2.textContent = small.textContent; frag.appendChild(sm2); }
+      b.replaceChildren(frag);
+      b.setAttribute("data-bbl-brand", ID.co);
+    }
+    document.title = document.title.split("Boulder Black Line").join(co).split("(720) 326-4652").join(ph).split("info@boulderblackline.com").join(em);
+    var as = document.querySelectorAll("a[href]");
+    for (var i = 0; i < as.length; i++) {
+      var a = as[i], href = a.getAttribute("href") || "", nh = href;
+      if (href.indexOf("tel:+17203264652") === 0 && phDigits) nh = "tel:" + phDigits;
+      else if (href.indexOf("mailto:info@boulderblackline.com") === 0) nh = "mailto:" + em;
+      else if (href.indexOf("info@boulderblackline.com") !== -1) nh = href.split("info@boulderblackline.com").join(em);
+      if (nh !== href) { a.setAttribute("href", nh); changed = true; }
+    }
+    var meta = document.querySelector('meta[name="description"]');
+    if (meta) { var c = meta.getAttribute("content") || ""; var nc = c.split("Boulder Black Line").join(co).split("(720) 326-4652").join(ph).split("info@boulderblackline.com").join(em); if (nc !== c) meta.setAttribute("content", nc); }
+    /* Owner name: the set keeps exactly one owner-name position, the
+       owner-page sign-in heading (marked data-bbl-owner at build time).
+       Where a page has no such slot the value is carried, not shown. */
+    var os = document.querySelectorAll("[data-bbl-owner]");
+    for (var j = 0; j < os.length; j++) { if (os[j].textContent !== owner) { os[j].textContent = owner; changed = true; } }
+    /* Logo tile: when the share link carries logo=1, the company
+       initials (the first letters of the first two words of the
+       company name) appear in a black tile with gold letters next to
+       the header wordmark, and the same tile takes the footer emblem
+       spot instead of the crest image. Styled text only, written
+       through textContent; no image is created or loaded. When the
+       logo is off or absent from the link this block does not run
+       and the page renders exactly as before. */
+    if (ID.logo) {
+      var ini = "";
+      var iws = co.split(/\s+/).filter(Boolean);
+      for (var iw = 0; iw < iws.length && ini.length < 2; iw++) {
+        var ich = iws[iw].replace(/^[^A-Za-z0-9]+/, "").charAt(0).toUpperCase();
+        if (ich) ini += ich;
+      }
+      if (!ini) ini = "X";
+      var hbs = document.querySelectorAll(".brand");
+      for (var hb = 0; hb < hbs.length; hb++) {
+        var bel = hbs[hb], hprev = bel.previousElementSibling;
+        if (!hprev || !hprev.classList || !hprev.classList.contains("bbl-logo-tile")) {
+          hprev = document.createElement("span");
+          hprev.className = "bbl-logo-tile bbl-logo-head";
+          hprev.setAttribute("aria-hidden", "true");
+          bel.parentNode.insertBefore(hprev, bel);
+        }
+        if (hprev.textContent !== ini) { hprev.textContent = ini; changed = true; }
+      }
+      var fcs = document.querySelectorAll(".foot-crest");
+      for (var fi = 0; fi < fcs.length; fi++) {
+        var fc = fcs[fi], cimg = fc.querySelector("img");
+        if (cimg) { cimg.remove(); changed = true; }
+        var ftile = fc.querySelector(".bbl-logo-tile");
+        if (!ftile) {
+          ftile = document.createElement("div");
+          ftile.className = "bbl-logo-tile bbl-logo-foot";
+          ftile.setAttribute("aria-hidden", "true");
+          fc.appendChild(ftile);
+        }
+        if (ftile.style.display === "none") { ftile.style.display = ""; changed = true; }
+        if (ftile.textContent !== ini) { ftile.textContent = ini; changed = true; }
+      }
+    }
+    /* Custom home screen icon: when the share link carries icon=1, the
+       page draws its own home screen icon for this visit only: a
+       full-bleed black square with the company initials in bold white,
+       drawn on a canvas and pointed to by the apple-touch-icon and the
+       192 and 512 icon links, plus a per-prospect manifest built as a
+       blob. Nothing is uploaded or stored, and no file is created. When
+       icon is off or absent from the link this block does not run and
+       the static BBL icon serves exactly as before. Where a browser
+       refuses a blob manifest, the static manifest link stays. */
+    if (ID.icon && !window.__bblIconDone) {
+      window.__bblIconDone = true;
+      try {
+        var ini2 = "";
+        var iws2 = co.split(/\s+/).filter(Boolean);
+        for (var iw2 = 0; iw2 < iws2.length && ini2.length < 2; iw2++) {
+          var ich2 = iws2[iw2].replace(/^[^A-Za-z0-9]+/, "").charAt(0).toUpperCase();
+          if (ich2) ini2 += ich2;
+        }
+        if (!ini2) ini2 = "X";
+        function xyzIconURL(size) {
+          var cv = document.createElement("canvas"); cv.width = size; cv.height = size;
+          var cx = cv.getContext("2d");
+          cx.fillStyle = "#000"; cx.fillRect(0, 0, size, size);
+          cx.fillStyle = "#fff"; cx.textAlign = "center"; cx.textBaseline = "middle";
+          var fs = size;
+          cx.font = "800 " + fs + "px Arial, Helvetica, sans-serif";
+          var tw = cx.measureText(ini2).width;
+          if (tw > 0) { fs = Math.max(10, Math.floor(fs * (size * 0.78) / tw)); cx.font = "800 " + fs + "px Arial, Helvetica, sans-serif"; }
+          cx.fillText(ini2, size / 2, size / 2 + fs * 0.04);
+          return cv.toDataURL("image/png");
+        }
+        var u512 = xyzIconURL(512), u192 = xyzIconURL(192), u180 = xyzIconURL(180);
+        var lks = document.querySelectorAll("link[rel~='icon'], link[rel='apple-touch-icon']");
+        for (var li = 0; li < lks.length; li++) {
+          var szv = lks[li].getAttribute("sizes") || "";
+          if (lks[li].rel === "apple-touch-icon" || szv.indexOf("180") > -1) lks[li].href = u180;
+          else if (szv.indexOf("512") > -1) lks[li].href = u512;
+          else if (szv.indexOf("192") > -1) lks[li].href = u192;
+        }
+        try {
+          var man = { name: co, short_name: co.length <= 20 ? co : ini2, start_url: window.location.pathname, scope: "/", display: "standalone", orientation: "portrait-primary", theme_color: "#17130E", background_color: "#FAF7F1", icons: [
+            { src: u192, sizes: "192x192", type: "image/png", purpose: "any" },
+            { src: u512, sizes: "512x512", type: "image/png", purpose: "any" }
+          ] };
+          var mlk = document.querySelector("link[rel='manifest']");
+          if (mlk) mlk.href = URL.createObjectURL(new Blob([JSON.stringify(man)], { type: "application/json" }));
+        } catch (e2) {}
+      } catch (e) {}
+    }
+    /* Vehicle block (quote page): the default Black SUV vehicle photo
+       is baked into this page itself and the name and description are
+       the static ones, so a Default visit paints the block at once and
+       never fetches the registry. A worn custom set is loaded from the
+       registry once; while it loads the block shows a skeleton (the
+       veh-pending class was set in the head, before first paint), and
+       if the registry cannot be reached, or the set is missing from
+       it, the description says so in plain words instead of the block
+       failing silently or leaving the default photo standing. */
+    if (!window.__bblQVehDone) {
+      window.__bblQVehDone = true;
+      if (ID.veh === DEF.veh) {
+        /* Default set: baked photo, static name and description. */
+      } else fetch("/bbl-vehicles.json").then(function (r) { return r.json(); }).then(function (reg) {
+        var img = document.getElementById("qVehImg"), nm = document.getElementById("qVehName"), ds = document.getElementById("qVehDesc");
+        if (!img) { document.documentElement.classList.remove("veh-pending"); return; }
+        var set = reg && reg.sets && reg.sets[ID.veh];
+        if (set && set.images && (set.images.vehicle || set.images.hero)) {
+          document.documentElement.classList.remove("veh-pending");
+          img.src = set.images.vehicle || set.images.hero;
+          img.alt = (set.scenes && set.scenes.vehicle) || (ID.veh === DEF.veh ? "2026 Cadillac Escalade ESV" : (set.label || "").replace(/\s*\(generated\)\s*$/, ""));
+          img.style.display = "";
+          if (nm && ID.veh !== DEF.veh && set.label) nm.textContent = set.label.replace(/\s*\(generated\)\s*$/, "");
+          if (ds && set.scenes && set.scenes.vehicle) ds.textContent = set.scenes.vehicle;
+          else if (ds) ds.textContent = "";
+          /* Scene gallery (owner order Nov 7, 2026): every scene photo
+             of the worn set under the vehicle block, first three slots
+             in scene order, then the rest in registry order. Service
+             card photos are excluded - they belong to the main preview
+             page. One card per scene with its label under it; a scene
+             with no photo is skipped, never a broken card. */
+          var gal = document.getElementById("qVehGallery");
+          if (gal && set.images) {
+            while (gal.firstChild) gal.removeChild(gal.firstChild);
+            var gorder = ["hero", "vehicle", "booking-banner"];
+            Object.keys(set.images).forEach(function (k) { if (gorder.indexOf(k) === -1 && k.indexOf("service:") !== 0) gorder.push(k); });
+            var gbuilt = 0;
+            gorder.forEach(function (slot) {
+              var gsrc = set.images[slot]; if (!gsrc) return;
+              var glbl = (set.scenes && set.scenes[slot]) || slot.replace(/-/g, " ").replace(/(^|\s)\S/g, function (c) { return c.toUpperCase(); });
+              var card = document.createElement("figure"); card.className = "qgal-card";
+              var gim = document.createElement("img"); gim.src = gsrc; gim.alt = glbl;
+              var cap = document.createElement("figcaption"); cap.className = "qgal-cap"; cap.textContent = glbl;
+              card.appendChild(gim); card.appendChild(cap); gal.appendChild(card);
+              gbuilt++;
+            });
+            if (gbuilt) gal.hidden = false;
+          }
+        } else {
+          img.style.display = "none";
+          if (nm) nm.textContent = "";
+          if (ds) ds.textContent = "Vehicle photo could not load.";
+          document.documentElement.classList.remove("veh-pending");
+        }
+      }).catch(function () {
+        var im2 = document.getElementById("qVehImg"); if (im2) im2.style.display = "none";
+        var nm2 = document.getElementById("qVehName"); if (nm2) nm2.textContent = "";
+        var ds = document.getElementById("qVehDesc");
+        if (ds) ds.textContent = "Vehicle photo could not load.";
+        document.documentElement.classList.remove("veh-pending");
+      });
+    }
+    carryAll();
+    return changed;
+  }
+  window.__bblApply = apply;
+  var pend = false;
+  var mo = new MutationObserver(function () { if (pend) return; pend = true; setTimeout(function () { pend = false; apply(); }, 120); });
+  function boot() { apply(); try { mo.observe(document.documentElement, { subtree: true, childList: true, characterData: true }); } catch (e) {} }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
+})();
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBcOFR4VbAcSn5Q0my5deeEz7JwLZOxiaI&libraries=places&callback=__qzInitMaps&loading=async" async defer></script>
+<script>
+/* BBL Back to edit (Raju order Nov 6, 2026). Runs only when the URL carries
+   edit=1. The admin panel opens previews in a new tab (target=_blank on the
+   Open buttons), so this tab has a single-entry history and window.close()
+   returns him to the panel tab. If the browser refuses the close, the tab
+   navigates to the admin page instead. The admin has no hash deep link for
+   the BBL panes, so the fallback is the plain admin page. The edit flag is
+   never copied anywhere by this block: it is not added to any link. */
+(function () {
+  try {
+    var q = new URLSearchParams(window.location.search);
+    if (q.get("edit") !== "1") return;
+    var go = function () {
+      var closed = false;
+      try { window.close(); closed = !!window.closed; } catch (e) {}
+      setTimeout(function () {
+        if (!closed && !document.hidden) window.location.href = "/owner.html";
+      }, 300);
+    };
+    var add = function () {
+      if (!document.body || document.getElementById("bblBackEdit")) return;
+      document.body.classList.add("xyz-edit-on");
+      var b = document.createElement("button");
+      b.id = "bblBackEdit";
+      b.type = "button";
+      b.textContent = "Back to edit";
+      b.setAttribute("aria-label", "Back to edit in the admin panel");
+      b.addEventListener("click", go);
+      document.body.appendChild(b);
+    };
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", add);
+    else add();
+  } catch (e) {}
+})();
+</script>
+
+<script>
+"use strict";
+/* Escalade ESV slideshow (user order 2026-11-17): five photos,
+   auto-advance with swipe / arrow / dot navigation. Auto-advance is
+   off under prefers-reduced-motion and pauses on hover, focus and
+   touch. Self-contained: if the markup is absent it does nothing. */
+(function () {
+  var track = document.getElementById("qShowTrack");
+  if (!track) return;
+  var n = track.children.length;
+  if (n < 2) return;
+  var dotsBox = document.getElementById("qShowDots");
+  var dotEls = dotsBox ? dotsBox.children : [];
+  var i = 0, timer = null, reduce = false;
+  try { reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+  function show(k) {
+    i = ((k % n) + n) % n;
+    track.style.transform = "translateX(" + (-i * 100) + "%)";
+    for (var d = 0; d < dotEls.length; d++) {
+      if (d === i) { dotEls[d].classList.add("is-on"); dotEls[d].setAttribute("aria-current", "true"); }
+      else { dotEls[d].classList.remove("is-on"); dotEls[d].removeAttribute("aria-current"); }
+    }
+  }
+  function stop() { if (timer) { clearInterval(timer); timer = null; } }
+  function start() { if (reduce) return; stop(); timer = setInterval(function () { show(i + 1); }, 4500); }
+  var prev = document.getElementById("qShowPrev"), next = document.getElementById("qShowNext");
+  if (prev) prev.addEventListener("click", function () { show(i - 1); start(); });
+  if (next) next.addEventListener("click", function () { show(i + 1); start(); });
+  for (var d2 = 0; d2 < dotEls.length; d2++) {
+    (function (k) { dotEls[k].addEventListener("click", function () { show(k); start(); }); })(d2);
+  }
+  var box = document.getElementById("qShow"), x0 = null;
+  if (box) {
+    box.addEventListener("touchstart", function (e) { x0 = e.changedTouches[0].clientX; stop(); }, { passive: true });
+    box.addEventListener("touchend", function (e) {
+      if (x0 === null) return;
+      var dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 40) show(i + (dx < 0 ? 1 : -1));
+      x0 = null; start();
+    }, { passive: true });
+    box.addEventListener("mouseenter", stop);
+    box.addEventListener("mouseleave", start);
+    box.addEventListener("focusin", stop);
+    box.addEventListener("focusout", start);
+  }
+  show(0); start();
+})();
+</script>
+
+</body>
+</html>
