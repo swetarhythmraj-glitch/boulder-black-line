@@ -19,6 +19,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script>try{if(new URLSearchParams(location.search).get("look")==="app")document.documentElement.classList.add("look-app");}catch(e){}</script>
+<!-- Fresh load always starts at the top (user, 2026-11-17): iOS Safari restores the previous scroll position on reload, which landed the page mid-form (header cut, map cropped). No page code scrolls or focuses anything at load — audited 2026-11-17 — so the fix is to opt out of restoration and reset to 0. -->
+<script>try{if("scrollRestoration" in history)history.scrollRestoration="manual";window.scrollTo(0,0);document.addEventListener("DOMContentLoaded",function(){window.scrollTo(0,0);});window.addEventListener("pageshow",function(e){if(e&&e.persisted)window.scrollTo(0,0);});}catch(e){}</script>
 <script>try{var v=new URLSearchParams(location.search).get("veh");if(v&&/^[a-z0-9][a-z0-9-]{0,40}$/.test(v)&&v!=="black-suv"){document.documentElement.classList.add("veh-pending");document.addEventListener("DOMContentLoaded",function(){var ds=document.getElementById("qVehDesc"),nm=document.getElementById("qVehName");if(ds)ds.textContent="Loading vehicle photo.";if(nm)nm.textContent="";});}}catch(e){}</script>
 <style>
 :root{
@@ -334,6 +336,7 @@ body.qpage header.site .btn-ghost:hover{background:rgba(255,255,255,.08)}
 body.qpage header.site :focus-visible{outline-color:#FFFFFF}
 body.qpage .call-plain{display:none}
 @media(max-width:760px){
+  /* Header breathing room restored on phones (user, 2026-11-17 23:32 MST, reversing the 23:21 tightening): the 12px above the nav returns so the first view breathes and Continue sits in the lower section. The notch safe area itself is kept. */
   body.qpage header.site{padding-top:calc(12px + env(safe-area-inset-top))}
   body.qpage header.site .nav{min-height:46px;flex-wrap:nowrap;gap:6px}
   body.qpage .brand{font-size:16px;flex:0 1 auto;min-width:0;padding:2px 6px;border-radius:8px;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -447,8 +450,9 @@ body.qpage .brand span{color:#FFFFFF}
 .qmap-note{position:absolute;inset:0;border-radius:18px 18px 0 0;display:grid;place-items:center;font-size:13px;font-weight:600;color:#B9B9B9;background:#161616;z-index:2}
 .qmap-note.qmap-failed{background:#161616}
 .map-credit{position:absolute;left:10px;bottom:8px;font-size:11px;font-weight:600;color:#262626;background:rgba(255,255,255,.88);padding:2px 8px;border-radius:999px;z-index:3}
-.qhero .app-panel{padding:10px 14px;gap:8px}
-@media(min-width:561px){.qhero .app-panel{padding:10px 18px}}
+/* Breathing room in the booking panel (user, 2026-11-17 23:32 MST): vertical padding 10 -> 14 and the gaps between sections 8 -> 10, so on a fresh load Continue sits in the lower section of the first view instead of hanging high. */
+.qhero .app-panel{padding:14px 14px;gap:10px}
+@media(min-width:561px){.qhero .app-panel{padding:14px 18px}}
 .qhero .mode-toggle{background:#1C1C1C;border-color:#333333;padding:2px}
 .qhero .mode-toggle button{height:42px;min-height:42px;color:#A3A3A3}
 .qhero .mode-toggle button.on{background:#FFFFFF;color:#000000}
@@ -456,7 +460,7 @@ body.qpage .brand span{color:#FFFFFF}
 .qhero .app-panel input,.qhero .app-panel select{background:#1C1C1C;border-color:#333333;color:#FFFFFF}
 .qhero .app-panel input::placeholder{color:#8E8E8E}
 .qhero .app-panel .flabel{color:#C9C9C9;font-size:13px;line-height:18px;margin-bottom:4px}
-.qhero .route-fields{gap:8px}
+.qhero .route-fields{gap:10px}
 .qhero .route-field input{padding-left:46px;padding-right:118px}
 .qhero .mk{top:23px}
 .qhero .fld-clear{top:23px;background:rgba(28,28,28,.92)}
@@ -516,6 +520,32 @@ body.book-open #book{display:block}
 .airline-none{padding:24px 18px;color:#8A7B5C;font-size:15px}
 body.airline-open{overflow:hidden}
 .pac-container{z-index:100050 !important;font-family:inherit}
+/* ---------- First view = exactly one screen (user, 2026-11-17 23:38 MST):
+   the previous spacing job tuned the stack to a 696px "unobscured" model,
+   but Safari's floating bars overlay the page, so the panel ended early,
+   Continue read as high, and the slideshow showed underneath it. Structural
+   fix, no per-phone tuning: the booking form is a flex column with
+   min-height = viewport height minus the site header's own height (65px
+   desktop; 59px + the device-resolved safe-area inset at phone widths),
+   100vh fallback then 100svh (Safari's dynamic toolbar cannot resize it).
+   Header + form = exactly one screen, so the slideshow and everything
+   after the form start below the fold. Inside the form the map is the
+   absorber: flex-grow stretches it taller on tall screens, flex-shrink:0
+   keeps it at its 224px floor on short ones (the form then exceeds one
+   screen rather than crushing). The fields panel is flex:none. */
+body.qpage .qhero .appbook{display:flex;flex-direction:column;min-height:calc(100vh - 65px);min-height:calc(100svh - 65px)}
+@media(max-width:760px){body.qpage .qhero .appbook{min-height:calc(100vh - 59px - env(safe-area-inset-top,0px));min-height:calc(100svh - 59px - env(safe-area-inset-top,0px))}}
+body.qpage .qhero .qmap{flex:1 0 auto}
+body.qpage .qhero .app-panel{flex:none}
+/* Short phone screens (natural stack 687px > viewport): the breathing room
+   scales down one step and the form's header constant follows (59 -> 53),
+   so the first view still lands on exactly one screen, map at its floor. */
+@media(max-width:760px) and (max-height:720px){
+  body.qpage header.site{padding-top:calc(6px + env(safe-area-inset-top))}
+  body.qpage .qhero .appbook{min-height:calc(100vh - 53px - env(safe-area-inset-top,0px));min-height:calc(100svh - 53px - env(safe-area-inset-top,0px))}
+  body.qpage .qhero .app-panel{padding:10px 14px;gap:8px}
+  body.qpage .qhero .route-fields{gap:8px}
+}
 </style>
 
 </head>
