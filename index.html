@@ -14,6 +14,12 @@
 <meta name="color-scheme" content="light dark">
 <meta name="description" content="Request a flat fare quote: send the owner your pickup, drop-off and time. No account, no payment.">
 <meta name="theme-color" content="#17130E">
+<!-- Home Screen / tab icons (user, 2026-11-18): the approved Escalade-crest artwork, full-bleed black. Preview files are bbl-prefixed (the ridewave-web root names belong to RideWave itself); the domain variant renames them to the canonical root names. -->
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<meta name="apple-mobile-web-app-title" content="Boulder Black Line">
 <title>Book your ride with Boulder Black Line</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -801,6 +807,92 @@ body.qpage.book-open #book{min-height:calc(100vh - 0px - env(safe-area-inset-top
   .qheadline{font-size:30px;line-height:1.04;padding:2px 14px 0}
 }
 </style>
+<style>
+/* Screenshot fixes (user, 2026-11-18 05:53 MST; fix 4 corrected
+   05:54): (1) the Service select's text clipped at the bottom —
+   the base rule's 12px vertical padding left a ~15px content box
+   inside the 42px field, shorter than the line box; selects in
+   the quick form now carry an explicit 22px line-height and no
+   vertical padding, so the text renders fully at every tier and
+   the field's outer height is unchanged. (2) The Add stop pill
+   crossed the Where-to field's bottom border — it was centred on
+   top:23px from the 46px-field era; it is now 34px tall and
+   centred on the field's true centre (21px; 19.5px on the short
+   tier), fully inside, and the route inputs' right padding grows
+   to 126px so text never runs under the Remove stop pill.
+   (3) More air above Continue: +8px margin (the map absorber
+   funds it; Continue still rests 10px above the floating bar).
+   (4) The slideshow band is 15% shorter (212 -> 180px) and its
+   AI photos were regenerated pulled-back and cinematic — the SUV
+   smaller in a wider scene (slide 5 is the real Wikimedia photo,
+   already at its full original frame, kept as-is). */
+#quickForm select{line-height:22px;padding-top:0;padding-bottom:0}
+body.qpage .qhero .add-stop{top:21px;height:34px}
+.qhero .route-field input{padding-right:126px}
+body.qpage .qhero .continue-btn{margin-top:8px}
+.qband{height:180px}
+.qband .qshow-track img{height:180px}
+@media(max-width:760px) and (max-height:800px){
+  body.qpage .qhero .add-stop{top:19.5px}
+}
+</style>
+<style>
+/* More air at the top of the first view (user, 2026-11-18 06:08
+   MST): the hero's top padding — the space above the headline —
+   grows 12 -> 20px (8 -> 14px on the short tier), and the
+   headline gains a gap above the map (padding-bottom 0 -> 8px;
+   6px on the short tier). The first-view budget subtracts the
+   new top air (20 + 56 bar = 76; 14 + 56 = 70 on the short
+   tier); the map flex absorber funds the difference, so the
+   first view still totals exactly one screen and Continue still
+   rests 10px above the floating Call/Text bar. */
+body.qpage .qhero{padding-top:calc(20px + env(safe-area-inset-top,0px))}
+body.qpage .qhero .appbook{min-height:calc(100vh - 20px - env(safe-area-inset-top,0px) - 56px - env(safe-area-inset-bottom,0px));min-height:calc(100svh - 20px - env(safe-area-inset-top,0px) - 56px - env(safe-area-inset-bottom,0px))}
+.qheadline{padding-bottom:8px}
+@media(max-width:760px) and (max-height:800px){
+  body.qpage .qhero{padding-top:calc(14px + env(safe-area-inset-top,0px))}
+  body.qpage .qhero .appbook{min-height:calc(100vh - 14px - env(safe-area-inset-top,0px) - 56px - env(safe-area-inset-bottom,0px));min-height:calc(100svh - 14px - env(safe-area-inset-top,0px) - 56px - env(safe-area-inset-bottom,0px))}
+  .qheadline{padding-bottom:6px}
+}
+</style>
+<style>
+/* Load & scroll motion (user, 2026-11-18 06:12 MST), mirroring
+   the reference page's v3.10.1708 mechanisms: the page fades in on open; a
+   skeleton of the hero (headline lines, map block, form panel)
+   covers the first view from first paint and fades out when the
+   page is ready (DOM + map idle), with a hard timeout so it can
+   never stick; below-fold sections carry the reversible .rv
+   scroll fade. The skeleton is absolutely positioned inside the
+   hero — it changes no layout geometry (first view still exactly
+   one screen; the sheet math is untouched). Its column reuses
+   the appbook's own min-height budget (20px top air + 56px bar;
+   14px on the short tier) so the blocks line up with the real
+   headline, map and form they stand in for. */
+main{animation:bblPagein .35s ease-out}
+@keyframes bblPagein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.bb-sk{position:relative;overflow:hidden;background:rgba(255,255,255,.13);border-radius:8px;flex:none}
+#bblSkel{position:absolute;inset:0;z-index:6;background:var(--bg);transition:opacity .25s ease;overflow:hidden;pointer-events:none}
+#bblSkel.done{opacity:0}
+.bb-in{display:flex;flex-direction:column;padding-top:calc(20px + env(safe-area-inset-top,0px));min-height:calc(100vh - 20px - env(safe-area-inset-top,0px) - 56px - env(safe-area-inset-bottom,0px));min-height:calc(100svh - 20px - env(safe-area-inset-top,0px) - 56px - env(safe-area-inset-bottom,0px))}
+.bb-t1{width:82%;height:34px;margin:10px auto 0}
+.bb-t2{width:56%;height:34px;margin:8px auto 0}
+.bb-map{flex:1 1 auto;min-height:180px;margin-top:8px;border-radius:18px 18px 0 0}
+.bb-panel{padding:14px;display:flex;flex-direction:column;gap:10px}
+.bb-row{display:flex;gap:10px}
+.bb-half{flex:1}
+.bb-pill{height:42px;border-radius:999px;flex:1}
+.bb-lab{width:30%;height:10px}
+.bb-inp{height:42px;width:100%;margin-top:6px}
+.bb-line{height:12px;width:100%}
+.bb-line.short{width:55%}
+.bb-btn{height:52px;border-radius:999px;width:100%}
+@media(max-width:760px) and (max-height:800px){
+  .bb-in{padding-top:calc(14px + env(safe-area-inset-top,0px));min-height:calc(100vh - 14px - env(safe-area-inset-top,0px) - 56px - env(safe-area-inset-bottom,0px));min-height:calc(100svh - 14px - env(safe-area-inset-top,0px) - 56px - env(safe-area-inset-bottom,0px))}
+}
+.rv{opacity:0;transform:translateY(10px);transition:opacity .5s ease,transform .5s ease}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){main{animation:none}#bblSkel{transition:none}.rv{opacity:1;transform:none;transition:none}}
+</style>
 </head>
 <body class="qpage">
 
@@ -810,6 +902,21 @@ body.qpage.book-open #book{min-height:calc(100vh - 0px - env(safe-area-inset-top
      service, route fields, fare, Continue), then the photo band below it
      (user order 2026-11-17 22:45: slideshow under the Continue button). -->
 <section class="qhero">
+<div id="bblSkel" aria-hidden="true"><div class="bb-in">
+<div class="bb-sk bb-t1"></div>
+<div class="bb-sk bb-t2"></div>
+<div class="bb-sk bb-map"></div>
+<div class="bb-panel">
+<div class="bb-row"><div class="bb-sk bb-pill"></div><div class="bb-sk bb-pill"></div></div>
+<div><div class="bb-sk bb-lab"></div><div class="bb-sk bb-inp"></div></div>
+<div><div class="bb-sk bb-lab"></div><div class="bb-sk bb-inp"></div></div>
+<div><div class="bb-sk bb-lab"></div><div class="bb-sk bb-inp"></div></div>
+<div class="bb-row"><div class="bb-half"><div class="bb-sk bb-lab"></div><div class="bb-sk bb-inp"></div></div><div class="bb-half"><div class="bb-sk bb-lab"></div><div class="bb-sk bb-inp"></div></div></div>
+<div class="bb-sk bb-line short"></div>
+<div class="bb-sk bb-btn"></div>
+</div>
+</div></div>
+
   <form class="appbook" id="quickForm" novalidate aria-label="Check your ride">
     <h1 class="qheadline"><span>Boulder's private black SUV.</span> <span>Book in minutes.</span></h1>
     <div class="map-panel qmap">
@@ -2310,5 +2417,121 @@ setTimeout(function () { if (!mapsReady) qzMapsFailed(); }, 10000);
 })();
 </script>
 
+<script>
+/* Load & scroll motion (user, 2026-11-18 06:12 MST): skeleton
+   handover and reversible scroll fade — the reference page's
+   v3.10.1708 mechanisms mirrored (see the style block above).
+   The map has NO camera animation: it is created at its resting
+   view (Denver center, zoom 10) and never moves on load, exactly
+   like the reference page. A zoom-in landing shipped in the
+   06:12 round as a visual equivalent and was REMOVED later the
+   same day (map-load fix, 2026-11-18): the user's phone
+   recording showed the skeleton handing over to a whole-Front-
+   Range zoom-8 view that then drifted for ~2s with grey,
+   not-yet-fetched tiles along one edge — the opposite of the
+   reference page's instant, settled load. With no flight there
+   is nothing to cancel: the page's own paintMap and the map's
+   touch behaviour are entirely untouched by this script.
+   Existing page functions are hooked only through transparent
+   wrappers that call through unchanged. */
+(function () {
+  if (window.__bblLoadFx) return;
+  var state = { skel: "shown", landing: "none" };
+  window.__bblLoadFx = state;
+  var RM = false;
+  try { RM = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); } catch (e) {}
+
+  /* ---------- map camera: none (resting view, like the reference) --
+     The map object is created by the page's own maps callback at
+     the resting view; this script never calls setZoom, setCenter
+     or setOptions on it, so the view the skeleton hands over to
+     is the final one. state.landing stays "none". */
+
+  /* ---------- readiness: DOM + map idle / maps failed ---------- */
+  var mapIdle = false, mapFailed = false, idleAttached = false;
+  function attachIdle(m) {
+    if (idleAttached || !m) return; idleAttached = true;
+    try {
+      if (window.google && google.maps && google.maps.event && google.maps.event.addListenerOnce) {
+        google.maps.event.addListenerOnce(m, "idle", function () { mapIdle = true; });
+      } else if (typeof m.addListener === "function") {
+        var h = m.addListener("idle", function () { mapIdle = true; if (h && h.remove) h.remove(); });
+      }
+    } catch (e) {}
+  }
+  var baseInit = window.__qzInitMaps;
+  if (typeof baseInit === "function") {
+    window.__qzInitMaps = function () {
+      var r = baseInit.apply(this, arguments);
+      var m = window.qzMap || window.gMap;
+      if (m) attachIdle(m);
+      return r;
+    };
+  }
+  var baseFail = window.qzMapsFailed;
+  if (typeof baseFail === "function") {
+    window.qzMapsFailed = function () { mapFailed = true; return baseFail.apply(this, arguments); };
+  }
+  /* Safety net: if the maps callback somehow fired before this
+     script ran, attach the idle hook by polling so the skeleton
+     can still hand over. */
+  var huntMs = 0;
+  var hunt = setInterval(function () {
+    huntMs += 150;
+    if (idleAttached || huntMs > 6000) { clearInterval(hunt); return; }
+    if (window.mapsReady && (window.qzMap || window.gMap)) {
+      attachIdle(window.qzMap || window.gMap);
+      clearInterval(hunt);
+    }
+  }, 150);
+
+  /* ---------- skeleton handover (reference lattice, mirrored) ---- */
+  var skelDone = false, skelT0 = Date.now();
+  function doneSkel() {
+    if (skelDone) return; skelDone = true; state.skel = "done";
+    var sk = document.getElementById("bblSkel");
+    if (!sk) return;
+    var wait = Math.max(0, 250 - (Date.now() - skelT0));
+    setTimeout(function () {
+      sk.classList.add("done");
+      setTimeout(function () { if (sk.parentNode) sk.parentNode.removeChild(sk); }, 350);
+    }, wait);
+  }
+  function domReady() { return document.readyState === "interactive" || document.readyState === "complete"; }
+  var poll = setInterval(function () {
+    if (domReady() && (mapIdle || mapFailed)) { clearInterval(poll); doneSkel(); }
+  }, 150);
+  setTimeout(function () { clearInterval(poll); doneSkel(); }, 4000);
+  window.addEventListener("load", function () { clearInterval(poll); doneSkel(); });
+  window.addEventListener("error", function () { setTimeout(doneSkel, 800); }, true);
+
+  /* ---------- reversible scroll fade (reference, mirrored) ------- */
+  try {
+    if (!RM && "IntersectionObserver" in window) {
+      var io = new IntersectionObserver(function (es) {
+        es.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add("in"); }
+          else { e.target.classList.remove("in"); }
+        });
+      }, { threshold: 0.08 });
+      var seen = new WeakSet();
+      function tag(el) { if (el && !seen.has(el)) { seen.add(el); el.classList.add("rv"); io.observe(el); } }
+      function tagAll() {
+        var secs = document.querySelectorAll("main > section:not(.qhero):not(#book)");
+        for (var i = 0; i < secs.length; i++) tag(secs[i]);
+        var cards = document.querySelectorAll("#svcGrid .svc");
+        for (var j = 0; j < cards.length; j++) tag(cards[j]);
+        tag(document.querySelector(".qband"));
+        tag(document.querySelector(".qveh-strip"));
+        var fblocks = document.querySelectorAll("footer .f-grid > div, footer .fine");
+        for (var k = 0; k < fblocks.length; k++) tag(fblocks[k]);
+      }
+      tagAll();
+      var grid = document.getElementById("svcGrid");
+      if (grid && "MutationObserver" in window) { new MutationObserver(tagAll).observe(grid, { childList: true }); }
+    }
+  } catch (e) {}
+})();
+</script>
 </body>
 </html>
