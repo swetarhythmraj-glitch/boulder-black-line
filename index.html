@@ -546,6 +546,57 @@ body.qpage .qhero .app-panel{flex:none}
   body.qpage .qhero .app-panel{padding:10px 14px;gap:8px}
   body.qpage .qhero .route-fields{gap:8px}
 }
+/* ---------- Booking sheet: one screen per view (user, 2026-11-17 23:57 MST):
+   step 1 and the confirmation view each fit one phone screen with no
+   scrolling. Compact, don't amputate — every element and all copy stays;
+   only the vertical budget shrinks. All selectors are #book-scoped, so the
+   quick form and the rest of the page keep their shipped geometry. Step 2
+   shares the card / progress / field / button tightening. */
+body.qpage.book-open #book{padding:10px 0 18px}
+body.qpage #book .book-card{padding:13px}
+body.qpage #book .progress{margin-bottom:10px}
+body.qpage #book .progress span{padding:6px;font-size:12.5px;line-height:1.35}
+body.qpage #book .sum-card{padding:9px 11px}
+body.qpage #book .sum-amt{font-size:27px}
+body.qpage #book .sum-route{margin-top:5px}
+body.qpage #book .suv-banner{height:64px;margin-top:8px;object-position:50% 57%}
+body.qpage #book .note-line{margin-top:8px;padding:6px 10px}
+body.qpage #book .book-card .grid{gap:10px}
+body.qpage #book .bstep[data-step="1"] .grid{margin-top:8px !important}
+body.qpage #book .book-card .field input[type="text"],body.qpage #book .book-card .field input[type="tel"],body.qpage #book .book-card .field input[type="email"],body.qpage #book .book-card .field select{min-height:44px;padding:10px 12px}
+body.qpage #book .book-card .field textarea{min-height:64px;padding:10px 12px}
+body.qpage #book .booknav{margin-top:12px}
+body.qpage #book .book-card .btn{min-height:46px;padding:10px 20px}
+body.qpage #book .success{padding:2px 0}
+body.qpage #book .success .big{width:40px;height:40px;font-size:22px;margin-bottom:6px}
+body.qpage #book .success h3{font-size:19px !important;margin-bottom:4px !important}
+body.qpage #book .sc-code{margin:4px 0 5px}
+body.qpage #book .success code{font-size:16px;padding:3px 10px}
+body.qpage #book .summary{padding:10px 12px;gap:4px;font-size:13px}
+body.qpage #book .duo{margin-top:8px}
+body.qpage #book .panel{padding:12px 14px}
+body.qpage #book .panel h3{font-size:17px;margin-bottom:6px}
+body.qpage #book .tl li{padding:4px 0}
+body.qpage #book .tl b{font-size:13px;line-height:1.4}
+body.qpage #book .tl span{font-size:13px;line-height:1.42}
+body.qpage #book .msg{padding:8px 12px;font-size:13px;line-height:1.45}
+body.qpage #book #successBox>div:last-child{margin-top:8px !important}
+/* Short phone screens: one more compaction tier so step 1 still lands on
+   exactly one screen at 390x667 (the confirmation keeps every element and
+   reports its overflow in sheetfit_harness.js rather than crushing text). */
+@media(max-width:760px) and (max-height:720px){
+  body.qpage.book-open #book{padding:8px 0 12px}
+  body.qpage #book .book-card{padding:12px}
+  body.qpage #book .progress{margin-bottom:10px}
+  body.qpage #book .progress span{padding:5px}
+  body.qpage #book .sum-card{padding:8px 11px}
+  body.qpage #book .note-line{padding:5px 10px}
+  body.qpage #book .suv-banner{height:46px}
+  body.qpage #book .book-card .grid{gap:8px}
+  body.qpage #book .bstep[data-step="1"] .grid{margin-top:6px !important}
+  body.qpage #book .book-card .field textarea{min-height:58px}
+  body.qpage #book .booknav{margin-top:10px}
+}
 </style>
 
 </head>
@@ -674,8 +725,8 @@ body.qpage .qhero .app-panel{flex:none}
           <div class="field" style="grid-column:1/-1"><label class="flabel" for="bEmail">Email *</label><input id="bEmail" type="email" autocomplete="email" placeholder="you@example.com"><div class="err">Please enter a valid email address.</div></div>
           <div class="field" style="grid-column:1/-1"><label class="flabel" for="bNotes">Notes for your driver <span style="color:var(--muted);font-weight:500">(optional)</span></label><textarea id="bNotes" placeholder="Gate code, child seat, extra luggage…"></textarea><div class="err"></div></div>
           <div class="field" id="consentField" style="grid-column:1/-1">
-            <div class="consent-box"><input type="checkbox" id="bConsent"><label for="bConsent"><b>Text me about this ride.</b> I agree to receive booking, reminder and driver-arrival texts at the number above. Msg &amp; data rates may apply. Reply STOP to opt out. Email confirmations are always sent.</label></div>
-            <div class="err">Please check the box so we can text you ride updates, or go back and we'll confirm by email only.</div>
+            <div class="consent-box"><input type="checkbox" id="bConsent"><label for="bConsent"><b>Email me about this ride.</b> I agree to receive booking, reminder and driver-arrival emails at the email address above.</label></div>
+            <div class="err">Please check the box so we can email you ride updates.</div>
           </div>
         </div>
         <div style="margin-top:10px"><div class="field" id="payField">
@@ -697,9 +748,9 @@ body.qpage .qhero .app-panel{flex:none}
         <p class="sc-code">Confirmation code <code id="confCode">BK-0000</code></p>
         <div class="summary" id="qSummary" style="text-align:left"></div>
         <div class="duo">
-          <div class="panel recv" style="grid-column:1/-1"><h3>What you will receive</h3><ul class="tl"><li><span class="dot"></span><div><b>Right away</b><span>Booking confirmation by text and email.</span></div></li>
-          <li><span class="dot"></span><div><b>When your driver is assigned</b><span>A welcome text with the driver information: driver name, vehicle and plate.</span></div></li>
-          <li><span class="dot"></span><div><b>Before your ride</b><span>An email reminder 24 hours before pickup, and a text reminder 12 hours before pickup.</span></div></li></ul><div class="msg" style="margin-top:0"><b>Sample confirmation text:</b> <span id="riderMsg"></span></div></div>
+          <div class="panel recv" style="grid-column:1/-1"><h3>What you will receive</h3><ul class="tl"><li><span class="dot"></span><div><b>Right away</b><span>Booking confirmation by email.</span></div></li>
+          <li><span class="dot"></span><div><b>When your driver is assigned</b><span>A welcome email with the driver information: driver name, vehicle and plate.</span></div></li>
+          <li><span class="dot"></span><div><b>Before your ride</b><span>An email reminder 24 hours before pickup.</span></div></li></ul><div class="msg" style="margin-top:0"><b>Sample confirmation email:</b> <span id="riderMsg"></span></div></div>
         </div>
         <div style="margin-top:16px"><button class="btn btn-amber" id="bookAnother" type="button">Book another ride</button></div>
       </div>
@@ -1464,7 +1515,7 @@ $("confirmBtn").addEventListener("click", function () {
   need(name, (name.value || "").trim().length >= 2, "Please enter your full name.");
   need(phone, (phone.value || "").replace(/\D/g, "").length >= 10, "Please enter a valid phone number (at least 10 digits).");
   need(email, /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((email.value || "").trim()), "Please enter a valid email address.");
-  need($("bConsent"), !!$("bConsent").checked, "Please check the box so we can text you ride updates, or go back and we'll confirm by email only.");
+  need($("bConsent"), !!$("bConsent").checked, "Please check the box so we can email you ride updates.");
   if (bad) { flagField(bad, true); return; }
   updatePrice();
   var code = "BK-" + (1000 + Math.floor(Math.random() * 9000));
