@@ -432,13 +432,10 @@ body.qpage .brand span{color:#FFFFFF}
 .qhero{background:#000;color:#FFFFFF;padding:0 0 26px;position:relative}
 .qhero .wrap{max-width:1180px;margin:0 auto;padding:0 10px}
 @media(max-width:760px){.qhero .wrap{padding:0}}
-/* photo band: the Escalade slideshow, headline overlaid like XYZ */
+/* photo band: the Escalade slideshow, no text overlay */
 .qband{position:relative;height:212px;overflow:hidden;background:#000}
 .qband .qshow{position:absolute;inset:0;border-radius:0;background:#000}
 .qband .qshow-track img{width:100%;height:212px;aspect-ratio:auto;object-fit:cover}
-.qband-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.34),rgba(0,0,0,.55) 58%,rgba(0,0,0,.90));pointer-events:none;z-index:1}
-.qband-in{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:0 6px 12px;pointer-events:none}
-.qband-in h1{font-family:Urbanist,Inter,sans-serif;font-size:clamp(34px,6vw,58px);font-weight:700;line-height:1.08;letter-spacing:-.01em;color:#FFFFFF;margin:0;max-width:720px}
 .qband .qshow-btn{z-index:4}
 .qband .qshow-dots{z-index:4;bottom:10px;justify-content:flex-end;padding-right:12px}
 .qband .qshow-dot{background:rgba(255,255,255,.45)}
@@ -523,7 +520,6 @@ body.airline-open{overflow:hidden}
 
 </head>
 <body class="qpage">
-<div style="background:#14150f;color:#f2f3f0;text-align:center;padding:8px 12px;font:600 13px/1.4 Inter,system-ui,sans-serif">PREVIEW — Boulder Black Line demo. Requests are saved on this device only: no booking, text, email, or payment is sent.</div>
 <header class="site">
   <div class="wrap nav">
     <a class="brand" href="/index.html">Boulder <span>Black Line</span></a>
@@ -558,8 +554,6 @@ body.airline-open{overflow:hidden}
       <button type="button" class="qshow-dot" data-i="4" aria-label="Photo 5 of 5"></button>
       </div>
     </div>
-    <div class="qband-shade" aria-hidden="true"></div>
-    <div class="qband-in"><h1>Your private SUV. Book in minutes.</h1></div>
   </div>
   <form class="appbook" id="quickForm" novalidate aria-label="Check your ride">
     <div class="map-panel qmap">
@@ -731,9 +725,11 @@ function fmtDate(d){if(!d)return"";var dt=new Date(d+"T12:00:00");return dt.toLo
 function escHtml(t){return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
 function flagMsg(el,msg,focusIt){var f=el.closest(".field");if(f){var e=f.querySelector(".err");if(e&&msg)e.textContent=msg}flagField(el,!!focusIt)}
 var FARE_CONFIG = window.BBL_PRICING; /* Boulder Black Line pricing snapshot — this site's only pricing source. */
-/* BBL home area: the fresh-load map opens here, zoomed in like the
-   reference page's local view, with a pin on it. */
-var BBL_HOME = { lat: 40.0150, lng: -105.2705 }; /* Boulder, CO */
+/* Default map view: Denver downtown and the metro area, wide
+   framing, no pin. Route framing takes over once both addresses
+   are picked. */
+var BBL_DEFAULT_CENTER = FARE_CONFIG.denverCenter; /* 39.7392, -104.9903 */
+var BBL_DEFAULT_ZOOM = 10;
 var DIA_CANON_ADDR = "Denver International Airport, 8500 Peña Blvd, Denver, CO 80249, USA";
 /* Airline code to DIA terminal side (same table the reference pages ship). */
 var DIA_AIRLINE_SIDE = {
@@ -1481,7 +1477,7 @@ $("confirmBtn").addEventListener("click", function () {
 });
 $("bookAnother").addEventListener("click", function () {
   /* Hand back the page exactly as it first loaded: blank widget,
-     idle map over Boulder, top of page. */
+     idle map over the Denver metro, top of page. */
   var qf = $("quickForm"); if (qf) qf.reset();
   var bf = $("bookForm"); if (bf) { bf.reset(); bf.style.display = ""; }
   var sb = $("successBox"); if (sb) sb.classList.remove("show");
@@ -1495,10 +1491,9 @@ $("bookAnother").addEventListener("click", function () {
   refreshFlightFields();
   closeBookView();
   if (gMap) {
-    gMap.setCenter(mkLatLng(BBL_HOME.lat, BBL_HOME.lng));
-    gMap.setZoom(12);
+    gMap.setCenter(mkLatLng(BBL_DEFAULT_CENTER.lat, BBL_DEFAULT_CENTER.lng));
+    gMap.setZoom(BBL_DEFAULT_ZOOM);
     setMarker("a", null); setMarker("b", null);
-    new google.maps.Marker({ position: mkLatLng(BBL_HOME.lat, BBL_HOME.lng), map: gMap });
   }
   window.scrollTo(0, 0);
 });
@@ -1543,13 +1538,12 @@ window.__qzInitMaps = function () {
     mapsReady = true;
     var el = $("qMap");
     if (el) {
-      /* Fresh load: zoomed-in local view of this site's home area
-         (Boulder) with a pin — the reference page's local-view
-         behavior — never a wide metro view. Route framing takes
-         over only once both addresses are picked. */
+      /* Fresh load: Denver downtown and the metro area, wide
+         framing, no pin. Route framing takes over only once
+         both addresses are picked. */
       gMap = new google.maps.Map(el, {
-        center: mkLatLng(BBL_HOME.lat, BBL_HOME.lng),
-        zoom: 12,
+        center: mkLatLng(BBL_DEFAULT_CENTER.lat, BBL_DEFAULT_CENTER.lng),
+        zoom: BBL_DEFAULT_ZOOM,
         disableDefaultUI: true,
         mapTypeControl: false,
         streetViewControl: false,
@@ -1557,7 +1551,6 @@ window.__qzInitMaps = function () {
         zoomControl: false
       });
       qzMap = gMap;
-      new google.maps.Marker({ position: mkLatLng(BBL_HOME.lat, BBL_HOME.lng), map: gMap });
       var mn = $("qMapNote"); if (mn) mn.style.display = "none";
     }
     bindAc("qPickup", "qPickup");
