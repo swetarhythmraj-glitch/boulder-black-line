@@ -987,9 +987,6 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
         <button type="button" id="modeP2P" class="on" aria-pressed="true">Point To Point</button>
         <button type="button" id="modeHourly" aria-pressed="false">Hourly</button>
       </div>
-      <div class="field"><label class="flabel" for="qService">Service</label>
-        <select id="qService"><option value="" selected>Please select the service</option><option value="airport">Airport Pickup / Drop-off</option><option value="business">Business Pickup</option><option value="special">Special Occasions</option><option value="wedding">Wedding &amp; Ceremony</option><option value="concert">Concert &amp; Events</option><option value="mountain">Mountain Rides</option><option value="hourly">Hourly Reservation</option></select>
-        <div class="err">Please choose a service.</div></div>
       <div class="route-wrap">
         <div class="route-fields">
           <div class="field route-field"><span class="mk mk-dot"></span><input id="qPickup" type="text" placeholder="Pickup location" autocomplete="street-address" aria-label="Pickup location"><button class="fld-clear" type="button" id="clear-qPickup" aria-label="Clear pickup" tabindex="-1"></button><div class="err">Please enter where we pick you up.</div></div>
@@ -1122,7 +1119,6 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
       <div class="bstep on" data-step="1">
         <div class="sum-card" id="priceSummary"></div>
         <img class="suv-banner" src="bbl-suv-2.jpg" alt="2026 Cadillac Escalade ESV, rear three-quarter view — the SUV that will pick you up">
-        <div class="note-line">One SUV, one ride at a time. Your time is yours.</div>
         <div class="grid g2" style="margin-top:12px">
           <div class="field"><label class="flabel" for="bPax">Passengers *</label><select id="bPax"><option value="">Select…</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select><div class="err">Please select how many passengers (max 6).</div></div>
           <div class="field"><label class="flabel" for="bBags">Bags</label><select id="bBags"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10+">10+</option></select><div class="err"></div></div>
@@ -1216,7 +1212,7 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
   <a href="sms:+17203264652">Text</a>
 </nav>
 
-<script src="bbl-pricing.js?v=2026-11-18-rates2"></script>
+<script src="bbl-pricing.js?v=2026-11-18-cos350"></script>
 <script src="bbl-backend.js"></script>
 <script>
 "use strict";
@@ -1256,8 +1252,14 @@ var DIA_AIRLINE_SIDE = {
    snapshot. No service carries its own package price anymore — the
    XYZ-era wedding / concert / mountain flats were not RideWave
    rates and are gone. */
-var ROUTE_SERVICES = { airport: 1, business: 1, special: 1, wedding: 1, concert: 1, mountain: 1 };
+var ROUTE_SERVICES = { standard: 1, airport: 1, business: 1, special: 1, wedding: 1, concert: 1, mountain: 1 };
 var SERVICES = {
+  /* "standard" is the ride when no service card was tapped: the
+     form has no Service select anymore (owner, 2026-11-19 — "no
+     need to have Service choose option"), so the service lives
+     in state only and defaults to this generic ride. A card's
+     Book this (or the Hourly toggle) still sets a named one. */
+  standard: { name: "Private SUV Ride" },
   airport: { name: "Airport Pickup / Drop-off" },
   business: { name: "Business Pickup" },
   special: { name: "Special Occasions" },
@@ -1266,7 +1268,7 @@ var SERVICES = {
   mountain: { name: "Mountain Rides" },
   hourly: { name: "Hourly Reservation" }
 };
-var state = { service: "", price: 0 };
+var state = { service: "standard", price: 0 };
 /* The booking ride facts, copied from the widget on Continue. The
    booking screens never re-ask them. diaManual is the rider's DIA
    terminal pick. */
@@ -1434,7 +1436,7 @@ function refreshWidgetFare() {
     el.innerHTML = 'Prices could not load on this copy of the page. <a href="index.html" style="color:inherit;font-weight:700;text-decoration:underline">Tap to reload the page</a>';
     return;
   }
-  var svc = $("qService").value;
+  var svc = state.service;
   if (svc === "hourly") {
     el.hidden = false;
     el.textContent = "Hourly rate: $" + FARE_CONFIG.hourlyFirstHour + " for the first hour, then $" + FARE_CONFIG.hourlyRate + " per hour · " + FARE_CONFIG.hourlyMinHours + " hour minimum. Your total is set by the hours you pick in booking.";
@@ -1475,8 +1477,24 @@ function refreshWidgetFare() {
 (function () {
   var qf = $("qFare");
   if (!qf) return;
-  var bkSync = function () { document.body.classList.toggle("bk-on", !qf.hidden); };
+  var bkApply = function () { document.body.classList.toggle("bk-on", !qf.hidden); };
+  var bkDeferred = false;
+  var bkSync = function () {
+    /* Picker guard (owner, 2026-11-19): toggling the booking
+       view reflows the whole form; if that lands while the
+       rider's Date/Time picker is open (the route can settle
+       in that window), the reflow can dismiss the picker
+       before a value is picked. Defer the toggle until the
+       picker field blurs, then apply it. */
+    var ae = document.activeElement;
+    if (ae && (ae.id === "qDate" || ae.id === "qTime")) { bkDeferred = true; return; }
+    bkApply();
+  };
   if (window.MutationObserver) { new MutationObserver(bkSync).observe(qf, { attributes: true, attributeFilter: ["hidden"] }); }
+  ["qDate", "qTime"].forEach(function (id) {
+    var el = $(id);
+    if (el) el.addEventListener("blur", function () { if (bkDeferred) { bkDeferred = false; bkApply(); } });
+  });
   bkSync();
 })();
 
@@ -1581,7 +1599,7 @@ function widgetRouteReady() {
    geometry (computeGeoQuote) and never enter this state, and the
    admin-request gate is a decision, not a wait. */
 function routePending() {
-  if (!ROUTE_SERVICES[$("qService").value]) return false;
+  if (!ROUTE_SERVICES[state.service]) return false;
   if (!placeById.qPickup || !placeById.qDropoff) return false;
   if (routeFailed) return false;
   if (quoteMatches(routeQuote, $("qPickup").value, $("qDropoff").value)) return false;
@@ -1634,7 +1652,6 @@ function gfGateOpen() {
 }
 function gfWidgetValid(id) {
   var el = $(id); if (!el) return false;
-  if (id === "qService") return !!el.value;
   if (id === "qPickup") return state.service === "hourly" ? !!el.value.trim() : !!placeById.qPickup;
   if (id === "qDropoff") {
     if (gfGateOpen()) return false;
@@ -1645,7 +1662,7 @@ function gfWidgetValid(id) {
   return false;
 }
 function gfWidgetOrder() {
-  var ids = ["qService", "qPickup", "qDropoff"];
+  var ids = ["qPickup", "qDropoff"];
   if (!$("stopRow").hidden) ids.push("qStop");
   ids.push("qDate", "qTime");
   var qf = $("qDiaSideField");
@@ -1684,7 +1701,7 @@ function gfApply(ids, validFn, suppressNext) {
   }
   return nextId;
 }
-var GF_WIDGET_ALL = ["qService", "qPickup", "qDropoff", "qStop", "qDate", "qTime", "qDiaSide"];
+var GF_WIDGET_ALL = ["qPickup", "qDropoff", "qStop", "qDate", "qTime", "qDiaSide"];
 var GF_SHEET_ALL = ["bPax", "bBags", "bHours", "bName", "bPhone", "bEmail", "bConsent"];
 function gfClearOutside(allIds, orderIds) {
   for (var i = 0; i < allIds.length; i++) {
@@ -1706,6 +1723,15 @@ function gfRefresh(sourceId) {
   var sBtn = $(gfSheetStep() === "2" ? "confirmBtn" : "toStep3");
   if (sBtn) sBtn.classList.toggle("gf-done", sheetOpen && !sNext);
   if (!sourceId) return;
+  /* Picker guard (owner, 2026-11-19): while Date or Time has
+     focus its iOS picker is open, and any programmatic scroll
+     or focus move in that window can dismiss the picker before
+     the rider picks — his report: "it closes by itself after
+     tapping before it gets picked". While a picker is up, the
+     flow only repaints the green/glow classes above; it never
+     scrolls and never moves focus. */
+  var ae0 = document.activeElement;
+  if (ae0 && (ae0.id === "qDate" || ae0.id === "qTime")) return;
   var target = null;
   if (!sheetOpen && wOrder.indexOf(sourceId) !== -1 && gfWidgetValid(sourceId) && wNext) target = $(wNext);
   if (sheetOpen && sOrder.indexOf(sourceId) !== -1 && gfSheetValid(sourceId) && sNext) target = $(sNext);
@@ -1716,15 +1742,18 @@ function gfRefresh(sourceId) {
        their focus is never fought. */
     var ae = document.activeElement, srcEl = $(sourceId);
     if (ae !== target && (!ae || ae === document.body || ae === srcEl)) {
-      var w = gfFieldWrap(target);
-      if (w && w.scrollIntoView) w.scrollIntoView({ behavior: "smooth", block: "center" });
-      /* Date and Time are never focused by the flow: on iOS,
-         focusing one opens its picker, dismissing the picker
-         commits the shown value (today / the current time) as
-         a change, and the flow then advanced again and popped
-         the next picker — the flash the owner hit. They carry
-         the glow only; a real tap opens them. */
-      if (target.focus && target.id !== "qDate" && target.id !== "qTime") target.focus({ preventScroll: true });
+      /* Date and Time are never scrolled to or focused by the
+         flow: on iOS, focusing one opens its picker, and even
+         smooth-scrolling its wrap while the rider taps it can
+         dismiss the picker mid-presentation (the 2026-11-19
+         self-closing report; the wedge round had only stopped
+         the focus, not the scroll). They carry the glow only;
+         a real tap opens them. */
+      if (target.id !== "qDate" && target.id !== "qTime") {
+        var w = gfFieldWrap(target);
+        if (w && w.scrollIntoView) w.scrollIntoView({ behavior: "smooth", block: "center" });
+        if (target.focus) target.focus({ preventScroll: true });
+      }
     }
   }
 }
@@ -1732,7 +1761,7 @@ function gfRefresh(sourceId) {
    text fields advance on blur-with-a-valid-value and only
    re-sync on input, so focus is never yanked mid-typing. Place
    picks advance from bindAc's place_changed (gfRefresh(key)). */
-["qService", "qDate", "qTime", "qDiaSide", "bPax", "bBags", "bHours", "bConsent"].forEach(function (id) {
+["qDate", "qTime", "qDiaSide", "bPax", "bBags", "bHours", "bConsent"].forEach(function (id) {
   var el = $(id); if (el) el.addEventListener("change", function () { gfRefresh(id); });
 });
 ["qPickup", "qDropoff", "qStop", "bName", "bPhone", "bEmail"].forEach(function (id) {
@@ -1750,8 +1779,11 @@ function setMode(hourly) {
   h.classList.toggle("on", hourly); h.setAttribute("aria-pressed", hourly ? "true" : "false");
 }
 function setService(k) {
+  /* No Service select anymore (owner, 2026-11-19): the service
+     lives only in state — the generic "standard" ride unless a
+     service card's Book this (or the Hourly toggle) sets one. */
+  k = k || "standard";
   state.service = k;
-  var qs = $("qService"); if (qs && qs.value !== k) qs.value = k;
   setMode(k === "hourly");
   refreshFlightFields();
   var hf = $("hoursField"); if (hf) hf.classList.toggle("show", k === "hourly");
@@ -1767,9 +1799,8 @@ function setService(k) {
    the DOM-stub smoke harness can drive it with fake buttons. */
 function wireBookButtons(){document.querySelectorAll("[data-book]").forEach(function(b){b.addEventListener("click",function(){setService(b.getAttribute("data-book"));if(typeof tryOpenSheetFromWidget==="function"&&tryOpenSheetFromWidget())return;var f=$("quickForm");if(f)f.scrollIntoView({behavior:"smooth",block:"start"});setTimeout(function(){var p=$("qPickup");if(p)p.focus({preventScroll:true})},550)})})}
 wireBookButtons();
-$("modeP2P").addEventListener("click", function () { setService(state.service === "hourly" ? "airport" : state.service); });
+$("modeP2P").addEventListener("click", function () { setService(state.service === "hourly" ? "standard" : state.service); });
 $("modeHourly").addEventListener("click", function () { setService("hourly"); });
-$("qService").addEventListener("change", function () { setService($("qService").value); });
 
 /* ---------- swap + stop + clear ---------- */
 $("swapBtn").addEventListener("click", function () {
@@ -2137,9 +2168,9 @@ function updatePrice() {
   var meta = fmtDate(bk.date) + (bk.time ? " · " + fmtTime(bk.time) : "");
   if (state.service === "hourly") { meta += " · " + ($("bHours").value || "2") + " hours"; }
   else if (rq) { meta += " · " + rq.miles.toFixed(1) + " mi · about " + Math.max(1, Math.round(rq.mins)) + " min"; }
-  if (rq && rq.mountain) { meta += " · Mountain fare — " + rq.mountain.name + " · flat $" + fmtMoney(rq.mountain.amount); }
+  if (rq && rq.mountain) { meta += " · " + (rq.mountain.name === "Colorado Springs" ? "Flat fare" : "Mountain fare") + " — " + rq.mountain.name + " · flat $" + fmtMoney(rq.mountain.amount); }
   else if (rq && rq.stadium) { meta += " · Stadium fare — " + rq.stadium.name + (rq.stadium.flat ? " · flat $200" : " · $200 minimum"); }
-  else if (gq && gq.mountain) { meta += " · Mountain fare — " + gq.mountain.name + " · flat $" + fmtMoney(gq.mountain.amount); }
+  else if (gq && gq.mountain) { meta += " · " + (gq.mountain.name === "Colorado Springs" ? "Flat fare" : "Mountain fare") + " — " + gq.mountain.name + " · flat $" + fmtMoney(gq.mountain.amount); }
   else if (gq && gq.stadium) { meta += " · Stadium fare — " + gq.stadium.name + " · flat $200"; }
   var unpriced = !!ROUTE_SERVICES[state.service] && !rq && !(gq && gq.fare != null) && !routeFailed && mapsReady;
   var amtTxt = unpriced ? "Not priced yet" : ("$" + fmtMoney(state.price));
@@ -2186,7 +2217,6 @@ $("quickForm").addEventListener("submit", function (e) {
   e.preventDefault();
   if (pricingBroken) { try { location.reload(); } catch (e2) {} return; }
   var bad = null;
-  if (!$("qService").value) { flagField($("qService"), false); bad = $("qService"); }
   ["qPickup", "qDate", "qTime"].forEach(function (id) {
     var el = $(id);
     if (!el.value) { flagField(el, false); if (!bad) bad = el; }
@@ -2346,7 +2376,7 @@ $("bookAnother").addEventListener("click", function () {
   diaManual = null;
   diaAirline = null; diaAirlineSkipped = false; diaGateDone = false;
   bk.pickup = ""; bk.dropoff = ""; bk.date = ""; bk.time = "";
-  setService("");
+  setService("standard");
   clearRouteState();
   qzFlightSync();
   refreshFlightFields();
@@ -2398,19 +2428,80 @@ function bindAc(id, key) {
     routeWidget();
   });
 }
-/* ---------- address suggestions: keep the whole list visible
-   while typing (user, 2026-11-18 11:01 MST) ----------
-   Google's dropdown is placed in document coordinates under
-   the field and simply hangs past the bottom of the visible
-   area; when the keyboard opens, the visible area shrinks and
-   the lower rows end up under the keyboard and the browser's
-   own form bar (his screenshot: the DEN row dimmed behind a
-   translucent pill, the rows below cut off). While an address
-   field is active, pin the open list to the field in viewport
-   coordinates and cap its height to the space the rider can
-   actually see — flipping it above the field when below is
-   tighter. Re-fits on typing, on keyboard-driven viewport
-   changes, and whenever Google re-places the list. */
+
+/* ---------- pickup starts at the rider's current location
+   (owner, 2026-11-19: "pickup address tab can be fresh load
+   with current location address at 1st by default") ----------
+   One shot per page load, right after the maps init: ask the
+   browser for the rider's position and reverse-geocode it into
+   the pickup field as a real picked place (same shape and same
+   downstream calls as an autocomplete pick, so pricing, the
+   flight gate and the guided flow all treat it identically).
+   It NEVER overwrites: if the rider has typed or picked
+   anything — or is typing in the field at that moment — it
+   stands down. Denied, unavailable or slow location is silent:
+   the field simply stays empty. The browser shows its own
+   one-time permission prompt; nothing is stored. */
+var geoDefaultTried = false;
+function maybeDefaultPickupFromLocation() {
+  if (geoDefaultTried) return;
+  geoDefaultTried = true;
+  try {
+    if (!navigator.geolocation || !window.google || !google.maps || !google.maps.Geocoder) return;
+    var inp = $("qPickup");
+    if (!inp || inp.value || placeById.qPickup) return;
+    navigator.geolocation.getCurrentPosition(function (pos) {
+      try {
+        if (!pos || !pos.coords) return;
+        var inp2 = $("qPickup");
+        if (!inp2 || inp2.value || placeById.qPickup) return;
+        if (document.activeElement === inp2) return;
+        var ll = mkLatLng(pos.coords.latitude, pos.coords.longitude);
+        new google.maps.Geocoder().geocode({ location: ll }, function (results, status) {
+          try {
+            if (status !== "OK" || !results || !results.length) return;
+            var inp3 = $("qPickup");
+            if (!inp3 || inp3.value || placeById.qPickup) return;
+            if (document.activeElement === inp3) return;
+            var pick = null;
+            for (var i = 0; i < results.length; i++) {
+              var t = results[i].types || [];
+              if (t.indexOf("street_address") !== -1 || t.indexOf("premise") !== -1) { pick = results[i]; break; }
+            }
+            if (!pick) pick = results[0];
+            if (!pick.formatted_address) return;
+            inp3.value = pick.formatted_address;
+            clearField(inp3);
+            placeById.qPickup = normPlace(inp3, pick);
+            if (!placeById.qPickup) { inp3.value = ""; return; }
+            qzFlightSync();
+            refreshFlightFields();
+            routeWidget();
+            airlineGatePickup();
+            gfRefresh("qPickup");
+          } catch (e) {}
+        });
+      } catch (e) {}
+    }, function () { /* denied / unavailable: leave the field empty */ }, { timeout: 8000, maximumAge: 60000 });
+  } catch (e) {}
+}
+/* ---------- address suggestions: a popup while typing
+   (user, 2026-11-18 11:01 MST; redone 2026-11-19) ----------
+   The first fix pinned Google's dropdown next to the field and
+   capped it to the space below; on the owner's phone that strip
+   is short, so the list still read as hidden — its top rows sat
+   under Safari's own form bar and the rest under the keyboard
+   (his 2026-11-19 screenshot: one row peeking out, the picked
+   address ghosted behind the bar). His ask: the suggestions
+   should POP UP while typing. So while an address field is
+   active, the open list becomes a popup panel pinned to the
+   TOP of the visual viewport — full width, up to 60% of the
+   visible height, every row reachable by scrolling the panel —
+   a place that never depends on where the field happens to sit
+   or how far the keyboard animation has run. Re-fits on typing,
+   on keyboard-driven viewport changes, and whenever Google
+   re-places the list; the fit signature carries the viewport
+   size, so a settled keyboard always re-fits. */
 (function () {
   var pacIds = ["qPickup", "qDropoff", "qStop"];
   var pacActive = null, pacSig = "", pacTimer = 0;
@@ -2423,20 +2514,18 @@ function bindAc(id, key) {
     var vv = window.visualViewport;
     if (!vv || !pacActive) return;
     var pac = pacOpen(); if (!pac) return;
-    var r = pacActive.getBoundingClientRect();
-    if (!r || !r.width) return;
-    var below = vv.height - r.bottom - 8, above = r.top - 8;
     var need = pac.scrollHeight || 230;
-    var top, maxH;
-    if (below >= Math.min(need, 150) || below >= above) { maxH = Math.max(110, Math.floor(below)); top = r.bottom + vv.offsetTop + 4; }
-    else { maxH = Math.max(110, Math.floor(Math.min(need, above))); top = r.top + vv.offsetTop - maxH - 4; }
-    var sig = top + "|" + maxH + "|" + r.left + "|" + r.width;
+    var maxH = Math.max(150, Math.min(need, Math.floor(vv.height * 0.6)));
+    var top = Math.round(vv.offsetTop) + 10;
+    var left = Math.round(vv.offsetLeft) + 12;
+    var width = Math.max(200, Math.round(vv.width) - 24);
+    var sig = top + "|" + maxH + "|" + left + "|" + width + "|" + Math.round(vv.height) + "|" + need;
     if (sig === pacSig) return;
     pacSig = sig;
     pac.style.position = "fixed";
     pac.style.top = top + "px";
-    pac.style.left = (r.left + vv.offsetLeft) + "px";
-    pac.style.width = r.width + "px";
+    pac.style.left = left + "px";
+    pac.style.width = width + "px";
     pac.style.maxHeight = maxH + "px";
     pac.style.overflowY = "auto";
     pac.style.marginTop = "0";
@@ -2486,6 +2575,7 @@ window.__qzInitMaps = function () {
     bindAc("qStop", "qStop");
     paintMap(null);
     refreshWidgetFare();
+    maybeDefaultPickupFromLocation();
   } catch (e) { qzMapsFailed(); }
 };
 setTimeout(function () { if (!mapsReady) qzMapsFailed(); }, 10000);
@@ -2516,7 +2606,7 @@ setTimeout(function () { if (!mapsReady) qzMapsFailed(); }, 10000);
    cache-busted reload; success re-points FARE_CONFIG and
    re-prices, failure is stated plainly on the fare line
    (pricingBroken) instead of wedging. */
-var PRICING_STAMP_EXPECTED = "2026-11-18-rates2";
+var PRICING_STAMP_EXPECTED = "2026-11-18-cos350";
 var pricingBroken = false;
 function pricingSnapshotOk(P) {
   return !!P && P.stamp === PRICING_STAMP_EXPECTED &&

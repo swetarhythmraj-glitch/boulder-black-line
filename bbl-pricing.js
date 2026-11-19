@@ -34,7 +34,10 @@
         with the other endpoint inside the Denver metro (or in
         another mountain zone) prices at the town's one flat fare
         for every vehicle class. Mountain <-> mountain takes the
-        HIGHER town's flat, once, never double.
+        HIGHER town's flat, once, never double. BBL-only exception
+        (owner order 2026-11-18 evening): Colorado Springs sits in
+        this same table at a flat $350 — RideWave itself leaves
+        Colorado Springs to the by-request gate below.
      3. Stadium / venue fare: an endpoint inside a stadium zone
         with the other endpoint inside the metro prices FLAT $200;
         with the other endpoint outside the metro, the meter fare
@@ -140,7 +143,16 @@
      Eagle County Regional Airport (EGE) rides at the Eagle price.
      Name fallbacks carry RideWave's two traps: never the bare word
      "loveland" (it would match Loveland, the Front Range city) and
-     never bare "eagle". */
+     never bare "eagle".
+     BBL-ONLY ADDITION (owner order 2026-11-18 evening, NOT in
+     RideWave — RideWave gates Colorado Springs as by-request):
+     Colorado Springs rides at a flat $350 in this same table, so
+     it pairs with the metro (and takes the higher flat against a
+     mountain town) exactly like a mountain town, and the gate
+     covers it. Its circle is city-sized (12 km — downtown, the
+     Powers corridor and the airport) rather than resort-sized.
+     The booking sheet labels it "Flat fare", not "Mountain fare"
+     (see updatePrice in the page). */
   BBL_PRICING.mountainZones = [
     { name: "Aspen",             lat: 39.1907, lng: -106.8192, radiusM: 2500, flat: 1200, names: ["aspen, co", "aspen, colorado"] },
     { name: "Aspen",             lat: 39.1826, lng: -106.8553, radiusM: 1000, flat: 1200, names: ["aspen highlands"] },
@@ -155,7 +167,8 @@
     { name: "Breckenridge",      lat: 39.4821, lng: -106.0487, radiusM: 2000, flat: 700,  names: ["breckenridge"] },
     { name: "Vail",              lat: 39.6403, lng: -106.3709, radiusM: 2500, flat: 800,  names: ["vail, co", "vail village", "lionshead"] },
     { name: "Eagle",             lat: 39.6553, lng: -106.8287, radiusM: 2500, flat: 800,  names: ["eagle, co", "eagle, colorado"] },
-    { name: "Eagle",             lat: 39.6426, lng: -106.9177, radiusM: 1500, flat: 800,  names: ["eagle county regional", "eagle county airport"] }
+    { name: "Eagle",             lat: 39.6426, lng: -106.9177, radiusM: 1500, flat: 800,  names: ["eagle county regional", "eagle county airport"] },
+    { name: "Colorado Springs",  lat: 38.8339, lng: -104.8214, radiusM: 12000, flat: 350, names: ["colorado springs"] }
   ];
 
   /* The meter formula, copied from the shipped computedFare():
@@ -365,6 +378,6 @@
      served against the current page forever). ANY edit to this
      file MUST bump the stamp here AND the page's
      PRICING_STAMP_EXPECTED + script-tag query together. */
-  BBL_PRICING.stamp = "2026-11-18-rates2";
+  BBL_PRICING.stamp = "2026-11-18-cos350";
   window.BBL_PRICING = BBL_PRICING;
 })();
