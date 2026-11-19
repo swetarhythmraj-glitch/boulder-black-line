@@ -12,7 +12,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
-<meta name="description" content="Request a flat fare quote: send the owner your pickup, drop-off and time. No account, no payment.">
+<meta name="description" content="Request a flat fare quote: send the owner your pickup, drop off and time. No account, no payment.">
 <meta name="theme-color" content="#17130E">
 <!-- Home Screen / tab icons (user, 2026-11-18): the approved Escalade-crest artwork, full-bleed black. Preview files are bbl-prefixed (the ridewave-web root names belong to RideWave itself); the domain variant renames them to the canonical root names. -->
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -114,7 +114,7 @@ header.site .btn{white-space:nowrap}
 .fld-clear::before,.fld-clear::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:2px;margin:-1px 0 0 -6px;border-radius:2px;background:#F5EFE3}
 .fld-clear::before{transform:rotate(45deg)}
 .fld-clear::after{transform:rotate(-45deg)}
-.swap{position:absolute;left:50%;right:auto;top:50px;transform:translate(-50%,-50%);width:auto;height:34px;padding:0 12px;border-radius:999px;background:#262019;border:1px solid #453B2C;color:#F5EFE3;font-size:13px;font-weight:700;line-height:1;display:grid;place-items:center;z-index:3;white-space:nowrap}
+.swap{position:absolute;left:50%;right:auto;top:50px;transform:translate(-50%,-50%);width:auto;height:24px;padding:0 12px;border-radius:999px;background:#262019;border:1px solid #453B2C;color:#F5EFE3;font-size:13px;font-weight:600;line-height:1;display:grid;place-items:center;z-index:3;white-space:nowrap}
 .stop-row[hidden]{display:none}
 .app-panel .dt-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
 .app-panel .dt-row .field{min-width:0;overflow:hidden}
@@ -137,27 +137,36 @@ textarea{min-height:84px;resize:vertical}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
 .shake{animation:shake .32s ease}
 @media(prefers-reduced-motion:reduce){.shake{animation:none}html{scroll-behavior:auto}*{transition:none!important}}
-/* Guided flow (owner's order, 2026-11-18): a finished field turns
-   green; the next REQUIRED field carries a glowing outline that
-   pulses on a 1s cycle (noticeable, not a blink). Optional fields
-   never glow. The error flag always wins — these rules apply only
-   to fields that are not .invalid. Reduced motion: the glow
-   becomes a steady outline, no pulsing. */
+/* Guided flow (owner's order, 2026-11-18; gf-next treatment
+   re-specified 2026-11-19): a finished field turns green; the
+   next REQUIRED field carries a thin (~2px) gold light that
+   travels around the box's own border line, one circuit in
+   2.8s. The ring is painted in the border area itself (a
+   conic-gradient border-box layer over the field's own
+   background), so nothing sits outside the box: no halo, no
+   double ring. Travel runs only when the browser can animate
+   the --gf-a custom property (the script registers it and adds
+   html.gf-travel); otherwise the ring is static. Optional
+   fields never carry it. The error flag always wins: these
+   rules apply only to fields that are not .invalid. Reduced
+   motion: a steady thin gold outline, no travel. */
 .field.gf-done:not(.invalid) input,.field.gf-done:not(.invalid) select,.field.gf-done:not(.invalid) textarea{border-color:var(--green);box-shadow:0 0 0 4px color-mix(in srgb,var(--green) 22%,transparent)}
-.field.gf-next:not(.invalid) input,.field.gf-next:not(.invalid) select,.field.gf-next:not(.invalid) textarea{border-color:var(--amber);animation:gfGlow 1s ease-in-out infinite}
-@keyframes gfGlow{0%,100%{box-shadow:0 0 0 3px color-mix(in srgb,var(--amber) 28%,transparent),0 0 10px color-mix(in srgb,var(--amber) 22%,transparent)}50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--amber) 48%,transparent),0 0 20px color-mix(in srgb,var(--amber) 40%,transparent)}}
+.field.gf-next:not(.invalid) input,.field.gf-next:not(.invalid) select,.field.gf-next:not(.invalid) textarea{--gf-a:0deg;border:2px solid transparent;background:linear-gradient(var(--surface),var(--surface)) padding-box,conic-gradient(from var(--gf-a),rgba(224,168,62,.38) 0deg,rgba(224,168,62,.38) 205deg,rgba(224,168,62,.78) 295deg,#FFD98A 348deg,rgba(224,168,62,.38) 360deg) border-box}
+.app-panel .field.gf-next:not(.invalid) input,.app-panel .field.gf-next:not(.invalid) select{background:linear-gradient(#262019,#262019) padding-box,conic-gradient(from var(--gf-a),rgba(224,168,62,.38) 0deg,rgba(224,168,62,.38) 205deg,rgba(224,168,62,.78) 295deg,#FFD98A 348deg,rgba(224,168,62,.38) 360deg) border-box}
+html.gf-travel .field.gf-next:not(.invalid) input,html.gf-travel .field.gf-next:not(.invalid) select,html.gf-travel .field.gf-next:not(.invalid) textarea,html.gf-travel .field.gf-next:not(.invalid) .consent-box{animation:gfTravel 2.8s linear infinite}
+@keyframes gfTravel{to{--gf-a:360deg}}
 #qContinue.gf-done,#toStep3.gf-done,#confirmBtn.gf-done{box-shadow:0 0 0 3px color-mix(in srgb,var(--amber) 38%,transparent),0 0 16px color-mix(in srgb,var(--amber) 32%,transparent)}
 .field.gf-done:not(.invalid) .consent-box{border-color:var(--green);box-shadow:0 0 0 4px color-mix(in srgb,var(--green) 22%,transparent)}
-.field.gf-next:not(.invalid) .consent-box{border-color:var(--amber);animation:gfGlow 1s ease-in-out infinite}
+.field.gf-next:not(.invalid) .consent-box{--gf-a:0deg;border:2px solid transparent;background:linear-gradient(var(--surface),var(--surface)) padding-box,conic-gradient(from var(--gf-a),rgba(224,168,62,.38) 0deg,rgba(224,168,62,.38) 205deg,rgba(224,168,62,.78) 295deg,#FFD98A 348deg,rgba(224,168,62,.38) 360deg) border-box}
 .field.gf-done:not(.invalid) .consent-box input,.field.gf-next:not(.invalid) .consent-box input{box-shadow:none;animation:none}
-@media(prefers-reduced-motion:reduce){.field.gf-next:not(.invalid) .consent-box{animation:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--amber) 40%,transparent)}}
-@media(prefers-reduced-motion:reduce){.field.gf-next:not(.invalid) input,.field.gf-next:not(.invalid) select,.field.gf-next:not(.invalid) textarea{animation:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--amber) 40%,transparent)}}
+@media(prefers-reduced-motion:reduce){.field.gf-next:not(.invalid) .consent-box{animation:none;background:linear-gradient(var(--surface),var(--surface)) padding-box,linear-gradient(rgba(224,168,62,.9),rgba(224,168,62,.9)) border-box}}
+@media(prefers-reduced-motion:reduce){.field.gf-next:not(.invalid) input,.field.gf-next:not(.invalid) select,.field.gf-next:not(.invalid) textarea{animation:none;background:linear-gradient(var(--surface),var(--surface)) padding-box,linear-gradient(rgba(224,168,62,.9),rgba(224,168,62,.9)) border-box}.app-panel .field.gf-next:not(.invalid) input,.app-panel .field.gf-next:not(.invalid) select{background:linear-gradient(#262019,#262019) padding-box,linear-gradient(rgba(224,168,62,.9),rgba(224,168,62,.9)) border-box}}
 section{padding:64px 0} .alt{background:var(--surface2)}
 .kicker{font-size:12.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:10px}
 h2.sec{font-size:clamp(26px,4vw,38px);font-weight:800;margin-bottom:10px}
 p.secsub{color:var(--ink2);max-width:680px;margin:0 0 30px}
 /* services */
-.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 @media(max-width:960px){.svc-grid{grid-template-columns:repeat(2,1fr)}} @media(max-width:600px){.svc-grid{grid-template-columns:1fr}}
 .svc{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column}
 .svc img{width:100%;aspect-ratio:16/10;object-fit:cover;object-position:50% 50%}
@@ -488,10 +497,10 @@ body.qpage .brand span{color:#FFFFFF}
 .qhero .fld-clear{top:23px;background:rgba(28,28,28,.92)}
 .qhero .add-stop{top:23px;background:#1C1C1C;border-color:#3A3A3A;color:#FFFFFF}
 .qhero .swap{top:50px;background:#1C1C1C;border-color:#3A3A3A;color:#FFFFFF}
-.qhero .q-fare{margin:0 0 2px;display:flex;align-items:baseline;gap:4px 10px;flex-wrap:wrap}
+.qhero .q-fare{margin:0 0 2px;display:flex;align-items:baseline;gap:4px 0;flex-wrap:wrap}
 .qhero .q-fare[hidden]{display:none}
 .qhero .q-fare .q-lbl{font-size:16px;font-weight:600;color:#FFFFFF}
-.qhero .q-fare .q-amt{font-family:Urbanist;font-size:30px;font-weight:800;color:#FFFFFF;line-height:1}
+.qhero .q-fare .q-amt{font-family:Urbanist;font-size:30px;font-weight:800;color:#FFFFFF;line-height:1;margin-left:10px}
 .qhero .q-fare .q-det{font-size:15px;font-weight:600;color:#A3A3A3}
 .qhero .continue-btn{height:50px;min-height:50px;width:100%;background:#FFFFFF;color:#14100B;font-size:17px;border-radius:999px;border:0;font-weight:800;cursor:pointer}
 .qhero .continue-btn:hover{background:#E8E8E8}
@@ -780,35 +789,68 @@ body.qpage footer{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
 .qheadline span{display:block}
 @media(min-width:561px){.qheadline{padding-left:18px;padding-right:18px}}
 @media(min-width:761px){.qheadline{font-size:34px;line-height:1.1;padding-top:12px}.qheadline span{display:inline}}
-body.qpage .qhero .app-panel{padding:10px 14px;gap:9px}
+body.qpage .qhero .app-panel{padding:10px 14px;gap:12px}
 @media(min-width:561px){body.qpage .qhero .app-panel{padding:10px 18px}}
-body.qpage .qhero .route-fields{gap:9px}
+body.qpage .qhero .route-fields{gap:16px}
 #quickForm input,#quickForm select{height:42px;min-height:42px}
 body.qpage .qhero .mode-toggle button{height:40px;min-height:40px}
 body.qpage .qhero .continue-btn{height:48px;min-height:48px}
 @media(max-width:760px) and (max-height:800px){
   .qheadline{font-size:17px;line-height:1.04;padding:2px 14px 0}
-  body.qpage .qhero .app-panel{padding:5px 14px;gap:6px}
-  body.qpage .qhero .route-fields{gap:6px}
+  body.qpage .qhero .app-panel{padding:10px 14px;gap:12px}
+  body.qpage .qhero .route-fields{gap:16px}
   #quickForm input,#quickForm select{height:39px;min-height:39px}
   body.qpage .qhero .mode-toggle button{height:38px;min-height:38px}
   body.qpage .qhero .continue-btn{height:44px;min-height:44px}
 }
-/* FIX-6 spacing (user, 2026-11-19 05:06 MST): on tall phones the
-   form rows breathe — more air between the address fields and
-   Date/Time, and more air above the Point To Point / Hourly
-   toggle under the map. The map (the flex absorber) funds every
-   added pixel, so the first view still fills exactly one screen
-   and Continue keeps its seat above the Call/Text bar. Shorter
-   phones keep the spacing they already fit with; the booking
-   view (bk-on) keeps its own compact tier. */
+/* FIX-7 spacing (user, 2026-11-19 06:48 MST — supersedes the
+   FIX-6 tier: "still very tight. You did not [give more
+   breathing space]"): two things were wrong with the FIX-6
+   tier. (1) Its gate, min-height:900px, never matches on the
+   owner's phone in Safari — the layout viewport there is the
+   100svh height (~852px with the browser chrome), so his
+   phone silently kept the base 9px gaps. (2) The values were
+   too small. The roomy spacing now starts at min-height:810px
+   (tier A: panel/route gaps 20, panel padding 18/12, Continue
+   margin 18) and steps up at min-height:900px for full-height
+   viewports (tier B: gaps 22, padding 28/16, Continue margin
+   20). The money comes from the headline: it drops 40 -> 29px
+   and stops wrapping to a third line (see the headline rule),
+   freeing ~67px of first-view height, and the panel absorbs
+   it as air — the map does NOT grow (at 430x932 it holds its
+   current ~280px; the owner's words: "Do not make big map.
+   Make just regular map size."). First view still exactly one
+   screen, Continue still 10px above the Call/Text bar, the
+   booking view (bk-on) keeps its own compact tier (its rules
+   outrank these), shorter phones keep the short tier. */
+@media (min-height:810px){
+  body.qpage .qhero .app-panel{padding:24px 14px 16px;gap:28px}
+  body.qpage .qhero .route-fields{gap:28px}
+  body.qpage .qhero .app-panel .continue-btn{margin-top:24px}
+  body.qpage .qhero .qmap{flex-basis:176px}
+}
+@media (min-height:810px) and (min-width:561px){
+  body.qpage .qhero .app-panel{padding:24px 18px 16px}
+}
 @media (min-height:900px){
-  body.qpage .qhero .app-panel{padding:18px 14px 10px;gap:13px}
-  body.qpage .qhero .route-fields{gap:13px}
+  body.qpage .qhero .app-panel{padding:32px 14px 20px;gap:32px}
+  body.qpage .qhero .route-fields{gap:32px}
+  body.qpage .qhero .app-panel .continue-btn{margin-top:28px}
+  body.qpage .qhero .qmap{flex-basis:200px}
 }
 @media (min-height:900px) and (min-width:561px){
-  body.qpage .qhero .app-panel{padding:18px 18px 10px}
+  body.qpage .qhero .app-panel{padding:32px 18px 20px}
 }
+/* FIX-8: the Swap pill (24px) sits centred in the route gap at
+   every tier (top = input height + half the route gap, measured
+   from the route-fields top); in the booking view it follows the
+   compact tier's seam. Footer fine-print links get real spacing
+   now that their separator dots are gone (dash removal). */
+@media(max-width:760px) and (max-height:800px){.qhero .swap{top:47px}}
+@media(min-height:810px){.qhero .swap{top:56px}}
+@media(min-height:900px){.qhero .swap{top:58px}}
+body.qpage.bk-on .qhero .swap{top:42px}
+.fine a{margin-left:16px}
 </style>
 
 
@@ -828,14 +870,23 @@ body.qpage .qhero .continue-btn{height:48px;min-height:48px}
    loses the header constant and keeps only the top safe area. */
 body.qpage .qhero{padding-top:calc(12px + env(safe-area-inset-top,0px))}
 body.qpage .qhero .appbook{min-height:calc(100vh - 12px - env(safe-area-inset-top,0px) - 56px - env(safe-area-inset-bottom,0px));min-height:calc(100svh - 12px - env(safe-area-inset-top,0px) - 56px - env(safe-area-inset-bottom,0px))}
-.qheadline{font-size:40px;line-height:1.08;padding:10px 14px 0;text-align:center}
-.qheadline span{display:block}
+/* FIX-7 (user, 2026-11-19 06:48 MST): the headline is TWO lines
+   only — one line per span. At 40px span 1 ("Boulder's private
+   black SUV.") measures 514px in Urbanist 800 against 402px of
+   room at 430px wide, so it wrapped and the headline took three
+   lines. At 29px span 1 measures 373px (the heaviest loaded
+   fallback, Inter 700, measures ~403px, and the spans are
+   nowrap so it can never wrap) — the biggest size that fits
+   one line. The ~67px the third line cost now funds the FIX-7
+   spacing tiers above; the map keeps its regular size. */
+.qheadline{font-size:29px;line-height:1.08;padding:10px 14px 0;text-align:center}
+.qheadline span{display:block;white-space:nowrap}
 .qmap{border-top-left-radius:18px;border-top-right-radius:18px}
 body.qpage.book-open #book{min-height:calc(100vh - 0px - env(safe-area-inset-top,0px));min-height:calc(100svh - 0px - env(safe-area-inset-top,0px))}
 @media(max-width:760px) and (max-height:800px){
   body.qpage .qhero{padding-top:calc(8px + env(safe-area-inset-top,0px))}
   body.qpage .qhero .appbook{min-height:calc(100vh - 8px - env(safe-area-inset-top,0px) - 56px - env(safe-area-inset-bottom,0px));min-height:calc(100svh - 8px - env(safe-area-inset-top,0px) - 56px - env(safe-area-inset-bottom,0px))}
-  .qheadline{font-size:30px;line-height:1.04;padding:2px 14px 0}
+  .qheadline{font-size:25px;line-height:1.04;padding:2px 14px 0}
 }
 </style>
 <style>
@@ -879,7 +930,7 @@ body.qpage .qhero .continue-btn{margin-top:8px}
    rests 10px above the floating Call/Text bar. */
 body.qpage .qhero{padding-top:calc(20px + env(safe-area-inset-top,0px))}
 body.qpage .qhero .appbook{min-height:calc(100vh - 20px - env(safe-area-inset-top,0px) - 56px - env(safe-area-inset-bottom,0px));min-height:calc(100svh - 20px - env(safe-area-inset-top,0px) - 56px - env(safe-area-inset-bottom,0px))}
-.qheadline{padding-bottom:8px}
+.qheadline{padding-bottom:12px}
 @media(max-width:760px) and (max-height:800px){
   body.qpage .qhero{padding-top:calc(14px + env(safe-area-inset-top,0px))}
   body.qpage .qhero .appbook{min-height:calc(100vh - 14px - env(safe-area-inset-top,0px) - 56px - env(safe-area-inset-bottom,0px));min-height:calc(100svh - 14px - env(safe-area-inset-top,0px) - 56px - env(safe-area-inset-bottom,0px))}
@@ -1007,7 +1058,7 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
           <div class="field route-field"><span class="mk mk-dot"></span><input id="qPickup" type="text" placeholder="Pickup location" autocomplete="street-address" aria-label="Pickup location"><button class="fld-clear" type="button" id="clear-qPickup" aria-label="Clear pickup" tabindex="-1"></button><div class="err">Please enter where we pick you up.</div></div>
           <div class="field route-field"><span class="mk mk-sq"></span><input id="qDropoff" type="text" placeholder="Where to?" aria-label="Drop-off location"><button class="fld-clear fld-clear-p" type="button" id="clear-qDropoff" aria-label="Clear drop-off" tabindex="-1"></button><button class="add-stop" type="button" id="addStop">Add stop</button><div class="err"></div></div>
         </div>
-        <button class="swap" type="button" id="swapBtn" aria-label="Swap pickup and drop-off">Swap</button>
+        <button class="swap" type="button" id="swapBtn" aria-label="Swap pickup and drop off">Swap</button>
       </div>
       <div class="field route-field stop-row" id="stopRow" hidden><span class="mk mk-stop"></span><input id="qStop" type="text" placeholder="Add a stop" aria-label="Stop"><button class="fld-clear fld-clear-p" type="button" id="clear-qStop" aria-label="Clear stop" tabindex="-1"></button><button class="add-stop" type="button" id="removeStop">Remove stop</button><div class="err"></div></div>
       <div class="field" id="qzFlightField" hidden><label class="flabel" for="qzFlight">Flight number (optional)</label><input id="qzFlight" type="text" autocomplete="off" placeholder="e.g. UA 1234"><div class="err"></div></div>
@@ -1023,11 +1074,11 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
   <div class="qband">
     <div class="qshow" id="qShow" role="region" aria-roledescription="carousel" aria-label="2026 Cadillac Escalade ESV photos">
       <div class="qshow-track" id="qShowTrack">
-      <img id="qVehImg" data-bbl-veh="vehicle" src="bbl-suv-1.jpg" alt="2026 Cadillac Escalade ESV, front three-quarter view">
-      <img src="bbl-suv-2.jpg" alt="2026 Cadillac Escalade ESV, rear three-quarter view" loading="lazy">
+      <img id="qVehImg" data-bbl-veh="vehicle" src="bbl-suv-1.jpg" alt="2026 Cadillac Escalade ESV, front three quarter view">
+      <img src="bbl-suv-2.jpg" alt="2026 Cadillac Escalade ESV, rear three quarter view" loading="lazy">
       <img src="bbl-suv-3.jpg" alt="2026 Cadillac Escalade ESV, front cabin with black leather interior" loading="lazy">
       <img src="bbl-suv-4.jpg" alt="2026 Cadillac Escalade ESV, rear passenger seats with black leather interior" loading="lazy">
-      <img src="bbl-suv-5.jpg" alt="2026 Cadillac Escalade ESV, front three-quarter view showing the vertical LED headlights" loading="lazy">
+      <img src="bbl-suv-5.jpg" alt="2026 Cadillac Escalade ESV, front three quarter view showing the vertical LED headlights" loading="lazy">
       </div>
       <button class="qshow-btn qshow-prev" id="qShowPrev" type="button" aria-label="Previous photo">&#8249;</button>
       <button class="qshow-btn qshow-next" id="qShowNext" type="button" aria-label="Next photo">&#8250;</button>
@@ -1044,7 +1095,7 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
     <div class="qveh-skel" id="qVehSkel" aria-hidden="true"></div>
     <div class="qveh-txt">
       <div class="qveh-name" id="qVehName">2026 Cadillac Escalade ESV</div>
-      <p class="qveh-desc" id="qVehDesc">Black outside, black inside, black leather throughout, finished with gloss-black premium wheels and blacked-out trim.</p>
+      <p class="qveh-desc" id="qVehDesc">Black outside, black inside, black leather throughout, finished with gloss black premium wheels and blacked out trim.</p>
     </div>
     <div class="qgal" id="qVehGallery" hidden></div>
   </div>
@@ -1056,13 +1107,13 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
     <div class="kicker">Services</div>
     <h2 class="sec">What do you need the SUV for?</h2>
     <div class="svc-grid" id="svcGrid">
-      <article class="svc svc-k-business"><img src="bbl-svc-business.jpg" alt="Black Cadillac Escalade ESV on a downtown Denver street in front of glass office towers" loading="lazy"><div class="svc-body"><h3>Business Pickup</h3><p>On-time pickups for meetings, offices and client visits around the Denver metro — quiet, private, and priced before you ride.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="business">Book this</button></div></div></article>
-      <article class="svc svc-k-airport svc-feature"><img src="bbl-svc-airport.jpg" alt="Black Cadillac Escalade ESV waiting at an airport departures curb" loading="lazy"><div class="svc-body"><h3>Airport Pickup &amp; Drop-off</h3><p>We track your flight and meet you at the terminal — DIA and every metro airport, with room for all your bags.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="airport">Book this</button></div></div></article>
-      <article class="svc svc-k-special svc-feature"><img src="bbl-svc-special.jpg" alt="Black Cadillac Escalade ESV outside a restaurant row at dusk, city lights behind it" loading="lazy"><div class="svc-body"><h3>Special Occasions</h3><p>Anniversaries, birthdays, date nights and proposals — arrive relaxed, and ride home safely when the night ends.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="special">Book this</button></div></div></article>
+      <article class="svc svc-k-business"><img src="bbl-svc-business.jpg" alt="Black Cadillac Escalade ESV on a downtown Denver street in front of glass office towers" loading="lazy"><div class="svc-body"><h3>Business Pickup</h3><p>On-time pickups for meetings, offices and client visits around the Denver metro, quiet, private, and priced before you ride.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="business">Book this</button></div></div></article>
+      <article class="svc svc-k-airport svc-feature"><img src="bbl-svc-airport.jpg" alt="Black Cadillac Escalade ESV waiting at an airport departures curb" loading="lazy"><div class="svc-body"><h3>Airport Pickup &amp; Drop Off</h3><p>We track your flight and meet you at the terminal, DIA and every metro airport, with room for all your bags.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="airport">Book this</button></div></div></article>
+      <article class="svc svc-k-special svc-feature"><img src="bbl-svc-special.jpg" alt="Black Cadillac Escalade ESV outside a restaurant row at dusk, city lights behind it" loading="lazy"><div class="svc-body"><h3>Special Occasions</h3><p>Anniversaries, birthdays, date nights and proposals, arrive relaxed, and ride home safely when the night ends.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="special">Book this</button></div></div></article>
       <article class="svc svc-k-wedding"><img src="bbl-svc-wedding.jpg" alt="Black Cadillac Escalade ESV in profile outside a stone wedding venue with a floral arch" loading="lazy"><div class="svc-body"><h3>Wedding &amp; Ceremony</h3><p>Ceremony, photos, reception: one calm driver for the whole day, waiting at every stop while you celebrate.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="wedding">Book this</button></div></div></article>
-      <article class="svc svc-k-concert svc-pano"><img src="bbl-svc-concert.jpg" alt="Black Cadillac Escalade ESV at a theater marquee on a concert night" loading="lazy"><div class="svc-body"><h3>Concert &amp; Events</h3><p>Red Rocks, Ball Arena and every metro venue — dropped off at the gate and picked up at a set spot after the show.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="concert">Book this</button></div></div></article>
-      <article class="svc svc-k-mountain svc-split svc-split-r"><img src="bbl-svc-mountain.jpg" alt="Black Cadillac Escalade ESV on a winding Colorado mountain road" loading="lazy"><div class="svc-body"><h3>Mountain Rides</h3><p>Ski towns, resorts and mountain weddings in the long-wheelbase Escalade — room for skis, boards and all the gear.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="mountain">Book this</button></div></div></article>
-      <article class="svc svc-k-hourly"><img src="bbl-svc-hourly.jpg" alt="Black Cadillac Escalade ESV waiting at a hotel front drive at dusk" loading="lazy"><div class="svc-body"><h3>Hourly Reservation</h3><p>Your driver stays with you through errands, tours or a full evening of stops. One booking, 2-hour minimum.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="hourly">Book this</button></div></div></article>
+      <article class="svc svc-k-concert svc-pano"><img src="bbl-svc-concert.jpg" alt="Black Cadillac Escalade ESV at a theater marquee on a concert night" loading="lazy"><div class="svc-body"><h3>Concert &amp; Events</h3><p>Red Rocks, Ball Arena and every metro venue, dropped off at the gate and picked up at a set spot after the show.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="concert">Book this</button></div></div></article>
+      <article class="svc svc-k-mountain svc-split svc-split-r"><img src="bbl-svc-mountain.jpg" alt="Black Cadillac Escalade ESV on a winding Colorado mountain road" loading="lazy"><div class="svc-body"><h3>Mountain Rides</h3><p>Ski towns, resorts and mountain weddings in the long wheelbase Escalade, room for skis, boards and all the gear.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="mountain">Book this</button></div></div></article>
+      <article class="svc svc-k-hourly"><img src="bbl-svc-hourly.jpg" alt="Black Cadillac Escalade ESV waiting at a hotel front drive at dusk" loading="lazy"><div class="svc-body"><h3>Hourly Reservation</h3><p>Your driver stays with you through errands, tours or a full evening of stops. One booking, 2 hour minimum.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="hourly">Book this</button></div></div></article>
     </div>
   </div>
 </section>
@@ -1072,17 +1123,17 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
   <div class="wrap">
     <div class="kicker">The vehicle</div>
     <h2 class="sec">Meet your SUV</h2>
-    <p class="secsub">One SUV and one driver, based in Boulder — the Escalade you book is the Escalade that arrives.</p>
+    <p class="secsub">One SUV and one driver, based in Boulder, the Escalade you book is the Escalade that arrives.</p>
     <div class="suv-grid">
-      <img src="bbl-suv-1.jpg" alt="2026 Cadillac Escalade ESV, front three-quarter view">
+      <img src="bbl-suv-1.jpg" alt="2026 Cadillac Escalade ESV, front three quarter view">
       <div>
         <h3 style="font-size:24px">2026 Cadillac Escalade ESV, Black on Black</h3>
-        <p style="color:var(--ink2);margin:10px 0 0">Black outside, black inside, black leather throughout, finished with gloss-black premium wheels and blacked-out trim.</p>
+        <p style="color:var(--ink2);margin:10px 0 0">Black outside, black inside, black leather throughout, finished with gloss black premium wheels and blacked out trim.</p>
         <div class="spec-grid">
           <div class="spec"><b>Up to 6</b><span>Passengers</span></div>
-          <div class="spec"><b>10+ bags</b><span>Luggage space</span></div>
+          <div class="spec"><b>Bags to 5</b><span>Luggage space</span></div>
           <div class="spec"><b>Black leather</b><span>Interior, front to back</span></div>
-          <div class="spec"><b>Gloss-black</b><span>Premium wheels &amp; blacked-out trim</span></div>
+          <div class="spec"><b>Gloss black</b><span>Premium wheels &amp; blacked out trim</span></div>
         </div>
       </div>
     </div>
@@ -1094,16 +1145,16 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
   <div class="wrap">
     <div class="kicker">How booking works</div>
     <h2 class="sec">Booked in about two minutes</h2>
-    <p class="secsub">Guest booking — no account and no password. You see the flat fare before you confirm, and you pay nothing until the ride.</p>
+    <p class="secsub">Guest booking, no account and no password. You see the flat fare before you confirm, and you pay nothing until the ride.</p>
     <div class="steps">
-      <div class="step"><div class="n">1</div><h3>Ride &amp; service</h3><p>Pickup, drop-off, date and time — plus a flight number or extra stops when your ride calls for them.</p></div>
+      <div class="step"><div class="n">1</div><h3>Ride &amp; service</h3><p>Pickup, drop off, date and time, plus a flight number or extra stops when your ride calls for them.</p></div>
       <div class="step"><div class="n">2</div><h3>Price &amp; ride details</h3><p>Your flat fare and the SUV, shown up front. Add passengers, bags and anything your driver should know.</p></div>
-      <div class="step"><div class="n">3</div><h3>Your details</h3><p>Name, phone and email — and your OK to email you about this ride. Confirmations always come by email.</p></div>
+      <div class="step"><div class="n">3</div><h3>Your details</h3><p>Name, phone and email, and your OK to email you about this ride. Confirmations always come by email.</p></div>
       <div class="step"><div class="n">4</div><h3>Review &amp; pay</h3><p>Check it over and confirm. You pay your driver at the ride, and your confirmation email lands right away.</p></div>
     </div>
 
     <h2 class="sec" style="margin-top:56px">You're never left wondering</h2>
-    <p class="secsub">Every booking brings an email at each moment that matters — when you book, when your driver is set, and before your ride.</p>
+    <p class="secsub">Every booking brings an email at each moment that matters, when you book, when your driver is set, and before your ride.</p>
     <div class="notif">
       <div class="panel"><h3>What the rider gets</h3>
         <ul class="tl">
@@ -1126,29 +1177,30 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
 
     <div class="book-card">
       <div class="progress" id="progress" aria-hidden="true">
-        <span data-p="1" class="on">1 · Price &amp; ride details</span><span data-p="2">2 · Your details &amp; review</span>
+        <span data-p="1" class="on">1. Price &amp; ride details</span><span data-p="2">2. Your details &amp; review</span>
       </div>
 
       <form id="bookForm" novalidate>
       <!-- STEP 1: PRICE, SUV AND RIDE DETAILS (ride facts come from the widget) -->
       <div class="bstep on" data-step="1">
         <div class="sum-card" id="priceSummary"></div>
-        <img class="suv-banner" src="bbl-suv-2.jpg" alt="2026 Cadillac Escalade ESV, rear three-quarter view — the SUV that will pick you up">
+        <img class="suv-banner" src="bbl-suv-2.jpg" alt="2026 Cadillac Escalade ESV, rear three quarter view, the SUV that will pick you up">
         <div class="grid g2" style="margin-top:12px">
           <div class="field"><label class="flabel" for="bPax">Passengers *</label><select id="bPax"><option value="">Select…</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select><div class="err">Please select how many passengers (max 6).</div></div>
-          <div class="field"><label class="flabel" for="bBags">Bags</label><select id="bBags"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10+">10+</option></select><div class="err"></div></div>
+          <div class="field"><label class="flabel" for="bBags">Bags</label><select id="bBags"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select><div class="err"></div></div>
           <div class="field cond" id="flightField"><label class="flabel" for="bFlight">Flight number</label><input id="bFlight" type="text" placeholder="e.g. UA1234, we track it and adjust for delays"><div class="err"></div></div>
           <div class="field cond" id="diaSideField"><label class="flabel" for="bDiaSide">DIA terminal side</label><select id="bDiaSide"><option value="west">West</option><option value="east">East</option></select><div class="err"></div></div>
           <div class="guide-note" id="diaPickupGuide" hidden></div>
           <div class="field cond" id="airlineField"><label class="flabel" for="bAirline">Airline</label><select id="bAirline"><option value="">Choose your airline</option></select><div class="err"></div></div>
+          <div class="field cond" id="airlineDropoffField"><label class="flabel" for="bAirlineDropoff">Airline (for airport drop off)</label><select id="bAirlineDropoff"><option value="">Choose your airline</option></select><div class="err"></div></div>
           <div class="guide-note" id="diaDropoffGuide" hidden></div>
           <div class="field cond" id="tailFieldPickup"><label class="flabel" for="bTailPickup">Flight or tail number (pickup airport)</label><input id="bTailPickup" type="text" placeholder="e.g. N12345 on a private plane"><div class="err"></div></div>
           <div class="field cond" id="fboFieldPickup"><label class="flabel" for="bFboPickup">FBO / facility (pickup airport)</label><select id="bFboPickup"><option value="">Select…</option><option value="Signature Aviation">Signature Aviation</option><option value="Other">Other</option></select><div class="err"></div></div>
           <div class="field cond" id="fboOtherFieldPickup"><label class="flabel" for="bFboOtherPickup">Facility name (pickup airport)</label><input id="bFboOtherPickup" type="text" placeholder="Name of the facility"><div class="err"></div></div>
-          <div class="field cond" id="tailFieldDropoff"><label class="flabel" for="bTailDropoff">Flight or tail number (drop-off airport)</label><input id="bTailDropoff" type="text" placeholder="e.g. N12345 on a private plane"><div class="err"></div></div>
-          <div class="field cond" id="fboFieldDropoff"><label class="flabel" for="bFboDropoff">FBO / facility (drop-off airport)</label><select id="bFboDropoff"><option value="">Select…</option><option value="Signature Aviation">Signature Aviation</option><option value="Other">Other</option></select><div class="err"></div></div>
-          <div class="field cond" id="fboOtherFieldDropoff"><label class="flabel" for="bFboOtherDropoff">Facility name (drop-off airport)</label><input id="bFboOtherDropoff" type="text" placeholder="Name of the facility"><div class="err"></div></div>
-          <div class="field cond" id="hoursField"><label class="flabel" for="bHours">Hours needed *</label><select id="bHours"><option value="">Select…</option><option value="2">2 hours (minimum)</option><option value="3">3 hours</option><option value="4">4 hours</option><option value="5">5 hours</option><option value="6">6 hours</option><option value="8">8 hours</option><option value="10">10 hours</option><option value="12">12 hours</option></select><div class="err">Please choose how many hours (2-hour minimum).</div></div>
+          <div class="field cond" id="tailFieldDropoff"><label class="flabel" for="bTailDropoff">Flight or tail number (for airport drop off)</label><input id="bTailDropoff" type="text" placeholder="e.g. N12345 on a private plane"><div class="err"></div></div>
+          <div class="field cond" id="fboFieldDropoff"><label class="flabel" for="bFboDropoff">FBO / facility (for airport drop off)</label><select id="bFboDropoff"><option value="">Select…</option><option value="Signature Aviation">Signature Aviation</option><option value="Other">Other</option></select><div class="err"></div></div>
+          <div class="field cond" id="fboOtherFieldDropoff"><label class="flabel" for="bFboOtherDropoff">Facility name (for airport drop off)</label><input id="bFboOtherDropoff" type="text" placeholder="Name of the facility"><div class="err"></div></div>
+          <div class="field cond" id="hoursField"><label class="flabel" for="bHours">Hours needed *</label><select id="bHours"><option value="">Select…</option><option value="2">2 hours (minimum)</option><option value="3">3 hours</option><option value="4">4 hours</option><option value="5">5 hours</option><option value="6">6 hours</option><option value="8">8 hours</option><option value="10">10 hours</option><option value="12">12 hours</option></select><div class="err">Please choose how many hours (2 hour minimum).</div></div>
           <div class="field cond" id="stopsField" style="grid-column:1/-1"><label class="flabel" for="bStops">Your stops</label><textarea id="bStops" placeholder="e.g. Ceremony at [venue], photos at [park], reception at [hall]. Add times if you have them."></textarea><div class="err"></div></div>
         </div>
         <div class="booknav"><button type="button" class="btn btn-ghost" id="bookExit">Back</button><button type="button" class="btn btn-amber" id="toStep3">Continue</button></div>
@@ -1163,7 +1215,7 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
           <div class="field" style="grid-column:1/-1"><label class="flabel" for="bEmail">Email *</label><input id="bEmail" type="email" autocomplete="email" placeholder="you@example.com"><div class="err">Please enter a valid email address.</div></div>
           <div class="field" style="grid-column:1/-1"><label class="flabel" for="bNotes">Notes for your driver <span style="color:var(--muted);font-weight:500">(optional)</span></label><textarea id="bNotes" placeholder="Gate code, child seat, extra luggage…"></textarea><div class="err"></div></div>
           <div class="field" id="consentField" style="grid-column:1/-1">
-            <div class="consent-box"><input type="checkbox" id="bConsent"><label for="bConsent"><b>Email me about this ride.</b> I agree to receive booking, reminder and driver-arrival emails at the email address above.</label></div>
+            <div class="consent-box"><input type="checkbox" id="bConsent"><label for="bConsent"><b>Email me about this ride.</b> I agree to receive booking, reminder and driver arrival emails at the email address above.</label></div>
             <div class="err">Please check the box so we can email you ride updates.</div>
           </div>
         </div>
@@ -1216,9 +1268,9 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
     <div class="f-grid">
       <div><h3>Boulder Black Line</h3><p>Private black SUV service by reservation.<br>Denver Metro, CO</p></div>
       <div><h3>Contact</h3><p>Call / text: <a href="tel:+17203264652">(720) 326-4652</a><br>Email: <a href="mailto:info@boulderblackline.com">info@boulderblackline.com</a></p></div>
-      <div><h3>Good to know</h3><p>Licensed &amp; insured · <span class="ph">[Permit / PUC #]</span><br>One SUV, one driver, rides are first-booked, first-served.<br>Airport pickups include flight tracking.</p></div>
+      <div><h3>Good to know</h3><p>Licensed &amp; insured, <span class="ph">[Permit / PUC #]</span><br>One SUV, one driver, rides are first booked, first served.<br>Airport pickups include flight tracking.</p></div>
     </div>
-    <div class="fine">© 2026 Boulder Black Line · <a href="/privacy.html">Privacy Policy</a> · <a href="/terms.html">Terms of Service</a> · <a href="/owner.html">Admin</a></div>
+    <div class="fine">© 2026 Boulder Black Line <a href="/privacy.html">Privacy Policy</a><a href="/terms.html">Terms of Service</a><a href="/owner.html">Admin</a></div>
   </div>
 </footer>
 
@@ -1227,7 +1279,7 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
   <a href="sms:+17203264652">Text</a>
 </nav>
 
-<script src="bbl-pricing.js?v=2026-11-18-cos350"></script>
+<script src="bbl-pricing.js?v=2026-11-19-fix11"></script>
 <script src="bbl-backend.js"></script>
 <script>
 "use strict";
@@ -1237,8 +1289,14 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
    Pricing comes ONLY from bbl-pricing.js (this site's snapshot);
    records save ONLY to this site's demo backend (bbl-backend.js)
    and this page's own local lists. Nothing leaves the device. */
+try{if(window.CSS&&CSS.registerProperty){CSS.registerProperty({name:"--gf-a",syntax:"<angle>",inherits:false,initialValue:"0deg"});document.documentElement.classList.add("gf-travel");}}catch(e){}
 var $=function(id){return document.getElementById(id)};
 function fmtMoney(n){return n%1?((+n).toFixed(2)):(""+n)}
+/* Bags cap (owner, 2026-11-19): the sheet offers 0 to 5 bags;
+   a value that arrives above the cap (a stored or restored
+   selection from before the cap existed) clamps to 5 wherever
+   the booking record reads it. */
+function bagsVal(){var n=parseInt($("bBags").value,10);if(isNaN(n)||n<0)n=0;if(n>5)n=5;return String(n)}
 /* field-error helper (standing pattern) */
 function flagField(el,focusIt){var f=el.closest(".field");if(!f)return;f.classList.add("invalid");var box=f.querySelector("input,select,textarea,.consent-box,.radio-row");if(box){box.classList.remove("shake");void box.offsetWidth;box.classList.add("shake")}if(focusIt){f.scrollIntoView({behavior:"smooth",block:"center"});setTimeout(function(){el.focus({preventScroll:true})},250)}}
 function clearField(el){var f=el&&el.closest?el.closest(".field"):null;if(f)f.classList.remove("invalid")}
@@ -1275,7 +1333,7 @@ var SERVICES = {
      in state only and defaults to this generic ride. A card's
      Book this (or the Hourly toggle) still sets a named one. */
   standard: { name: "Private SUV Ride" },
-  airport: { name: "Airport Pickup / Drop-off" },
+  airport: { name: "Airport Pickup / Drop Off" },
   business: { name: "Business Pickup" },
   special: { name: "Special Occasions" },
   wedding: { name: "Wedding & Ceremony" },
@@ -1454,7 +1512,7 @@ function refreshWidgetFare() {
   var svc = state.service;
   if (svc === "hourly") {
     el.hidden = false;
-    el.textContent = "Hourly rate: $" + FARE_CONFIG.hourlyFirstHour + " for the first hour, then $" + FARE_CONFIG.hourlyRate + " per hour · " + FARE_CONFIG.hourlyMinHours + " hour minimum. Your total is set by the hours you pick in booking.";
+    el.textContent = "Hourly rate: $" + FARE_CONFIG.hourlyFirstHour + " for the first hour, then $" + FARE_CONFIG.hourlyRate + " per hour, " + FARE_CONFIG.hourlyMinHours + " hour minimum. Your total is set by the hours you pick in booking.";
     return;
   }
   if (!ROUTE_SERVICES[svc]) {
@@ -1465,7 +1523,7 @@ function refreshWidgetFare() {
   if (quoteMatches(routeQuote, $("qPickup").value, $("qDropoff").value)) {
     el.hidden = false;
     if (routeQuote.openCountry) { el.innerHTML = REQUEST_HTML; return; }
-    el.innerHTML = '<span class="q-lbl">Your fare:</span> <span class="q-amt">$' + fmtMoney(routeQuote.fare) + '</span> <span class="q-det">· ' + routeQuote.miles.toFixed(1) + ' mi · about ' + Math.max(1, Math.round(routeQuote.mins)) + ' min</span>';
+    el.innerHTML = '<span class="q-lbl">Your fare:</span> <span class="q-amt">$' + fmtMoney(routeQuote.fare) + '</span><span class="q-det">, ' + routeQuote.miles.toFixed(1) + ' mi, about ' + Math.max(1, Math.round(routeQuote.mins)) + ' min</span>';
     return;
   }
   if (quoteMatches(geoQuote, $("qPickup").value, $("qDropoff").value)) {
@@ -1492,7 +1550,22 @@ function refreshWidgetFare() {
 (function () {
   var qf = $("qFare");
   if (!qf) return;
-  var bkApply = function () { document.body.classList.toggle("bk-on", !qf.hidden); };
+  var bkWasOn = false;
+  var bkApply = function () {
+    var on = !qf.hidden;
+    document.body.classList.toggle("bk-on", on);
+    /* Anchor the booking view at the top (FIX-7, user
+       2026-11-19 06:50 MST): engaging bk-on hides the headline;
+       with the scroll position kept, the view then lands
+       part-way down the map with the vehicle slideshow pulled
+       up under Continue (his screenshot: headline gone, map
+       cut, slideshow filling the lower third). On the off->on
+       transition, restore the top, so the booking view opens
+       on the map and its route line with the slideshow below
+       the fold. */
+    if (on && !bkWasOn) { try { window.scrollTo(0, 0); } catch (e) {} }
+    bkWasOn = on;
+  };
   var bkDeferred = false;
   var bkSync = function () {
     /* Picker guard (owner, 2026-11-19): toggling the booking
@@ -1639,9 +1712,9 @@ function clearRouteState() {
 /* ---------- guided flow: green-done + glowing next ----------
    The owner's order (2026-11-18): a finished field turns green,
    the flow moves on its own to the next REQUIRED field, and that
-   field carries a glowing outline (the gfGlow pulse, 1s — a
-   little faster, noticeable, not a blink; steady under reduced
-   motion). The walk covers required fields only: the optional
+   field carries the gf-next ring: a thin gold light travelling
+   the box's own border line (2.8s circuit; steady under reduced
+   motion; re-specified by the owner 2026-11-19). The walk covers required fields only: the optional
    flight-number field is never a target and is never focused by
    the flow, though a rider can still tap into it directly.
    Validity mirrors the page's own rules: a route-service address
@@ -1780,7 +1853,15 @@ function gfRefresh(sourceId) {
           var r = null;
           try { r = w.getBoundingClientRect ? w.getBoundingClientRect() : null; } catch (e) {}
           var vh = (window.visualViewport && window.visualViewport.height) || window.innerHeight || 0;
-          if (!r || !vh || r.top < 8 || r.bottom > vh - 8) w.scrollIntoView({ behavior: "smooth", block: "center" });
+          /* Booking view (FIX-7, user 2026-11-19 06:50 MST):
+             while bk-on is up, the advance never scrolls the
+             page — every booking-view field already sits on the
+             one screen, and a scroll here can only drag the map
+             out of view and pull the vehicle slideshow in under
+             Continue (his screenshot). The booking sheet's own
+             walk (sheetOpen) is unaffected. */
+          var bkOn = !sheetOpen && document.body && document.body.classList && document.body.classList.contains("bk-on");
+          if (!bkOn && (!r || !vh || r.top < 8 || r.bottom > vh - 8)) w.scrollIntoView({ behavior: "smooth", block: "center" });
         }
         if (target.focus) target.focus({ preventScroll: true });
       }
@@ -1845,6 +1926,7 @@ $("swapBtn").addEventListener("click", function () {
   refreshFlightFields();
   routeWidget();
   airlineGatePickup();
+  airlineGateDropoff();
 });
 $("addStop").addEventListener("click", function () { $("stopRow").hidden = false; $("qStop").focus(); routeWidget(); });
 $("removeStop").addEventListener("click", function () {
@@ -1860,6 +1942,7 @@ function wireClear(btnId, inputId, key) {
     inp.value = "";
     placeById[key] = null;
     if (key === "qPickup") { qzFlightSync(); airlineGatePickup(); }
+    if (key === "qDropoff") airlineGateDropoff();
     refreshFlightFields();
     routeWidget();
     inp.focus();
@@ -1927,10 +2010,14 @@ function refreshFlightFields() {
      rule as the sheet and the flight field (user, 2026-11-17):
      shown only while the selected pickup place is an airport. */
   var af = $("airlineField"); if (af) af.classList.toggle("show", qzPickupIsAirport());
+  /* The drop-off select mirrors it for an airport DROP-OFF
+     (owner, 2026-11-19): shown only while the selected drop-off
+     place is an airport, on the same detection. */
+  var adf = $("airlineDropoffField"); if (adf) adf.classList.toggle("show", qzDropoffIsAirport());
   var pg = $("diaPickupGuide");
   if (pg) { pg.hidden = !info.diaPickup; if (info.diaPickup) pg.textContent = "DIA pickup: Level 5, Island 2, " + endSide("qPickup") + " side"; }
   var dg = $("diaDropoffGuide");
-  if (dg) { dg.hidden = !info.diaDropoff; if (info.diaDropoff) dg.textContent = "DIA drop-off: Level 6, " + endSide("qDropoff") + " side"; }
+  if (dg) { dg.hidden = !info.diaDropoff; if (info.diaDropoff) dg.textContent = "DIA drop off: Level 6, " + endSide("qDropoff") + " side"; }
   toggleEndFields("Pickup", info.pickupAirport && !info.diaPickup);
   toggleEndFields("Dropoff", info.dropoffAirport && !info.diaDropoff);
   /* Airline state lives only in the airport-pickup flow: whenever
@@ -1939,6 +2026,7 @@ function refreshFlightFields() {
      swap), including while the booking sheet is open, where the
      sheet gate deliberately stays out of the way. */
   if (!qzPickupIsAirport() && diaAirline) clearAirline();
+  if (!qzDropoffIsAirport() && dropAirline) clearDropAirline();
   refreshDiaSideUI();
   syncAirlineUI();
   gfRefresh(null);
@@ -1951,6 +2039,8 @@ function refreshDiaSideUI() {
 function syncAirlineUI() {
   var sel = $("bAirline");
   if (sel) sel.value = diaAirline || "";
+  var dsel = $("bAirlineDropoff");
+  if (dsel) dsel.value = dropAirline || "";
 }
 function resnapDIAPlaces() {
   if (!placeById) return;
@@ -1962,8 +2052,9 @@ function resnapDIAPlaces() {
     if (b1 !== pl.lat + "," + pl.lng) changed = true;
   }
   var dl = placeById.qDropoff;
-  if (dl && dl.isAirport && diaAirline) {
-    var t = GA_TERM[diaAirline] === "east" ? FARE_CONFIG.diaEast : FARE_CONFIG.diaWest;
+  var dAir = dropAirline || diaAirline;
+  if (dl && dl.isAirport && dAir) {
+    var t = GA_TERM[dAir] === "east" ? FARE_CONFIG.diaEast : FARE_CONFIG.diaWest;
     if (dl.lat !== t.lat || dl.lng !== t.lng) { dl.lat = t.lat; dl.lng = t.lng; changed = true; }
   }
   if (changed) { routeWidget(); updatePrice(); }
@@ -1975,7 +2066,7 @@ function applyDiaDropoff(side, name) {
   pl.lat = t.lat; pl.lng = t.lng; pl.isAirport = true;
   var addr = (side === "east"
     ? "Denver International Airport Terminal East Level 6, 8500 Peña Blvd, Denver, CO 80249"
-    : "Denver International Airport Terminal West Level 6, 8500 Peña Blvd, Denver, CO 80249") + (name ? " · " + name : "");
+    : "Denver International Airport Terminal West Level 6, 8500 Peña Blvd, Denver, CO 80249") + (name ? ", " + name : "");
   pl.address = addr;
   $("qDropoff").value = addr;
   if (bk.dropoff) bk.dropoff = addr;
@@ -1998,10 +2089,28 @@ function clearAirline() {
   if (name) revertDiaDropoffSnap(name);
   syncAirlineUI();
 }
+/* Drop-off airline clearing, the mirror of clearAirline():
+   the chosen drop-off airline is dropped, the step-1 drop-off
+   select re-syncs, and a terminal snap that the choice applied
+   to a DIA drop-off is reverted (revertDiaDropoffSnap keeps the
+   pickup airline's snap when one is still held, else the
+   default no-airline handling). */
+function clearDropAirline() {
+  var name = dropAirline;
+  dropAirline = null;
+  if (name) revertDiaDropoffSnap(name);
+  syncAirlineUI();
+}
 function revertDiaDropoffSnap(name) {
   var pl = placeById.qDropoff;
   if (!pl || !isDIAPlace(pl)) return;
-  if ((pl.address || "").indexOf(" · " + name) === -1) return;
+  if ((pl.address || "").indexOf(", " + name) === -1) return;
+  /* If the other end still holds an airline, its snap is the
+     one that stays (the two choices never clobber each other);
+     the caller has already dropped the cleared one, so whatever
+     remains held is the other end's. */
+  var remain = dropAirline || diaAirline;
+  if (remain) { applyDiaDropoff(GA_TERM[remain] || "east", remain); return; }
   snapDIA(pl);
   pl.address = DIA_CANON_ADDR;
   var inp = $("qDropoff"); if (inp) inp.value = DIA_CANON_ADDR;
@@ -2018,6 +2127,10 @@ function revertDiaDropoffSnap(name) {
 function qzPickupIsAirport() {
   var p = placeById.qPickup;
   return !!(p && (p.isAnyAirport || p.isAirport));
+}
+function qzDropoffIsAirport() {
+  var d = placeById.qDropoff;
+  return !!(d && (d.isAnyAirport || d.isAirport));
 }
 function qzFlightSync() {
   var wrap = $("qzFlightField"); if (!wrap) return;
@@ -2037,6 +2150,12 @@ var GA_POPULAR = ['Delta','Southwest Airlines','Frontier Airlines','United Airli
 var GA_LOGO = {'Aer Lingus':'EI','Aeromexico':'AM','Air Canada':'AC','Air France':'AF','Alaska Airlines':'AS','American Airlines':'AA','British Airways':'BA','Condor':'DE','Delta':'DL','Edelweiss':'WK','Frontier Airlines':'F9','Iberia':'IB','Japan Airlines':'JL','KLM':'KL','Lufthansa':'LH','Norse Atlantic':'N0','Southwest Airlines':'WN','Spirit Airlines':'NK','Sun Country':'SY','United Airlines':'UA','Volaris':'Y4','WestJet':'WS'};
 var GA_TERM = { 'Alaska Airlines':'east','American Airlines':'east','Air Canada':'east','Aer Lingus':'east','Condor':'east','Frontier Airlines':'east','Iberia':'east','Japan Airlines':'east','JetBlue':'east','KLM':'east','Norse Atlantic':'east','Southwest Airlines':'east','Sun Country':'east','Volaris':'east','WestJet':'east','Aeromexico':'west','Air France':'west','British Airways':'west','Delta':'west','Edelweiss':'west','Lufthansa':'west','Spirit Airlines':'west','United Airlines':'west' };
 var diaAirline = null, diaAirlineSkipped = false;
+/* Drop-off airline state (owner, 2026-11-19): a second,
+   independent trio mirroring the pickup one, plus gaTarget —
+   which end the one shared picker sheet is currently asking
+   about ("pickup" or "dropoff"). Both ends can hold an airline
+   at once; neither choice writes the other's state. */
+var dropAirline = null, dropAirlineSkipped = false, dropGateDone = false, gaTarget = "pickup";
 /* Set once Continue has asked about the airline for the current
    address picks, so a Skip at Continue lets the next Continue
    through (the reference behavior: skipping dismisses the sheet
@@ -2067,7 +2186,8 @@ function gaRender(q) {
   }
   el.innerHTML = out;
 }
-function gaShow() {
+function gaShow(target) {
+  gaTarget = target === "dropoff" ? "dropoff" : "pickup";
   var p = $("airlinePicker");
   if (!p) return;
   var s = $("airlineSearch");
@@ -2082,6 +2202,22 @@ function gaClose() {
   document.body.classList.remove("airline-open");
 }
 function gaSelect(name) {
+  /* Drop-off flow (owner, 2026-11-19): a selection is recorded
+     only while the drop-off is an airport; it writes ONLY the
+     drop-off state, and a DIA drop-off snaps to this airline's
+     terminal side. The pickup airline is never touched. */
+  if (gaTarget === "dropoff") {
+    if (!qzDropoffIsAirport()) { gaClose(); return; }
+    dropAirline = name;
+    dropAirlineSkipped = false;
+    dropGateDone = true;
+    var dinfo = pickupAirport();
+    if (dinfo.diaDropoff) applyDiaDropoff(GA_TERM[name] || "east", name);
+    syncAirlineUI();
+    refreshFlightFields();
+    gaClose();
+    return;
+  }
   /* A selection is recorded only in the airport-pickup flow: if
      the pickup is no longer an airport, the tap is ignored and
      nothing is recorded. */
@@ -2090,7 +2226,7 @@ function gaSelect(name) {
   diaAirlineSkipped = false;
   diaGateDone = true;
   var info = pickupAirport();
-  if (info.diaDropoff) applyDiaDropoff(GA_TERM[name] || "east", name);
+  if (info.diaDropoff && !dropAirline) applyDiaDropoff(GA_TERM[name] || "east", name);
   if (info.diaPickup) { diaManual = GA_TERM[name] || "east"; resnapDIAPlaces(); }
   syncAirlineUI();
   refreshFlightFields();
@@ -2101,8 +2237,8 @@ $("airlineList").addEventListener("click", function (e) {
   if (b) gaSelect(b.getAttribute("data-airline"));
 });
 $("airlineSearch").addEventListener("input", function () { gaRender($("airlineSearch").value); });
-$("airlineSkip").addEventListener("click", function () { diaAirlineSkipped = true; gaClose(); });
-$("airlineBack").addEventListener("click", function () { diaAirlineSkipped = true; gaClose(); });
+$("airlineSkip").addEventListener("click", function () { if (gaTarget === "dropoff") dropAirlineSkipped = true; else diaAirlineSkipped = true; gaClose(); });
+$("airlineBack").addEventListener("click", function () { if (gaTarget === "dropoff") dropAirlineSkipped = true; else diaAirlineSkipped = true; gaClose(); });
 $("bAirline").addEventListener("change", function () {
   /* Same guard as gaSelect: outside the airport-pickup flow a
      change here records nothing (the field is hidden then); the
@@ -2112,9 +2248,21 @@ $("bAirline").addEventListener("change", function () {
   diaAirline = v || null;
   if (v) {
     var info = pickupAirport();
-    if (info.diaDropoff) applyDiaDropoff(GA_TERM[v] || "east", v);
+    if (info.diaDropoff && !dropAirline) applyDiaDropoff(GA_TERM[v] || "east", v);
     else if (info.diaPickup) { diaManual = GA_TERM[v] || "east"; resnapDIAPlaces(); }
   }
+  refreshFlightFields();
+});
+$("bAirlineDropoff").addEventListener("change", function () {
+  /* Same guard as the pickup select: outside the airport
+     drop-off flow a change records nothing (the field is hidden
+     then); the refresh clears any held drop-off airline. */
+  if (!qzDropoffIsAirport()) { refreshFlightFields(); return; }
+  var v = $("bAirlineDropoff").value;
+  if (!v) { clearDropAirline(); refreshFlightFields(); return; }
+  dropAirline = v;
+  var info = pickupAirport();
+  if (info.diaDropoff) applyDiaDropoff(GA_TERM[v] || "east", v);
   refreshFlightFields();
 });
 $("bFboPickup").addEventListener("change", function () { refreshFlightFields(); });
@@ -2122,16 +2270,25 @@ $("bFboDropoff").addEventListener("change", function () { refreshFlightFields();
 (function () {
   var sel = $("bAirline");
   if (sel) sel.innerHTML = '<option value="">Choose your airline</option>' + GA_ALL.map(function (n) { return '<option value="' + n + '">' + n + '</option>'; }).join("");
+  var dsel = $("bAirlineDropoff");
+  if (dsel) dsel.innerHTML = '<option value="">Choose your airline</option>' + GA_ALL.map(function (n) { return '<option value="' + n + '">' + n + '</option>'; }).join("");
 })();
-/* The airline sheet asks ONLY when an airport pickup is chosen —
+/* The airline sheet asks when an airport PICKUP is chosen —
    the standing rule (user, 2026-11-17 22:53 MST): the airline
    choose option and the flight-number field appear only when the
    rider's PICKUP address is an airport (any airport), on the same
-   detection that shows the flight-number field. A DIA drop-off
-   never asks. Skipping dismisses it until Continue, which asks
-   again (airport pickups only). When the pickup stops being an
-   airport, any chosen airline is cleared and an open sheet is
-   closed, so no stale airline can ride along. */
+   detection that shows the flight-number field. Skipping
+   dismisses it until Continue, which asks again (airport pickups
+   only). When the pickup stops being an airport, any chosen
+   airline is cleared and an open sheet is closed, so no stale
+   airline can ride along.
+   EXTENDED 2026-11-19 (FIX-10, the owner's order): the sheet
+   ALSO asks when an airport DROP-OFF is chosen, as its own
+   independent flow (airlineGateDropoff below) — his test had a
+   street pickup and a DIA drop-off, so no airline choice ever
+   appeared. The flight-number field stays pickup-only, exactly
+   as in the reference page, whose drop-off airline pairs with
+   the terminal snap, not a flight number. */
 function airlineGatePickup() {
   if (document.body.classList.contains("book-open")) return;
   if (qzPickupIsAirport()) {
@@ -2141,6 +2298,26 @@ function airlineGatePickup() {
     diaAirlineSkipped = false;
     diaGateDone = false;
     gaClose();
+  }
+}
+/* The drop-off gate, the mirror of airlineGatePickup(): the
+   sheet asks when an airport drop-off is chosen and no drop-off
+   airline decision exists yet for these picks. Skipping
+   dismisses it until Continue, which asks again. When the
+   drop-off stops being an airport, the drop-off airline is
+   cleared and a sheet asking about the drop-off is closed, so
+   no stale drop-off airline can ride along. The pickup state
+   is never touched here. */
+function airlineGateDropoff() {
+  if (document.body.classList.contains("book-open")) return;
+  if (qzDropoffIsAirport()) {
+    var p = $("airlinePicker");
+    if (!dropAirline && !dropAirlineSkipped && !dropGateDone && !(p && p.classList.contains("open"))) gaShow("dropoff");
+  } else {
+    if (dropAirline) { dropAirline = null; syncAirlineUI(); }
+    dropAirlineSkipped = false;
+    dropGateDone = false;
+    if (gaTarget === "dropoff") gaClose();
   }
 }
 ["qDiaSide", "bDiaSide"].forEach(function (id) {
@@ -2195,18 +2372,18 @@ function updatePrice() {
   }
   var rq = quoteMatches(routeQuote, bk.pickup, bk.dropoff) ? routeQuote : null;
   var gq = !rq && quoteMatches(geoQuote, bk.pickup, bk.dropoff) ? geoQuote : null;
-  var meta = fmtDate(bk.date) + (bk.time ? " · " + fmtTime(bk.time) : "");
-  if (state.service === "hourly") { meta += " · " + ($("bHours").value || "2") + " hours"; }
-  else if (rq) { meta += " · " + rq.miles.toFixed(1) + " mi · about " + Math.max(1, Math.round(rq.mins)) + " min"; }
-  if (rq && rq.mountain) { meta += " · " + (rq.mountain.name === "Colorado Springs" ? "Flat fare" : "Mountain fare") + " — " + rq.mountain.name + " · flat $" + fmtMoney(rq.mountain.amount); }
-  else if (rq && rq.stadium) { meta += " · Stadium fare — " + rq.stadium.name + (rq.stadium.flat ? " · flat $200" : " · $200 minimum"); }
-  else if (gq && gq.mountain) { meta += " · " + (gq.mountain.name === "Colorado Springs" ? "Flat fare" : "Mountain fare") + " — " + gq.mountain.name + " · flat $" + fmtMoney(gq.mountain.amount); }
-  else if (gq && gq.stadium) { meta += " · Stadium fare — " + gq.stadium.name + " · flat $200"; }
+  var meta = fmtDate(bk.date) + (bk.time ? ", " + fmtTime(bk.time) : "");
+  if (state.service === "hourly") { meta += ", " + ($("bHours").value || "2") + " hours"; }
+  else if (rq) { meta += ", " + rq.miles.toFixed(1) + " mi, about " + Math.max(1, Math.round(rq.mins)) + " min"; }
+  if (rq && rq.mountain) { meta += ", " + ((rq.mountain.name === "Colorado Springs" || rq.mountain.name === "Fort Collins") ? "Flat fare" : "Mountain fare") + ": " + rq.mountain.name + ", flat $" + fmtMoney(rq.mountain.amount); }
+  else if (rq && rq.stadium) { meta += ", Stadium fare: " + rq.stadium.name + (rq.stadium.flat ? ", flat $200" : ", $200 minimum"); }
+  else if (gq && gq.mountain) { meta += ", " + ((gq.mountain.name === "Colorado Springs" || gq.mountain.name === "Fort Collins") ? "Flat fare" : "Mountain fare") + ": " + gq.mountain.name + ", flat $" + fmtMoney(gq.mountain.amount); }
+  else if (gq && gq.stadium) { meta += ", Stadium fare: " + gq.stadium.name + ", flat $200"; }
   var unpriced = !!ROUTE_SERVICES[state.service] && !rq && !(gq && gq.fare != null) && !routeFailed && mapsReady;
   var amtTxt = unpriced ? "Not priced yet" : ("$" + fmtMoney(state.price));
   var metaTxt = unpriced ? "Your fare is set once your route is priced. Go back and pick your addresses from the list." : meta;
   ps.innerHTML = '<div class="sum-top"><div><span class="sum-lbl">Flat total</span><b class="sum-amt">' + amtTxt + '</b></div><div class="sum-svc">' + s.name + '</div></div><div class="sum-route">' + escHtml(shortPlace(bk.pickup, "qPickup")) + ' to ' + escHtml(shortPlace(bk.dropoff, "qDropoff")) + '</div><div class="sum-meta">' + escHtml(metaTxt) + '</div>';
-  rs.innerHTML = '<b>' + amtTxt + '</b> · ' + escHtml(shortPlace(bk.pickup, "qPickup")) + ' to ' + escHtml(shortPlace(bk.dropoff, "qDropoff")) + ' · ' + escHtml(fmtDate(bk.date) + (bk.time ? ", " + fmtTime(bk.time) : ""));
+  rs.innerHTML = '<b>' + amtTxt + '</b>, ' + escHtml(shortPlace(bk.pickup, "qPickup")) + ' to ' + escHtml(shortPlace(bk.dropoff, "qDropoff")) + ', ' + escHtml(fmtDate(bk.date) + (bk.time ? ", " + fmtTime(bk.time) : ""));
 }
 $("bPax").addEventListener("change", function () { updatePrice(); });
 $("bBags").addEventListener("change", function () { updatePrice(); });
@@ -2252,16 +2429,17 @@ $("quickForm").addEventListener("submit", function (e) {
     if (!el.value) { flagField(el, false); if (!bad) bad = el; }
   });
   if (!$("qDropoff").value) {
-    flagMsg($("qDropoff"), "Please enter your drop-off, for hourly, you can write “Multiple stops”.", false);
+    flagMsg($("qDropoff"), "Please enter your drop off, for hourly, you can write “Multiple stops”.", false);
     if (!bad) bad = $("qDropoff");
   }
   if (bad) { flagField(bad, true); return; }
   if (qzPickupIsAirport() && !diaAirline && !diaGateDone) { diaGateDone = true; gaShow(); return; }
+  if (qzDropoffIsAirport() && !dropAirline && !dropGateDone) { dropGateDone = true; gaShow("dropoff"); return; }
   if (!widgetRouteReady()) {
     if (routeQuote && routeQuote.openCountry && quoteMatches(routeQuote, $("qPickup").value, $("qDropoff").value)) { flagMsg($("qDropoff"), FARE_CONFIG.adminRequestMsg, false); flagField($("qDropoff"), true); }
     else if (geoQuote && geoQuote.openCountry && quoteMatches(geoQuote, $("qPickup").value, $("qDropoff").value)) { flagMsg($("qDropoff"), FARE_CONFIG.adminRequestMsg, false); flagField($("qDropoff"), true); }
     else if (!placeById.qPickup) { flagMsg($("qPickup"), "Please pick your pickup from the address list so we can price your ride.", false); flagField($("qPickup"), true); }
-    else if (!placeById.qDropoff) { flagMsg($("qDropoff"), "Please pick your drop-off from the address list so we can price your ride.", false); flagField($("qDropoff"), true); }
+    else if (!placeById.qDropoff) { flagMsg($("qDropoff"), "Please pick your drop off from the address list so we can price your ride.", false); flagField($("qDropoff"), true); }
     else if (routeFailed) { flagMsg($("qDropoff"), "We could not find a route between those addresses. Check them and try again.", false); flagField($("qDropoff"), true); }
     else {
       /* Both places are picked, the route did not fail, yet no
@@ -2339,7 +2517,7 @@ $("confirmBtn").addEventListener("click", function () {
     serviceName: SERVICES[state.service] ? SERVICES[state.service].name : "",
     mode: state.service === "hourly" ? "hourly" : "point-to-point",
     passengers: parseInt($("bPax").value, 10) || 1,
-    bags: $("bBags").value,
+    bags: bagsVal(),
     notes: ($("bNotes").value || "").trim(),
     fare: state.price,
     miles: rq ? rq.miles : null,
@@ -2349,6 +2527,7 @@ $("confirmBtn").addEventListener("click", function () {
   };
   if (flightNumber) rec.flightNumber = flightNumber;
   if (diaAirline) rec.airline = diaAirline;
+  if (dropAirline) rec.airlineDropoff = dropAirline;
   try {
     var all = []; try { all = JSON.parse(localStorage.getItem(QZ_LS) || "[]"); } catch (e) { all = []; }
     if (!Array.isArray(all)) all = [];
@@ -2373,6 +2552,7 @@ $("confirmBtn").addEventListener("click", function () {
     };
     if (flightNumber) bkRec.flightNumber = flightNumber;
     if (diaAirline) bkRec.airline = diaAirline;
+    if (dropAirline) bkRec.airlineDropoff = dropAirline;
     books.push(bkRec);
     localStorage.setItem(QZ_LS_BOOKS, JSON.stringify(books));
     if (window.BBL_BACKEND) { try { BBL_BACKEND.recordBooking(bkRec); } catch (e) {} }
@@ -2382,9 +2562,10 @@ $("confirmBtn").addEventListener("click", function () {
     ["Pickup", rec.pickup]
   ];
   if (rec.stop) rows.push(["Stop", rec.stop]);
-  rows.push(["Drop-off", rec.dropoff]);
+  rows.push(["Drop off", rec.dropoff]);
   if (rec.flightNumber) rows.push(["Flight", rec.flightNumber]);
   if (rec.airline) rows.push(["Airline", rec.airline]);
+  if (rec.airlineDropoff) rows.push(["Drop off airline", rec.airlineDropoff]);
   rows.push(["Passengers", String(rec.passengers)]);
   if (rec.fare != null) rows.push(["Your fare", "$" + fmtMoney(rec.fare) + (rec.miles != null ? " (" + rec.miles.toFixed(1) + " mi)" : "")]);
   if (rec.notes) rows.push(["Notes", rec.notes]);
@@ -2405,6 +2586,7 @@ $("bookAnother").addEventListener("click", function () {
   var sr = $("stopRow"); if (sr) sr.hidden = true;
   diaManual = null;
   diaAirline = null; diaAirlineSkipped = false; diaGateDone = false;
+  dropAirline = null; dropAirlineSkipped = false; dropGateDone = false; gaTarget = "pickup";
   bk.pickup = ""; bk.dropoff = ""; bk.date = ""; bk.time = "";
   setService("standard");
   clearRouteState();
@@ -2440,10 +2622,12 @@ function bindAc(id, key) {
     clearField(inp);
     placeById[key] = normPlace(inp, p);
     if (key === "qPickup" && qzPickupIsAirport()) diaGateDone = false;
+    if (key === "qDropoff" && qzDropoffIsAirport()) dropGateDone = false;
     if (key === "qPickup") qzFlightSync();
     refreshFlightFields();
     routeWidget();
     if (key === "qPickup") airlineGatePickup();
+    if (key === "qDropoff") airlineGateDropoff();
     gfRefresh(key);
   });
   inp.addEventListener("input", function () {
@@ -2454,6 +2638,7 @@ function bindAc(id, key) {
     if (placeById[key] && inp.value === placeById[key].display) return;
     placeById[key] = null;
     if (key === "qPickup") { qzFlightSync(); airlineGatePickup(); }
+    if (key === "qDropoff") airlineGateDropoff();
     refreshFlightFields();
     routeWidget();
   });
@@ -2536,10 +2721,34 @@ function maybeDefaultPickupFromLocation() {
    longer opens over the map — it starts below the map's bottom
    edge so the map and its route line stay visible while
    typing; the viewport-top pin remains only as the fallback
-   for when the map has scrolled off the top. */
+   for when the map has scrolled off the top.
+   AMENDED 2026-11-19 (FIX-7, user 06:50 MST): the popup also
+   never covers the field being typed in, and while an address
+   field is active the page keeps the map's top edge inside
+   the visual viewport (iOS's focus scroll can push it out
+   when the keyboard opens).
+   AMENDED 2026-11-19 (FIX-9, owner 07:46 MST, his screen
+   recording of the FIX-8 preview): the FIX-7 map restoration
+   fought iOS's own focus scroll. Its check compares
+   getBoundingClientRect().top (visual-viewport relative)
+   against visualViewport.offsetTop (layout relative) — two
+   coordinate systems that disagree exactly while the keyboard
+   animates — and every visualViewport resize/scroll event of
+   that animation re-ran it, so its instant scrollTo kept
+   yanking the page back against Safari's animated pan: four
+   visible bounces in about two seconds (frames: settled,
+   jump up, drop back, up, down, up, then settle). His order:
+   the box must not slide below the keyboard, no flickering,
+   no slow sliding — it has to be STABLE. So while an address
+   field is being typed in, the page now issues NO scroll of
+   its own at all: Safari's one native pan is the only motion,
+   the suggestions panel tracks the map by live geometry
+   only, and pacAlignMap is gated off for the whole session
+   (see its note). Completion advances (a finished pick) are
+   a different path and are untouched. */
 (function () {
   var pacIds = ["qPickup", "qDropoff", "qStop"];
-  var pacActive = null, pacSig = "", pacTimer = 0;
+  var pacActive = null, pacSig = "", pacTimer = 0, pacTyping = false;
   function pacOpen() {
     var cs = document.querySelectorAll(".pac-container");
     for (var i = 0; i < cs.length; i++) { if (cs[i].style && cs[i].style.display !== "none" && cs[i].offsetHeight > 0) return cs[i]; }
@@ -2558,16 +2767,37 @@ function maybeDefaultPickupFromLocation() {
        scrolls and the keyboard settles) and rides in the fit
        signature. When the map has scrolled off the top there
        is nothing left to cover, and the popup takes the
-       viewport top as before. */
+       viewport top as before.
+       FIX-9 (2026-11-19): the anchor condition below used to
+       give up whenever less than 140px remained under the
+       map — exactly the keyboard-open geometry — and fall
+       back to the viewport-top pin, which put the list OVER
+       the map while the owner typed "Airp" (his recording).
+       The anchor now holds whenever the map's bottom edge is
+       inside the visual viewport with at least ~56px below
+       it; the height caps (space to the viewport bottom,
+       then the field cap) keep the list readable, tappable
+       and above the keyboard. */
     var topBase = Math.round(vv.offsetTop) + 10;
     var top = topBase;
     var mapEl = document.getElementById("qMap");
     if (mapEl && mapEl.getBoundingClientRect) {
       var mb = Math.round(vv.offsetTop + mapEl.getBoundingClientRect().bottom) + 8;
-      if (mb > topBase && mb < Math.round(vv.offsetTop + vv.height) - 140) top = mb;
+      if (mb > topBase && mb <= Math.round(vv.offsetTop + vv.height) - 56) top = mb;
     }
     var avail = Math.round(vv.offsetTop + vv.height) - top - 10;
-    var maxH = Math.max(120, Math.min(need, avail));
+    var maxH = Math.max(56, Math.min(need, avail));
+    /* The field being typed in stays visible too (FIX-7, user
+       2026-11-19 06:50 MST): the popup never covers the active
+       field — its height is capped so its bottom edge stops
+       above the field (90px floor so the list stays usable
+       when space is truly tight). */
+    if (pacActive && pacActive.getBoundingClientRect) {
+      try {
+        var fTop = Math.round(vv.offsetTop + pacActive.getBoundingClientRect().top) - 6;
+        if (fTop > top && fTop - top < maxH) maxH = Math.max(90, fTop - top);
+      } catch (e) {}
+    }
     var left = Math.round(vv.offsetLeft) + 12;
     var width = Math.max(200, Math.round(vv.width) - 24);
     var sig = top + "|" + maxH + "|" + left + "|" + width + "|" + Math.round(vv.height) + "|" + need;
@@ -2581,16 +2811,47 @@ function maybeDefaultPickupFromLocation() {
     pac.style.overflowY = "auto";
     pac.style.marginTop = "0";
   }
+  /* The map stays IN the visible area while typing (FIX-7,
+     user 2026-11-19 06:50 MST): with the keyboard open, iOS
+     scrolls the focused field into view, which can push the
+     map off the top of the visual viewport even though the
+     suggestions sit below it. While an address field is
+     active, if the map's top edge has risen above the visual
+     viewport's top edge, scroll back just enough to restore
+     it — never the other way, never when not typing. */
+  function pacAlignMap() {
+    /* FIX-9: inert while typing (see the IIFE header note).
+       The FIX-7 restoration under this gate mixed coordinate
+       systems mid keyboard-animation and its instant scrollTo
+       fought Safari's pan on every visualViewport event —
+       the recorded bounce. It stays in the code for the
+       record; a typing session, the only context that ever
+       called it, no longer lets it scroll. */
+    if (pacTyping) return;
+    if (!pacActive) return;
+    var vv = window.visualViewport;
+    if (!vv) return;
+    var mapEl = document.getElementById("qMap");
+    if (!mapEl || !mapEl.getBoundingClientRect) return;
+    var mt = 0;
+    try { mt = mapEl.getBoundingClientRect().top; } catch (e) { return; }
+    var visTop = vv.offsetTop || 0;
+    if (mt < visTop - 2) {
+      var y = (window.pageYOffset || 0) + (mt - visTop);
+      if (y < 0) y = 0;
+      try { window.scrollTo(0, y); } catch (e) {}
+    }
+  }
   function pacSoon() {
     if (pacTimer) return;
-    pacTimer = setTimeout(function () { pacTimer = 0; pacFit(); }, 40);
+    pacTimer = setTimeout(function () { pacTimer = 0; pacFit(); pacAlignMap(); }, 40);
   }
   pacIds.forEach(function (id) {
     var inp = document.getElementById(id);
     if (!inp) return;
-    inp.addEventListener("focus", function () { pacActive = inp; pacSig = ""; setTimeout(pacFit, 320); pacSoon(); });
+    inp.addEventListener("focus", function () { pacActive = inp; pacTyping = true; pacSig = ""; setTimeout(function () { pacFit(); pacAlignMap(); }, 320); pacSoon(); });
     inp.addEventListener("input", pacSoon);
-    inp.addEventListener("blur", function () { setTimeout(function () { if (document.activeElement !== inp) { pacActive = null; pacSig = ""; } }, 200); });
+    inp.addEventListener("blur", function () { setTimeout(function () { if (document.activeElement !== inp) { pacActive = null; pacSig = ""; pacTyping = false; } }, 200); });
   });
   if (window.visualViewport) {
     window.visualViewport.addEventListener("resize", pacSoon);
@@ -2657,7 +2918,7 @@ setTimeout(function () { if (!mapsReady) qzMapsFailed(); }, 10000);
    cache-busted reload; success re-points FARE_CONFIG and
    re-prices, failure is stated plainly on the fare line
    (pricingBroken) instead of wedging. */
-var PRICING_STAMP_EXPECTED = "2026-11-18-cos350";
+var PRICING_STAMP_EXPECTED = "2026-11-19-fix11";
 var pricingBroken = false;
 function pricingSnapshotOk(P) {
   return !!P && P.stamp === PRICING_STAMP_EXPECTED &&

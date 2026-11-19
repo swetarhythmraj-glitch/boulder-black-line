@@ -37,7 +37,9 @@
         HIGHER town's flat, once, never double. BBL-only exception
         (owner order 2026-11-18 evening): Colorado Springs sits in
         this same table at a flat $350 — RideWave itself leaves
-        Colorado Springs to the by-request gate below.
+        Colorado Springs to the by-request gate below. Fort
+        Collins sits in the same table at a flat $300 (owner
+        order 2026-11-19) — RideWave gates it the same way.
      3. Stadium / venue fare: an endpoint inside a stadium zone
         with the other endpoint inside the metro prices FLAT $200;
         with the other endpoint outside the metro, the meter fare
@@ -131,6 +133,15 @@
     { name: "Denver",               lat: 39.7392, lng: -104.9903, radiusM: 9500 },
     { name: "Aurora",               lat: 39.7294, lng: -104.8319, radiusM: 8000 },
     { name: "DEN airport",          lat: 39.8561, lng: -104.6737, radiusM: 8000 },
+    /* BBL-ONLY ADDITION (owner order 2026-11-19, NOT in RideWave):
+       the DIA corridor — Reunion, east Commerce City, Green Valley
+       Ranch and the Gaylord band. These are local airport rides,
+       but they sat outside every circle above (the airport end of
+       the band hung on the DEN circle's edge by ~1 km), so the
+       closed-list gate refused them as open country. This circle
+       fills the corridor band only: Brighton (19 km from the DEN
+       centre) and everything past the airport stay outside. */
+    { name: "DIA corridor",         lat: 39.8550, lng: -104.7650, radiusM: 8000 },
     { name: "Englewood",            lat: 39.6479, lng: -104.9876, radiusM: 6500 },
     { name: "Littleton",            lat: 39.6133, lng: -105.0166, radiusM: 7000 },
     { name: "Highlands Ranch",      lat: 39.5536, lng: -104.9692, radiusM: 6500 },
@@ -152,7 +163,14 @@
      covers it. Its circle is city-sized (12 km — downtown, the
      Powers corridor and the airport) rather than resort-sized.
      The booking sheet labels it "Flat fare", not "Mountain fare"
-     (see updatePrice in the page). */
+     (see updatePrice in the page).
+     BBL-ONLY ADDITION (owner order 2026-11-19, NOT in RideWave —
+     RideWave gates Fort Collins as by-request): Fort Collins
+     rides at a flat $300 in this same table, on the same terms
+     as Colorado Springs — it pairs with the metro (and takes
+     the higher flat against Colorado Springs or a mountain
+     town), and the gate covers it. Its circle is city-sized
+     (11 km). The sheet labels it "Flat fare" as well. */
   BBL_PRICING.mountainZones = [
     { name: "Aspen",             lat: 39.1907, lng: -106.8192, radiusM: 2500, flat: 1200, names: ["aspen, co", "aspen, colorado"] },
     { name: "Aspen",             lat: 39.1826, lng: -106.8553, radiusM: 1000, flat: 1200, names: ["aspen highlands"] },
@@ -168,7 +186,8 @@
     { name: "Vail",              lat: 39.6403, lng: -106.3709, radiusM: 2500, flat: 800,  names: ["vail, co", "vail village", "lionshead"] },
     { name: "Eagle",             lat: 39.6553, lng: -106.8287, radiusM: 2500, flat: 800,  names: ["eagle, co", "eagle, colorado"] },
     { name: "Eagle",             lat: 39.6426, lng: -106.9177, radiusM: 1500, flat: 800,  names: ["eagle county regional", "eagle county airport"] },
-    { name: "Colorado Springs",  lat: 38.8339, lng: -104.8214, radiusM: 12000, flat: 350, names: ["colorado springs"] }
+    { name: "Colorado Springs",  lat: 38.8339, lng: -104.8214, radiusM: 12000, flat: 350, names: ["colorado springs"] },
+    { name: "Fort Collins",     lat: 40.5853, lng: -105.0844, radiusM: 11000, flat: 300, names: ["fort collins"] }
   ];
 
   /* The meter formula, copied from the shipped computedFare():
@@ -378,6 +397,6 @@
      served against the current page forever). ANY edit to this
      file MUST bump the stamp here AND the page's
      PRICING_STAMP_EXPECTED + script-tag query together. */
-  BBL_PRICING.stamp = "2026-11-18-cos350";
+  BBL_PRICING.stamp = "2026-11-19-fix11";
   window.BBL_PRICING = BBL_PRICING;
 })();
