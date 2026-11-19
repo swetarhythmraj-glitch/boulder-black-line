@@ -268,7 +268,7 @@ body.book-open header.site{position:fixed;top:0;left:0;right:0}
 footer{background:var(--dark);color:#D9CFB8;padding:52px 0 30px}
 footer h3{color:#FFF6E0;font-size:19px;margin-bottom:10px} footer a{color:#EFB954}
 .f-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}@media(max-width:760px){.f-grid{grid-template-columns:1fr}}
-.fine{border-top:1px solid #3A3226;margin-top:30px;padding-top:18px;font-size:13px;color:#9A8C6E}
+.fine{border-top:1px solid #3A3226;margin-top:30px;padding-top:18px;font-size:13px;color:#9A8C6E;text-align:center}
 .ph{border-bottom:1px dashed #B98A1D}
 
 /* ---------- BBL quote page additions ---------- */
@@ -850,7 +850,7 @@ body.qpage .qhero .continue-btn{height:48px;min-height:48px}
 @media(min-height:810px){.qhero .swap{top:56px}}
 @media(min-height:900px){.qhero .swap{top:58px}}
 body.qpage.bk-on .qhero .swap{top:42px}
-.fine a{margin-left:16px}
+.fine a{margin:0 8px}
 </style>
 
 
@@ -1123,7 +1123,7 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
   <div class="wrap">
     <div class="kicker">The vehicle</div>
     <h2 class="sec">Meet your SUV</h2>
-    <p class="secsub">One SUV and one driver, based in Boulder, the Escalade you book is the Escalade that arrives.</p>
+    <p class="secsub">Locally owned and operated, based in Boulder — the Escalade you book is the Escalade that arrives.</p>
     <div class="suv-grid">
       <img src="bbl-suv-1.jpg" alt="2026 Cadillac Escalade ESV, front three quarter view">
       <div>
@@ -1244,6 +1244,10 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
         </div>
         <div style="margin-top:16px"><button class="btn btn-amber" id="bookAnother" type="button">Book another ride</button></div>
         <p style="margin-top:12px"><a class="btn" id="textRequestBtn" href="#" hidden>Also text your request to Boulder Black Line now</a></p>
+        <!-- Spam-folder note (owner, 2026-11-19): the Jotform confirmation email can land
+             in the rider's junk folder (live test BK-7630, Hotmail) — tell the customer
+             on the confirmation screen itself to check email / spam. -->
+        <p class="msg" style="margin-top:14px;text-align:left">Please check your email for your confirmation. If you don't see it in your inbox, please check your spam or junk folder.</p>
       </div>
     </div>
   </div>
@@ -1268,11 +1272,11 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
     <div class="foot-crest"><span class="bbl-logo-tile bbl-logo-foot" style="display:none" aria-hidden="true"></span></div>
     <div class="f-grid">
       <div><h3>Boulder Black Line</h3><p>Private black SUV service by reservation.<br>Denver Metro, CO</p></div>
-      <div><h3>Contact</h3><p>Call / text: <a href="tel:+17203264652">(720) 326-4652</a><br>Email: <a href="mailto:dipsdhakal1@gmail.com">dipsdhakal1@gmail.com</a></p></div>
-      <div><h3>Good to know</h3><p>Licensed &amp; insured, <span class="ph">[Permit / PUC #]</span><br>One SUV, one driver, rides are first booked, first served.<br>Airport pickups include flight tracking.</p></div>
+      <div><h3>Contact</h3><p>Call / text: <a href="tel:+17203264652">(720) 326-4652</a><br>Email: <a href="mailto:boulderblack1@gmail.com">boulderblack1@gmail.com</a></p></div>
+      <div><h3>Good to know</h3><p>Licensed &amp; insured, LLC #LL04950<br>A locally owned Boulder business. Rides are first booked, first served.<br>Airport pickups include flight tracking.</p></div>
     </div>
     <div class="fine">© 2026 Boulder Black Line <a href="/privacy.html">Privacy Policy</a><a href="/terms.html">Terms of Service</a><a href="/owner.html">Admin</a></div>
-    <div class="fine build-line">Build 11 · v2026.11.19-airport20 · 2026-11-19</div>
+    <div class="fine build-line">Build 12 · v2026.11.19-local · 2026-11-19</div>
   </div>
 </footer>
 
@@ -2973,7 +2977,7 @@ if (!pricingSnapshotOk(window.BBL_PRICING)) healPricing();
    parameters it renders the Boulder Black Line identity. Fare parameters
    are never read: pricing stays exactly Boulder's. */
 (function () {
-  var DEF = { co: "Boulder Black Line", owner: "Boulder Black Line", ph: "(720) 326-4652", em: "dipsdhakal1@gmail.com", veh: "black-suv" };
+  var DEF = { co: "Boulder Black Line", owner: "Boulder Black Line", ph: "(720) 326-4652", em: "boulderblack1@gmail.com", veh: "black-suv" };
   var CAP = { co: 60, owner: 60, ph: 32, em: 80 };
   var q = {};
   try { q = Object.fromEntries(new URLSearchParams(window.location.search).entries()); } catch (e) { q = {}; }
@@ -3016,7 +3020,7 @@ if (!pricingSnapshotOk(window.BBL_PRICING)) healPricing();
         var v = node.nodeValue; if (!v) return;
         var nv = v.split("Boulder Black Line").join(co)
                   .split("(720) 326-4652").join(ph)
-                  .split("dipsdhakal1@gmail.com").join(em);
+                  .split("boulderblack1@gmail.com").join(em);
         if (nv !== v) { node.nodeValue = nv; changed = true; }
       });
     }
@@ -3046,17 +3050,17 @@ if (!pricingSnapshotOk(window.BBL_PRICING)) healPricing();
       b.replaceChildren(frag);
       b.setAttribute("data-bbl-brand", ID.co);
     }
-    document.title = document.title.split("Boulder Black Line").join(co).split("(720) 326-4652").join(ph).split("dipsdhakal1@gmail.com").join(em);
+    document.title = document.title.split("Boulder Black Line").join(co).split("(720) 326-4652").join(ph).split("boulderblack1@gmail.com").join(em);
     var as = document.querySelectorAll("a[href]");
     for (var i = 0; i < as.length; i++) {
       var a = as[i], href = a.getAttribute("href") || "", nh = href;
       if (href.indexOf("tel:+17203264652") === 0 && phDigits) nh = "tel:" + phDigits;
-      else if (href.indexOf("mailto:dipsdhakal1@gmail.com") === 0) nh = "mailto:" + em;
-      else if (href.indexOf("dipsdhakal1@gmail.com") !== -1) nh = href.split("dipsdhakal1@gmail.com").join(em);
+      else if (href.indexOf("mailto:boulderblack1@gmail.com") === 0) nh = "mailto:" + em;
+      else if (href.indexOf("boulderblack1@gmail.com") !== -1) nh = href.split("boulderblack1@gmail.com").join(em);
       if (nh !== href) { a.setAttribute("href", nh); changed = true; }
     }
     var meta = document.querySelector('meta[name="description"]');
-    if (meta) { var c = meta.getAttribute("content") || ""; var nc = c.split("Boulder Black Line").join(co).split("(720) 326-4652").join(ph).split("dipsdhakal1@gmail.com").join(em); if (nc !== c) meta.setAttribute("content", nc); }
+    if (meta) { var c = meta.getAttribute("content") || ""; var nc = c.split("Boulder Black Line").join(co).split("(720) 326-4652").join(ph).split("boulderblack1@gmail.com").join(em); if (nc !== c) meta.setAttribute("content", nc); }
     /* Owner name: the set keeps exactly one owner-name position, the
        owner-page sign-in heading (marked data-bbl-owner at build time).
        Where a page has no such slot the value is carried, not shown. */

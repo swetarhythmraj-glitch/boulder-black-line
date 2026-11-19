@@ -242,7 +242,7 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
     <h2 class="sec" style="margin-top:56px">What you receive</h2>
     <p class="secsub">Every booking sends alerts to the owner side at each moment that matters. These are the samples.</p>
     <div class="panel">
-      <p style="margin:0 0 6px;color:var(--ink2);font-size:14.5px">Every alert goes to the owner at <a href="tel:+17203264652"><b>(720) 326-4652</b></a> and <a href="mailto:dipsdhakal1@gmail.com"><b>dipsdhakal1@gmail.com</b></a>.</p>
+      <p style="margin:0 0 6px;color:var(--ink2);font-size:14.5px">Every alert goes to the owner at <a href="tel:+17203264652"><b>(720) 326-4652</b></a> and <a href="mailto:boulderblack1@gmail.com"><b>boulderblack1@gmail.com</b></a>.</p>
       <ul class="tl">
         <li><span class="dot"></span><div><b>Instantly, on every booking</b><span>Text + email with rider name, route, time and tap-to-call.</span></div></li>
         <li><span class="dot"></span><div><b>If payment fails</b><span>Immediate alert so the ride is never silently lost.</span></div></li>
@@ -261,7 +261,7 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
   <div class="wrap">
     <div class="foot-crest"></div>
     <h3>Boulder Black Line</h3>
-    <p style="margin:0">Private SUV rides in the Denver metro. Call <a href="tel:+17203264652">(720) 326-4652</a> or email <a href="mailto:dipsdhakal1@gmail.com">dipsdhakal1@gmail.com</a>.</p>
+    <p style="margin:0">Private SUV rides in the Denver metro. Call <a href="tel:+17203264652">(720) 326-4652</a> or email <a href="mailto:boulderblack1@gmail.com">boulderblack1@gmail.com</a>.</p>
     <p class="fine">Owner page for the preview. This page has its own address and its own sign in, and it is not linked from the rider site.<br><a href="/privacy.html">Privacy Policy</a> · <a href="/terms.html">Terms of Service</a></p>
   </div>
 </footer>
@@ -566,7 +566,7 @@ function receiptLines(b){
   lines.push("Total: "+money2(b.price));
   lines.push("Payment: Pay driver later");
   lines.push("");
-  lines.push("Thank you for riding with Boulder Black Line. Call (720) 326-4652 or email dipsdhakal1@gmail.com.");
+  lines.push("Thank you for riding with Boulder Black Line. Call (720) 326-4652 or email boulderblack1@gmail.com.");
   return lines;
 }
 function ensureReceipt(b){if(!b||b.receiptSentAt)return false;
@@ -576,7 +576,7 @@ function ensureReceipt(b){if(!b||b.receiptSentAt)return false;
   b.receiptSentAt=new Date().toISOString();return true}
 function ensureSampleReceipt(r){if(!r||r.receiptSentAt)return false;
   var price=parseFloat((/\$([0-9.]+)/.exec(r.amt||"")||[])[1]||"0");var later=/Pay later/i.test(r.amt||"");
-  var lines=["Boulder Black Line","Ride receipt","","Ride: "+r.s,"When: "+r.t,"Rider: "+r.r,"","Total: "+money2(price),"Payment: "+(later?"Pay driver later":"Paid"),"","Thank you for riding with Boulder Black Line. Call (720) 326-4652 or email dipsdhakal1@gmail.com."];
+  var lines=["Boulder Black Line","Ride receipt","","Ride: "+r.s,"When: "+r.t,"Rider: "+r.r,"","Total: "+money2(price),"Payment: "+(later?"Pay driver later":"Paid"),"","Thank you for riding with Boulder Black Line. Call (720) 326-4652 or email boulderblack1@gmail.com."];
   r.receiptText=lines.join("\n");r.receiptEmail="Subject: Your Boulder Black Line receipt\n\n"+r.receiptText+"\n\nBoulder Black Line";r.receiptSentAt=new Date().toISOString();return true}
 function showReceiptPanel(txt){var p=$("receiptPanel");if(!p)return;$("receiptBody").textContent=txt||"";p.hidden=false;p.scrollIntoView({behavior:"smooth",block:"center"})}
 $("receiptCloseBtn").addEventListener("click",function(){$("receiptPanel").hidden=true});
@@ -960,7 +960,7 @@ $("accountsRefresh").addEventListener("click",function(){loadAccounts()});
    parameters it renders the Boulder Black Line identity. Fare parameters
    are never read: pricing stays exactly Boulder's. */
 (function () {
-  var DEF = { co: "Boulder Black Line", owner: "Boulder Black Line", ph: "(720) 326-4652", em: "dipsdhakal1@gmail.com", veh: "black-suv" };
+  var DEF = { co: "Boulder Black Line", owner: "Boulder Black Line", ph: "(720) 326-4652", em: "boulderblack1@gmail.com", veh: "black-suv" };
   var CAP = { co: 60, owner: 60, ph: 32, em: 80 };
   var q = {};
   try { q = Object.fromEntries(new URLSearchParams(window.location.search).entries()); } catch (e) { q = {}; }
@@ -1001,7 +1001,7 @@ $("accountsRefresh").addEventListener("click",function(){loadAccounts()});
         var v = node.nodeValue; if (!v) return;
         var nv = v.split("Boulder Black Line").join(co)
                   .split("(720) 326-4652").join(ph)
-                  .split("dipsdhakal1@gmail.com").join(em);
+                  .split("boulderblack1@gmail.com").join(em);
         if (nv !== v) { node.nodeValue = nv; changed = true; }
       });
     }
@@ -1031,17 +1031,17 @@ $("accountsRefresh").addEventListener("click",function(){loadAccounts()});
       b.replaceChildren(frag);
       b.setAttribute("data-bbl-brand", ID.co);
     }
-    document.title = document.title.split("Boulder Black Line").join(co).split("(720) 326-4652").join(ph).split("dipsdhakal1@gmail.com").join(em);
+    document.title = document.title.split("Boulder Black Line").join(co).split("(720) 326-4652").join(ph).split("boulderblack1@gmail.com").join(em);
     var as = document.querySelectorAll("a[href]");
     for (var i = 0; i < as.length; i++) {
       var a = as[i], href = a.getAttribute("href") || "", nh = href;
       if (href.indexOf("tel:+17203264652") === 0 && phDigits) nh = "tel:" + phDigits;
-      else if (href.indexOf("mailto:dipsdhakal1@gmail.com") === 0) nh = "mailto:" + em;
-      else if (href.indexOf("dipsdhakal1@gmail.com") !== -1) nh = href.split("dipsdhakal1@gmail.com").join(em);
+      else if (href.indexOf("mailto:boulderblack1@gmail.com") === 0) nh = "mailto:" + em;
+      else if (href.indexOf("boulderblack1@gmail.com") !== -1) nh = href.split("boulderblack1@gmail.com").join(em);
       if (nh !== href) { a.setAttribute("href", nh); changed = true; }
     }
     var meta = document.querySelector('meta[name="description"]');
-    if (meta) { var c = meta.getAttribute("content") || ""; var nc = c.split("Boulder Black Line").join(co).split("(720) 326-4652").join(ph).split("dipsdhakal1@gmail.com").join(em); if (nc !== c) meta.setAttribute("content", nc); }
+    if (meta) { var c = meta.getAttribute("content") || ""; var nc = c.split("Boulder Black Line").join(co).split("(720) 326-4652").join(ph).split("boulderblack1@gmail.com").join(em); if (nc !== c) meta.setAttribute("content", nc); }
     /* Owner name: the set keeps exactly one owner-name position, the
        owner-page sign-in heading (marked data-bbl-owner at build time).
        Where a page has no such slot the value is carried, not shown. */
