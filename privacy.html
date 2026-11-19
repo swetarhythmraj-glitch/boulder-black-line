@@ -142,7 +142,7 @@ footer{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
   <p>To stop texts, reply <b>STOP</b> to any text from us. To ask what information we hold about you, to correct it, or to have it deleted, contact us:</p>
   <ul>
     <li>Call or text: <a href="tel:+17203264652">(720) 326-4652</a></li>
-    <li>Email: <a href="mailto:info@boulderblackline.com">info@boulderblackline.com</a></li>
+    <li>Email: <a href="mailto:dipsdhakal1@gmail.com">dipsdhakal1@gmail.com</a></li>
   </ul>
   <div class="backbar backbar-end"><a class="btn btn-ghost backpill" href="/index.html" data-back>Back</a></div>
 </main>
@@ -152,7 +152,7 @@ footer{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
     <div class="foot-crest"></div>
     <div class="f-grid">
       <div><h3>Boulder Black Line</h3><p>Private black SUV service by reservation.<br>Denver Metro, CO</p></div>
-      <div><h3>Contact</h3><p>Call / text: <a href="tel:+17203264652">(720) 326-4652</a><br>Email: <a href="mailto:info@boulderblackline.com">info@boulderblackline.com</a></p></div>
+      <div><h3>Contact</h3><p>Call / text: <a href="tel:+17203264652">(720) 326-4652</a><br>Email: <a href="mailto:dipsdhakal1@gmail.com">dipsdhakal1@gmail.com</a></p></div>
       <div><h3>Good to know</h3><p><a href="/privacy.html">Privacy Policy</a><br><a href="/terms.html">Terms of Service</a><br><a href="/index.html">Book a ride</a></p></div>
     </div>
     <div class="fine">© 2026 Boulder Black Line</div>
@@ -208,7 +208,7 @@ footer{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
    parameters it renders the Boulder Black Line identity. Fare parameters
    are never read: pricing stays exactly Boulder's. */
 (function () {
-  var DEF = { co: "Boulder Black Line", owner: "Boulder Black Line", ph: "(720) 326-4652", em: "info@boulderblackline.com", veh: "black-suv" };
+  var DEF = { co: "Boulder Black Line", owner: "Boulder Black Line", ph: "(720) 326-4652", em: "dipsdhakal1@gmail.com", veh: "black-suv" };
   var CAP = { co: 60, owner: 60, ph: 32, em: 80 };
   var q = {};
   try { q = Object.fromEntries(new URLSearchParams(window.location.search).entries()); } catch (e) { q = {}; }
@@ -249,7 +249,7 @@ footer{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
         var v = node.nodeValue; if (!v) return;
         var nv = v.split("Boulder Black Line").join(co)
                   .split("(720) 326-4652").join(ph)
-                  .split("info@boulderblackline.com").join(em);
+                  .split("dipsdhakal1@gmail.com").join(em);
         if (nv !== v) { node.nodeValue = nv; changed = true; }
       });
     }
@@ -279,17 +279,17 @@ footer{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
       b.replaceChildren(frag);
       b.setAttribute("data-bbl-brand", ID.co);
     }
-    document.title = document.title.split("Boulder Black Line").join(co).split("(720) 326-4652").join(ph).split("info@boulderblackline.com").join(em);
+    document.title = document.title.split("Boulder Black Line").join(co).split("(720) 326-4652").join(ph).split("dipsdhakal1@gmail.com").join(em);
     var as = document.querySelectorAll("a[href]");
     for (var i = 0; i < as.length; i++) {
       var a = as[i], href = a.getAttribute("href") || "", nh = href;
       if (href.indexOf("tel:+17203264652") === 0 && phDigits) nh = "tel:" + phDigits;
-      else if (href.indexOf("mailto:info@boulderblackline.com") === 0) nh = "mailto:" + em;
-      else if (href.indexOf("info@boulderblackline.com") !== -1) nh = href.split("info@boulderblackline.com").join(em);
+      else if (href.indexOf("mailto:dipsdhakal1@gmail.com") === 0) nh = "mailto:" + em;
+      else if (href.indexOf("dipsdhakal1@gmail.com") !== -1) nh = href.split("dipsdhakal1@gmail.com").join(em);
       if (nh !== href) { a.setAttribute("href", nh); changed = true; }
     }
     var meta = document.querySelector('meta[name="description"]');
-    if (meta) { var c = meta.getAttribute("content") || ""; var nc = c.split("Boulder Black Line").join(co).split("(720) 326-4652").join(ph).split("info@boulderblackline.com").join(em); if (nc !== c) meta.setAttribute("content", nc); }
+    if (meta) { var c = meta.getAttribute("content") || ""; var nc = c.split("Boulder Black Line").join(co).split("(720) 326-4652").join(ph).split("dipsdhakal1@gmail.com").join(em); if (nc !== c) meta.setAttribute("content", nc); }
     /* Owner name: the set keeps exactly one owner-name position, the
        owner-page sign-in heading (marked data-bbl-owner at build time).
        Where a page has no such slot the value is carried, not shown. */

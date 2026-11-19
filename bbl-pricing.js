@@ -21,12 +21,19 @@
        hourly stepper's 2..12 hour clamp (the 2-hour minimum).
 
    WHAT THE STACK IS (applied in this order):
-     1. Meter fare: base + miles x per-mile + DIA surcharge +
+     1. Meter fare: base + miles x per-mile + airport surcharge +
         long-distance surcharge past 50 miles, never below base.
-        The DIA surcharge fires ONLY on the DIA keyword test below
-        (Denver International / DIA / DEN addresses) — other
-        airports (Centennial, Boulder Municipal, ASE, EGE...) do
-        NOT draw it. There is no per-minute charge (ratePerMin = 0
+        BBL-ONLY CHANGE (owner order 2026-11-19, supersedes the
+        DIA-only rule this snapshot was taken with): the $20
+        airport surcharge fires when EITHER endpoint is ANY
+        airport in the Denver metro area (the metroAirports table
+        below: DEN/DIA, Centennial APA, Rocky Mountain Metro BJC,
+        Colorado Air and Space Port FTG, Boulder Municipal BDU,
+        Erie Municipal EIK) — charged ONCE per ride even if both
+        ends are metro airports. Airports outside the metro
+        (Colorado Springs, Aspen/Pitkin ASE, Eagle County EGE...)
+        do NOT draw it; their rides are flat-fare or gated below.
+        There is no per-minute charge (ratePerMin = 0
         on every RideWave tier) and NO flat route-pair price: the
         $140 Boulder<->DEN invoices in RideWave's history are
         admin-set prices, not a coded rule — the meter governs.
@@ -72,8 +79,9 @@
       black: { base: 10, ratePerMile: 2.30 },
       bsuv:  { base: 12, ratePerMile: 2.90 }
     },
-    /* DIA surcharge by tier — charged only when an endpoint address
-       passes the DIA keyword test (diaSurchargeFor below). */
+    /* Airport surcharge by tier — charged once when either
+       endpoint is a Denver-metro airport (metroAirports table +
+       airportSurchargeFor below; owner order 2026-11-19). */
     airportSurcharge: { x: 10, xl: 10, black: 20, bsuv: 20 },
     diaKeywords: [
       "denver international", "denver int", "denver airport",
@@ -102,6 +110,26 @@
     diaBounds: { latMin: 39.83, latMax: 39.89, lngMin: -104.72, lngMax: -104.62 },
     denverCenter: { lat: 39.7392, lng: -104.9903 }
   };
+
+  /* Denver-metro airports (BBL-only table, owner order
+     2026-11-19): a regular (meter) ride with a pickup OR drop-off
+     at any of these draws the one-time airportSurcharge above.
+     Detection is by endpoint coordinates within radiusM of the
+     airport centre, OR by the specific airport name / code
+     keywords — never the bare city words ("centennial",
+     "boulder", "erie", "rocky mountain" alone do NOT trigger),
+     and never a generic "airport" word, so non-metro airports
+     (Colorado Springs, Aspen/Pitkin, Eagle County) return no
+     match here. DEN keeps its wider existing keyword list
+     (diaKeywords + the DIA/DEN short tokens). */
+  BBL_PRICING.metroAirports = [
+    { code: "DEN", name: "Denver International Airport",          lat: 39.8561, lng: -104.6737, radiusM: 2000, names: ["denver international", "denver int", "denver airport", "international airport", "peña blvd", "pena blvd", "8500 pe", "(den)", "denver, co 80249"] },
+    { code: "APA", name: "Centennial Airport",                    lat: 39.5701, lng: -104.8493, radiusM: 2000, names: ["centennial airport", "(apa)"] },
+    { code: "BJC", name: "Rocky Mountain Metropolitan Airport",   lat: 39.9088, lng: -105.1172, radiusM: 2000, names: ["rocky mountain metropolitan airport", "jeffco airport", "(bjc)"] },
+    { code: "FTG", name: "Colorado Air and Space Port",           lat: 39.7853, lng: -104.5433, radiusM: 2000, names: ["colorado air and space port", "front range airport", "(ftg)", "(cfo)"] },
+    { code: "BDU", name: "Boulder Municipal Airport",             lat: 40.0394, lng: -105.2258, radiusM: 2000, names: ["boulder municipal airport", "(bdu)"] },
+    { code: "EIK", name: "Erie Municipal Airport",                lat: 40.0101, lng: -105.0475, radiusM: 2000, names: ["erie municipal airport", "(eik)"] }
+  ];
 
   /* Stadium zones — centre + radius circles, copied from the live
      RideWave tables (backend + rider page, identical). Centres are
@@ -133,15 +161,6 @@
     { name: "Denver",               lat: 39.7392, lng: -104.9903, radiusM: 9500 },
     { name: "Aurora",               lat: 39.7294, lng: -104.8319, radiusM: 8000 },
     { name: "DEN airport",          lat: 39.8561, lng: -104.6737, radiusM: 8000 },
-    /* BBL-ONLY ADDITION (owner order 2026-11-19, NOT in RideWave):
-       the DIA corridor — Reunion, east Commerce City, Green Valley
-       Ranch and the Gaylord band. These are local airport rides,
-       but they sat outside every circle above (the airport end of
-       the band hung on the DEN circle's edge by ~1 km), so the
-       closed-list gate refused them as open country. This circle
-       fills the corridor band only: Brighton (19 km from the DEN
-       centre) and everything past the airport stay outside. */
-    { name: "DIA corridor",         lat: 39.8550, lng: -104.7650, radiusM: 8000 },
     { name: "Englewood",            lat: 39.6479, lng: -104.9876, radiusM: 6500 },
     { name: "Littleton",            lat: 39.6133, lng: -105.0166, radiusM: 7000 },
     { name: "Highlands Ranch",      lat: 39.5536, lng: -104.9692, radiusM: 6500 },
@@ -196,8 +215,8 @@
             + (miles - 50) * longHaulPerMile   (only past 50 miles)
      rounded to cents. Kept in this boolean form as the meter core
      (the build harness parity-checks it against the shipped page);
-     meterFare() below is the same math with RideWave's real DIA
-     keyword test deciding the surcharge. */
+     meterFare() below is the same math with the Denver-metro
+     airport test (airportSurchargeFor) deciding the surcharge. */
   BBL_PRICING.computeFare = function (miles, hasAirport) {
     var rt = BBL_PRICING.rates[BBL_PRICING.tier];
     var fare = rt.base + miles * rt.ratePerMile;
@@ -208,22 +227,51 @@
     return Math.round(fare * 100) / 100;
   };
 
-  /* RideWave's DIA surcharge test (backend _diaSurcharge — the
-     NARROW keyword list, deliberately): the surcharge fires when
-     either endpoint address names Denver International Airport.
-     Any other airport address returns 0. */
+  /* Denver-metro airport detection (owner order 2026-11-19,
+     supersedes RideWave's DIA-only _diaSurcharge test in this
+     snapshot): an endpoint is a metro airport when its
+     coordinates fall within the airport's radiusM, or its
+     address names that airport specifically (the table's name /
+     code keywords). Returns the airport entry or null. */
   var DIA_SHORT_TOKENS = /\b(?:dia|den)\b/i;
-  BBL_PRICING.diaSurchargeFor = function (pickupAddr, dropoffAddr) {
+  BBL_PRICING.metroAirportOf = function (lat, lng, addr) {
+    var p = validLatLng(lat, lng), i, j;
+    if (p) {
+      for (i = 0; i < BBL_PRICING.metroAirports.length; i++) {
+        var a = BBL_PRICING.metroAirports[i];
+        if (distM(p[0], p[1], a.lat, a.lng) <= a.radiusM) return a;
+      }
+    }
+    var s = (addr || "").toString().toLowerCase();
+    if (s) {
+      for (i = 0; i < BBL_PRICING.metroAirports.length; i++) {
+        var names = BBL_PRICING.metroAirports[i].names;
+        for (j = 0; j < names.length; j++) {
+          if (s.indexOf(names[j]) >= 0) return BBL_PRICING.metroAirports[i];
+        }
+      }
+      if (DIA_SHORT_TOKENS.test(addr || "")) return BBL_PRICING.metroAirports[0];
+    }
+    return null;
+  };
+
+  /* The airport surcharge for one ride: the tier amount, charged
+     ONCE, when either endpoint is a Denver-metro airport (by
+     coordinates from the optional ride-data argument, or by
+     address). Non-metro airports and bare city names return 0. */
+  BBL_PRICING.airportSurchargeFor = function (pickupAddr, dropoffAddr, data) {
     var amt = BBL_PRICING.airportSurcharge[BBL_PRICING.tier];
     if (!amt) return 0;
-    var pu = (pickupAddr || "").toLowerCase(), dr = (dropoffAddr || "").toLowerCase();
-    if (!pu && !dr) return 0;
-    for (var i = 0; i < BBL_PRICING.diaKeywords.length; i++) {
-      var k = BBL_PRICING.diaKeywords[i];
-      if ((pu && pu.indexOf(k) >= 0) || (dr && dr.indexOf(k) >= 0)) return amt;
-    }
-    if (DIA_SHORT_TOKENS.test(pickupAddr || "") || DIA_SHORT_TOKENS.test(dropoffAddr || "")) return amt;
+    var d = data || {};
+    if (BBL_PRICING.metroAirportOf(d.pickupLat, d.pickupLng, pickupAddr)) return amt;
+    if (BBL_PRICING.metroAirportOf(d.dropoffLat, d.dropoffLng, dropoffAddr)) return amt;
     return 0;
+  };
+
+  /* Legacy name kept for parity with the snapshot's sources —
+     now the metro-airport test above, not DIA-only. */
+  BBL_PRICING.diaSurchargeFor = function (pickupAddr, dropoffAddr, data) {
+    return BBL_PRICING.airportSurchargeFor(pickupAddr, dropoffAddr, data);
   };
 
   /* The wider "is this address DIA at all" test (backend
@@ -242,13 +290,16 @@
   };
 
   /* The canonical meter fare (backend _canonicalFare): base +
-     miles x per-mile + DIA surcharge + long-distance surcharge,
-     never below base, rounded to cents. */
-  BBL_PRICING.meterFare = function (miles, pickupAddr, dropoffAddr) {
+     miles x per-mile + airport surcharge (any Denver-metro
+     airport endpoint, once) + long-distance surcharge, never
+     below base, rounded to cents. The optional ride-data
+     argument carries the endpoint coordinates for the airport
+     test; without it the test runs on the addresses alone. */
+  BBL_PRICING.meterFare = function (miles, pickupAddr, dropoffAddr, data) {
     var rt = BBL_PRICING.rates[BBL_PRICING.tier];
     var m = Number(miles) || 0;
     var raw = rt.base + m * rt.ratePerMile
-      + BBL_PRICING.diaSurchargeFor(pickupAddr, dropoffAddr);
+      + BBL_PRICING.airportSurchargeFor(pickupAddr, dropoffAddr, data);
     if (m > BBL_PRICING.longHaulAfterMiles) {
       raw += (m - BBL_PRICING.longHaulAfterMiles) * (BBL_PRICING.longHaulPerMile[BBL_PRICING.tier] || 0);
     }
@@ -363,7 +414,7 @@
      { fare, meterFare, stadium, mountain, openCountry } — fare is
      null when the admin-request gate applies (no instant price). */
   BBL_PRICING.priceRide = function (miles, data) {
-    var meter = BBL_PRICING.meterFare(miles, data.pickup, data.dropoff);
+    var meter = BBL_PRICING.meterFare(miles, data.pickup, data.dropoff, data);
     var mtn = BBL_PRICING.mountainRuleFor(data);
     var stad = mtn ? null : BBL_PRICING.stadiumRuleFor(data);
     var fare = meter;
@@ -385,7 +436,7 @@
     snapshotDate: "2026-11-18",
     sourceFiles: ["functions/index.js (ridewave-functions)", "app.html (ridewave-web)"],
     sourceBlobs: ["17e751439ffe81247b63635c84cc2c7b48e2763c", "48f41448e533c1a719bdd4a62b1297ba844ecb22"],
-    note: "Snapshot only — no live link to RideWave pricing in either direction. Rates made identical to RideWave's live fare stack at the owner's order, 2026-11-18."
+    note: "Snapshot only — no live link to RideWave pricing in either direction. Rates made identical to RideWave's live fare stack at the owner's order, 2026-11-18. BBL-only change 2026-11-19 (staged, not deployed): the airport surcharge now covers every Denver-metro airport, not DIA only."
   };
 
   /* Version stamp — the quote page pins its script URL to this
@@ -397,6 +448,6 @@
      served against the current page forever). ANY edit to this
      file MUST bump the stamp here AND the page's
      PRICING_STAMP_EXPECTED + script-tag query together. */
-  BBL_PRICING.stamp = "2026-11-19-fix11";
+  BBL_PRICING.stamp = "2026-11-19-airport20";
   window.BBL_PRICING = BBL_PRICING;
 })();

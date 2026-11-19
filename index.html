@@ -1160,7 +1160,7 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
         <ul class="tl">
           <li><span class="dot"></span><div><b>Right away</b><span>Booking confirmation by email.</span></div></li>
           <li><span class="dot"></span><div><b>When your driver is assigned</b><span>A welcome email with the driver information: driver name, vehicle and plate.</span></div></li>
-          <li><span class="dot"></span><div><b>Before your ride</b><span>An email reminder 24 hours before pickup.</span></div></li>
+          <li><span class="dot"></span><div><b>Before your ride</b><span>An email reminder 12 hours before pickup.</span></div></li>
         </ul>
         <div class="msg"><b>Sample confirmation email:</b> “Boulder Black Line: You are booked Fri Nov 6, 4:30 PM, Boulder to Denver International Airport. Questions? Call (720) 326-4652.”</div>
       </div>
@@ -1240,9 +1240,10 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
         <div class="duo">
           <div class="panel recv" style="grid-column:1/-1"><h3>What you will receive</h3><ul class="tl"><li><span class="dot"></span><div><b>Right away</b><span>Booking confirmation by email.</span></div></li>
           <li><span class="dot"></span><div><b>When your driver is assigned</b><span>A welcome email with the driver information: driver name, vehicle and plate.</span></div></li>
-          <li><span class="dot"></span><div><b>Before your ride</b><span>An email reminder 24 hours before pickup.</span></div></li></ul><div class="msg" style="margin-top:0"><b>Sample confirmation email:</b> <span id="riderMsg"></span></div></div>
+          <li><span class="dot"></span><div><b>Before your ride</b><span>An email reminder 12 hours before pickup.</span></div></li></ul><div class="msg" style="margin-top:0"><b>Sample confirmation email:</b> <span id="riderMsg"></span></div></div>
         </div>
         <div style="margin-top:16px"><button class="btn btn-amber" id="bookAnother" type="button">Book another ride</button></div>
+        <p style="margin-top:12px"><a class="btn" id="textRequestBtn" href="#" hidden>Also text your request to Boulder Black Line now</a></p>
       </div>
     </div>
   </div>
@@ -1267,10 +1268,11 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
     <div class="foot-crest"><span class="bbl-logo-tile bbl-logo-foot" style="display:none" aria-hidden="true"></span></div>
     <div class="f-grid">
       <div><h3>Boulder Black Line</h3><p>Private black SUV service by reservation.<br>Denver Metro, CO</p></div>
-      <div><h3>Contact</h3><p>Call / text: <a href="tel:+17203264652">(720) 326-4652</a><br>Email: <a href="mailto:info@boulderblackline.com">info@boulderblackline.com</a></p></div>
+      <div><h3>Contact</h3><p>Call / text: <a href="tel:+17203264652">(720) 326-4652</a><br>Email: <a href="mailto:dipsdhakal1@gmail.com">dipsdhakal1@gmail.com</a></p></div>
       <div><h3>Good to know</h3><p>Licensed &amp; insured, <span class="ph">[Permit / PUC #]</span><br>One SUV, one driver, rides are first booked, first served.<br>Airport pickups include flight tracking.</p></div>
     </div>
     <div class="fine">© 2026 Boulder Black Line <a href="/privacy.html">Privacy Policy</a><a href="/terms.html">Terms of Service</a><a href="/owner.html">Admin</a></div>
+    <div class="fine build-line">Build 11 · v2026.11.19-airport20 · 2026-11-19</div>
   </div>
 </footer>
 
@@ -1279,7 +1281,7 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
   <a href="sms:+17203264652">Text</a>
 </nav>
 
-<script src="bbl-pricing.js?v=2026-11-19-fix11"></script>
+<script src="bbl-pricing.js?v=2026-11-19-airport20"></script>
 <script src="bbl-backend.js"></script>
 <script>
 "use strict";
@@ -2572,6 +2574,20 @@ $("confirmBtn").addEventListener("click", function () {
   $("qSummary").innerHTML = rows.map(function (r) { return "<div class='srow'><span>" + escHtml(r[0]) + "</span><b>" + escHtml(r[1]) + "</b></div>"; }).join("");
   $("confCode").textContent = code;
   $("riderMsg").textContent = "Boulder Black Line: You are booked " + fmtDate(rec.date) + ", " + fmtTime(rec.time) + ", " + shortPlace(rec.pickup, "qPickup") + " to " + shortPlace(rec.dropoff, "qDropoff") + ". Questions? Call (720) 326-4652.";
+  /* Owner-alert wiring (2026-11-19): the booking above already fired
+     the one Jotform submission (owner text + email, rider confirmation
+     email) and the server-side record inside recordBooking. This
+     optional button is only a convenience copy of the same request
+     the rider can text from their own phone; it stays hidden in demo
+     mode, where nothing leaves the device. */
+  var _trb = $("textRequestBtn");
+  if (_trb) {
+    if (!window.BBL_BACKEND || BBL_BACKEND.demoMode) { _trb.hidden = true; }
+    else {
+      _trb.href = "sms:+17203264652?&body=" + encodeURIComponent("Boulder Black Line booking " + code + ": " + fmtDate(rec.date) + " " + fmtTime(rec.time) + ", " + rec.pickup + " to " + rec.dropoff + ", " + rec.rider + " " + rec.phone);
+      _trb.hidden = false;
+    }
+  }
   $("bookForm").style.display = "none";
   var done = $("successBox");
   done.classList.add("show");
@@ -2583,6 +2599,7 @@ $("bookAnother").addEventListener("click", function () {
   var qf = $("quickForm"); if (qf) qf.reset();
   var bf = $("bookForm"); if (bf) { bf.reset(); bf.style.display = ""; }
   var sb = $("successBox"); if (sb) sb.classList.remove("show");
+  var trbReset = $("textRequestBtn"); if (trbReset) { trbReset.hidden = true; trbReset.setAttribute("href", "#"); }
   var sr = $("stopRow"); if (sr) sr.hidden = true;
   diaManual = null;
   diaAirline = null; diaAirlineSkipped = false; diaGateDone = false;
@@ -2918,7 +2935,7 @@ setTimeout(function () { if (!mapsReady) qzMapsFailed(); }, 10000);
    cache-busted reload; success re-points FARE_CONFIG and
    re-prices, failure is stated plainly on the fare line
    (pricingBroken) instead of wedging. */
-var PRICING_STAMP_EXPECTED = "2026-11-19-fix11";
+var PRICING_STAMP_EXPECTED = "2026-11-19-airport20";
 var pricingBroken = false;
 function pricingSnapshotOk(P) {
   return !!P && P.stamp === PRICING_STAMP_EXPECTED &&
@@ -2956,7 +2973,7 @@ if (!pricingSnapshotOk(window.BBL_PRICING)) healPricing();
    parameters it renders the Boulder Black Line identity. Fare parameters
    are never read: pricing stays exactly Boulder's. */
 (function () {
-  var DEF = { co: "Boulder Black Line", owner: "Boulder Black Line", ph: "(720) 326-4652", em: "info@boulderblackline.com", veh: "black-suv" };
+  var DEF = { co: "Boulder Black Line", owner: "Boulder Black Line", ph: "(720) 326-4652", em: "dipsdhakal1@gmail.com", veh: "black-suv" };
   var CAP = { co: 60, owner: 60, ph: 32, em: 80 };
   var q = {};
   try { q = Object.fromEntries(new URLSearchParams(window.location.search).entries()); } catch (e) { q = {}; }
@@ -2999,7 +3016,7 @@ if (!pricingSnapshotOk(window.BBL_PRICING)) healPricing();
         var v = node.nodeValue; if (!v) return;
         var nv = v.split("Boulder Black Line").join(co)
                   .split("(720) 326-4652").join(ph)
-                  .split("info@boulderblackline.com").join(em);
+                  .split("dipsdhakal1@gmail.com").join(em);
         if (nv !== v) { node.nodeValue = nv; changed = true; }
       });
     }
@@ -3029,17 +3046,17 @@ if (!pricingSnapshotOk(window.BBL_PRICING)) healPricing();
       b.replaceChildren(frag);
       b.setAttribute("data-bbl-brand", ID.co);
     }
-    document.title = document.title.split("Boulder Black Line").join(co).split("(720) 326-4652").join(ph).split("info@boulderblackline.com").join(em);
+    document.title = document.title.split("Boulder Black Line").join(co).split("(720) 326-4652").join(ph).split("dipsdhakal1@gmail.com").join(em);
     var as = document.querySelectorAll("a[href]");
     for (var i = 0; i < as.length; i++) {
       var a = as[i], href = a.getAttribute("href") || "", nh = href;
       if (href.indexOf("tel:+17203264652") === 0 && phDigits) nh = "tel:" + phDigits;
-      else if (href.indexOf("mailto:info@boulderblackline.com") === 0) nh = "mailto:" + em;
-      else if (href.indexOf("info@boulderblackline.com") !== -1) nh = href.split("info@boulderblackline.com").join(em);
+      else if (href.indexOf("mailto:dipsdhakal1@gmail.com") === 0) nh = "mailto:" + em;
+      else if (href.indexOf("dipsdhakal1@gmail.com") !== -1) nh = href.split("dipsdhakal1@gmail.com").join(em);
       if (nh !== href) { a.setAttribute("href", nh); changed = true; }
     }
     var meta = document.querySelector('meta[name="description"]');
-    if (meta) { var c = meta.getAttribute("content") || ""; var nc = c.split("Boulder Black Line").join(co).split("(720) 326-4652").join(ph).split("info@boulderblackline.com").join(em); if (nc !== c) meta.setAttribute("content", nc); }
+    if (meta) { var c = meta.getAttribute("content") || ""; var nc = c.split("Boulder Black Line").join(co).split("(720) 326-4652").join(ph).split("dipsdhakal1@gmail.com").join(em); if (nc !== c) meta.setAttribute("content", nc); }
     /* Owner name: the set keeps exactly one owner-name position, the
        owner-page sign-in heading (marked data-bbl-owner at build time).
        Where a page has no such slot the value is carried, not shown. */

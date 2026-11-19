@@ -221,6 +221,7 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
         <div class="field"><label class="flabel" for="dEmail">Email (optional)</label><input id="dEmail" type="email" autocomplete="email" placeholder="driver@example.com"><div class="err">Please enter a valid email address, or leave it blank.</div></div>
       </div>
       <div class="field"><label class="flabel" for="dVehicle">Vehicle (optional)</label><input id="dVehicle" type="text" placeholder="e.g. Black SUV"><div class="err">Please check the vehicle.</div></div>
+      <div class="field"><label class="flabel" for="dPlate">License plate (optional)</label><input id="dPlate" type="text" placeholder="e.g. ABC-123"><div class="err">Please check the license plate.</div></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <button class="btn btn-dark" type="submit" id="driverSubmitBtn">Add driver</button>
         <button class="btn btn-ghost" type="button" id="driverCancelEdit" hidden>Cancel edit</button>
@@ -241,7 +242,7 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
     <h2 class="sec" style="margin-top:56px">What you receive</h2>
     <p class="secsub">Every booking sends alerts to the owner side at each moment that matters. These are the samples.</p>
     <div class="panel">
-      <p style="margin:0 0 6px;color:var(--ink2);font-size:14.5px">Every alert goes to the owner at <a href="tel:+17203264652"><b>(720) 326-4652</b></a> and <a href="mailto:info@boulderblackline.com"><b>info@boulderblackline.com</b></a>.</p>
+      <p style="margin:0 0 6px;color:var(--ink2);font-size:14.5px">Every alert goes to the owner at <a href="tel:+17203264652"><b>(720) 326-4652</b></a> and <a href="mailto:dipsdhakal1@gmail.com"><b>dipsdhakal1@gmail.com</b></a>.</p>
       <ul class="tl">
         <li><span class="dot"></span><div><b>Instantly, on every booking</b><span>Text + email with rider name, route, time and tap-to-call.</span></div></li>
         <li><span class="dot"></span><div><b>If payment fails</b><span>Immediate alert so the ride is never silently lost.</span></div></li>
@@ -260,7 +261,7 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
   <div class="wrap">
     <div class="foot-crest"></div>
     <h3>Boulder Black Line</h3>
-    <p style="margin:0">Private SUV rides in the Denver metro. Call <a href="tel:+17203264652">(720) 326-4652</a> or email <a href="mailto:info@boulderblackline.com">info@boulderblackline.com</a>.</p>
+    <p style="margin:0">Private SUV rides in the Denver metro. Call <a href="tel:+17203264652">(720) 326-4652</a> or email <a href="mailto:dipsdhakal1@gmail.com">dipsdhakal1@gmail.com</a>.</p>
     <p class="fine">Owner page for the preview. This page has its own address and its own sign in, and it is not linked from the rider site.<br><a href="/privacy.html">Privacy Policy</a> · <a href="/terms.html">Terms of Service</a></p>
   </div>
 </footer>
@@ -367,7 +368,7 @@ function loadCentral(quiet){
     if(note)note.textContent=fbOwnerLevel()?("Live view unlocked with your account ("+(FB_ACCT.email||"")+" )."):"Live view unlocked for this tab.";
     return loadCentralDrivers();
   }).catch(function(){
-    if(fbOwnerLevel())return false;
+    if(fbOwnerLevel()){var n2=$("gateNote");if(n2)n2.textContent="Live view needs your owner code. Enter it below to unlock the live list.";$("gateForm").hidden=false;return false}
     flagMsg($("gateCode"),"That code did not match. Try again.",!quiet);
     setGateCode("");
     $("liveWrap").hidden=true;
@@ -382,7 +383,7 @@ function loadLive(code,quiet){
 }
 function mirrorDriversLocal(){
   if(!LIVE_DRIVERS)return;
-  saveDrivers(LIVE_DRIVERS.map(function(d){return {id:d.id,name:d.name,mobile:d.mobile,email:d.email,vehicle:d.vehicle,self:!!d.self}}));
+  saveDrivers(LIVE_DRIVERS.map(function(d){return {id:d.id,name:d.name,mobile:d.mobile,email:d.email,vehicle:d.vehicle,plate:d.plate||"",self:!!d.self}}));
 }
 function loadCentralDrivers(){
   if(typeof window.__bblCall!=="function")return Promise.resolve(false);
@@ -397,7 +398,7 @@ function loadCentralDrivers(){
       local.forEach(function(d){
         if(!d.self&&phoneKey(d.mobile).length<10)return;
         if(d.self&&phoneKey(d.mobile).length<10)return;
-        chain=chain.then(function(){return window.__bblCall("bblSaveDriver",centralPayload({id:d.id,name:d.name,mobile:d.mobile,email:d.email||"",vehicle:d.vehicle||"",self:!!d.self})).catch(function(){})});
+        chain=chain.then(function(){return window.__bblCall("bblSaveDriver",centralPayload({id:d.id,name:d.name,mobile:d.mobile,email:d.email||"",vehicle:d.vehicle||"",plate:d.plate||"",self:!!d.self})).catch(function(){})});
       });
       return chain.then(function(){
         lsSet("bbl_drivers_migrated_v1",true);
@@ -565,7 +566,7 @@ function receiptLines(b){
   lines.push("Total: "+money2(b.price));
   lines.push("Payment: Pay driver later");
   lines.push("");
-  lines.push("Thank you for riding with Boulder Black Line. Call (720) 326-4652 or email info@boulderblackline.com.");
+  lines.push("Thank you for riding with Boulder Black Line. Call (720) 326-4652 or email dipsdhakal1@gmail.com.");
   return lines;
 }
 function ensureReceipt(b){if(!b||b.receiptSentAt)return false;
@@ -575,7 +576,7 @@ function ensureReceipt(b){if(!b||b.receiptSentAt)return false;
   b.receiptSentAt=new Date().toISOString();return true}
 function ensureSampleReceipt(r){if(!r||r.receiptSentAt)return false;
   var price=parseFloat((/\$([0-9.]+)/.exec(r.amt||"")||[])[1]||"0");var later=/Pay later/i.test(r.amt||"");
-  var lines=["Boulder Black Line","Ride receipt","","Ride: "+r.s,"When: "+r.t,"Rider: "+r.r,"","Total: "+money2(price),"Payment: "+(later?"Pay driver later":"Paid"),"","Thank you for riding with Boulder Black Line. Call (720) 326-4652 or email info@boulderblackline.com."];
+  var lines=["Boulder Black Line","Ride receipt","","Ride: "+r.s,"When: "+r.t,"Rider: "+r.r,"","Total: "+money2(price),"Payment: "+(later?"Pay driver later":"Paid"),"","Thank you for riding with Boulder Black Line. Call (720) 326-4652 or email dipsdhakal1@gmail.com."];
   r.receiptText=lines.join("\n");r.receiptEmail="Subject: Your Boulder Black Line receipt\n\n"+r.receiptText+"\n\nBoulder Black Line";r.receiptSentAt=new Date().toISOString();return true}
 function showReceiptPanel(txt){var p=$("receiptPanel");if(!p)return;$("receiptBody").textContent=txt||"";p.hidden=false;p.scrollIntoView({behavior:"smooth",block:"center"})}
 $("receiptCloseBtn").addEventListener("click",function(){$("receiptPanel").hidden=true});
@@ -596,7 +597,7 @@ function renderDrivers(){
   }
   if(!list.length&&!html){box.innerHTML='<p class="empty-note">No drivers yet. Add your first driver above.</p>';return}
   html+=list.map(function(d){
-    var sub=escHtml(d.mobile||"No mobile yet")+(d.vehicle?" \u00B7 "+escHtml(d.vehicle):"")+(d.email?" \u00B7 "+escHtml(d.email):"");
+    var sub=escHtml(d.mobile||"No mobile yet")+(d.vehicle?" \u00B7 "+escHtml(d.vehicle):"")+(d.plate?" \u00B7 Plate "+escHtml(d.plate):"")+(d.email?" \u00B7 "+escHtml(d.email):"");
     return '<div class="owner-row"><div class="info"><b>'+escHtml(d.name)+(d.self?' <span class="status go">Myself</span>':"")+'</b><span>'+sub+'</span></div><div class="row-actions"><button class="mini-btn" type="button" data-dedit="'+escHtml(d.id)+'">Edit</button>'+(d.self?"":'<button class="mini-btn" type="button" data-dremove="'+escHtml(d.id)+'">Remove</button>')+'</div></div>';
   }).join("");
   box.innerHTML=html;
@@ -605,7 +606,7 @@ function renderDrivers(){
   box.querySelectorAll("[data-dremove]").forEach(function(btn){btn.addEventListener("click",function(){removeDriver(btn.getAttribute("data-dremove"))})});
 }
 function driverSourceList(){return LIVE_DRIVERS||getDrivers()}
-function startEditDriver(id){var d=null;driverSourceList().forEach(function(x){if(x.id===id)d=x});if(!d)return;selfAddMode=false;editingDriverId=id;$("dName").value=d.name||"";$("dMobile").value=d.mobile||"";$("dEmail").value=d.email||"";$("dVehicle").value=d.vehicle||"";$("driverSubmitBtn").textContent="Save driver";$("driverCancelEdit").hidden=false;$("driverFormTitle").textContent="Edit driver";$("dName").scrollIntoView({behavior:"smooth",block:"center"})}
+function startEditDriver(id){var d=null;driverSourceList().forEach(function(x){if(x.id===id)d=x});if(!d)return;selfAddMode=false;editingDriverId=id;$("dName").value=d.name||"";$("dMobile").value=d.mobile||"";$("dEmail").value=d.email||"";$("dVehicle").value=d.vehicle||"";$("dPlate").value=d.plate||"";$("driverSubmitBtn").textContent="Save driver";$("driverCancelEdit").hidden=false;$("driverFormTitle").textContent="Edit driver";$("dName").scrollIntoView({behavior:"smooth",block:"center"})}
 function resetDriverForm(){editingDriverId="";selfAddMode=false;$("driverForm").reset();$("driverSubmitBtn").textContent="Add driver";$("driverCancelEdit").hidden=true;$("driverFormTitle").textContent="Add a driver"}
 function removeDriver(id){
   var d=null;driverSourceList().forEach(function(x){if(x.id===id)d=x});if(!d||d.self)return;
@@ -623,16 +624,16 @@ function removeDriver(id){
   if(editingDriverId===id)resetDriverForm();
   renderDrivers();renderDay();}
 $("driverCancelEdit").addEventListener("click",function(){resetDriverForm()});
-$("driverForm").addEventListener("submit",function(e){e.preventDefault();var nm=$("dName"),mb=$("dMobile"),em=$("dEmail"),vh=$("dVehicle"),bad=null;
+$("driverForm").addEventListener("submit",function(e){e.preventDefault();var nm=$("dName"),mb=$("dMobile"),em=$("dEmail"),vh=$("dVehicle"),pl=$("dPlate"),bad=null;
   if(nm.value.trim().length<2){flagMsg(nm,"Please enter the driver full name.",false);bad=bad||nm}
   if(phoneKey(mb.value).length<10){flagMsg(mb,"Please enter a valid 10 digit mobile number.",false);bad=bad||mb}
   var email=em.value.trim();
   if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){flagMsg(em,"Please enter a valid email address, or leave it blank.",false);bad=bad||em}
   if(bad){flagField(bad,true);return}
-  var name=nm.value.trim(),mobile=mb.value.trim(),veh=vh.value.trim();
+  var name=nm.value.trim(),mobile=mb.value.trim(),veh=vh.value.trim(),plate=pl.value.trim();
   if(LIVE_DRIVERS&&typeof window.__bblCall==="function"){
     var isSelf=selfAddMode||(editingDriverId==="self");
-    var payload={name:name,mobile:mobile,email:email,vehicle:veh,self:!!isSelf};
+    var payload={name:name,mobile:mobile,email:email,vehicle:veh,plate:plate,self:!!isSelf};
     if(editingDriverId)payload.id=editingDriverId;
     window.__bblCall("bblSaveDriver",centralPayload(payload)).then(function(){resetDriverForm();return loadCentralDrivers()}).then(function(){renderDay()},function(err){
       var msg=(err&&err.message)||"";
@@ -641,8 +642,8 @@ $("driverForm").addEventListener("submit",function(e){e.preventDefault();var nm=
     return;
   }
   var list=getDrivers();
-  if(editingDriverId){list.forEach(function(d){if(d.id===editingDriverId){d.name=name;d.mobile=mobile;d.email=email;d.vehicle=veh}})}
-  else{list.push({id:"d"+Date.now().toString(36)+Math.floor(Math.random()*999),name:name,mobile:mobile,email:email,vehicle:veh})}
+  if(editingDriverId){list.forEach(function(d){if(d.id===editingDriverId){d.name=name;d.mobile=mobile;d.email=email;d.vehicle=veh;d.plate=plate}})}
+  else{list.push({id:"d"+Date.now().toString(36)+Math.floor(Math.random()*999),name:name,mobile:mobile,email:email,vehicle:veh,plate:plate})}
   saveDrivers(list);resetDriverForm();renderDrivers();renderDay();});
 var selfAddMode=false;
 $("alertCloseBtn").addEventListener("click",function(){$("alertPanel").hidden=true});
@@ -871,8 +872,36 @@ $("accountsRefresh").addEventListener("click",function(){loadAccounts()});
     user: function () { return sessUser(); }
   };
   Object.defineProperty(window, "__bblUser", { configurable: true, writable: true, value: null });
+  /* LIVE backend (2026-11-19): bookings, drivers, assignment and
+     status run on the BBL Cloud Functions (the bbl namespace), not
+     on this device. The owner code is the one entered in the live
+     view gate; it is read from session storage here because the
+     page's own payload helper leaves it out once the owner account
+     is signed in. Accounts, activity and the rider-side booking
+     mirror below stay on the local demo store. */
+  var BBL_FN_BASE = "https://us-central1-blackcarservice4u-57d2a.cloudfunctions.net/";
+  var BBL_LIVE_FNS = { bblListBookings: 1, bblListDrivers: 1, bblSaveDriver: 1, bblDeleteDriver: 1, bblAssignDriver: 1, bblSetBookingStatus: 1 };
+  function bblFnCall(name, data) {
+    var code = "";
+    try { code = sessionStorage.getItem("bbl_owner_gate_v1") || ""; } catch (e) {}
+    if (!code) return Promise.reject({ code: "owner-code-missing", message: "Enter your owner code in the live view above first." });
+    var body = {};
+    for (var k in data) body[k] = data[k];
+    body.code = code;
+    return fetch(BBL_FN_BASE + name, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    }).then(function (r) {
+      return r.json().then(function (j) {
+        if (!r.ok || (j && j.error)) throw { code: "bbl/" + (r.status || "error"), message: (j && j.error) || "The live service did not answer." };
+        return j;
+      });
+    });
+  }
   window.__bblCall = function (name, data) {
     data = data || {};
+    if (BBL_LIVE_FNS[String(name)]) return bblFnCall(String(name), data);
     var u = sessUser();
     function needUser() { if (!u) throw { code: "unauthenticated", message: "Sign in first." }; return u._acct; }
     switch (String(name)) {
@@ -892,25 +921,14 @@ $("accountsRefresh").addEventListener("click",function(){loadAccounts()});
         lsSet(LS_BOOKQ, books);
         return Promise.resolve({ ok: true, code: data.code || "", bookingId: "xyz-demo" });
       }
-      case "bblListBookings": {
-        var mine = lsGet("bbl_bookings_v1", []);
-        if (u && u._acct && (u._acct.isOperator || u._acct.isDriver)) mine = lsGet(LS_BOOKQ, mine);
-        return Promise.resolve({ bookings: mine });
-      }
       case "bblListAccounts": {
         var all = lsGet(LS_ACCTS, {});
         var extra = lsGet(LS_OWNERQ, null);
         var list = Object.keys(all).map(function (k) { return acctView(all[k]); });
         return Promise.resolve({ accounts: extra || list });
       }
-      case "bblListDrivers": {
-        var all2 = lsGet(LS_ACCTS, {});
-        var list2 = Object.keys(all2).filter(function (k) { return all2[k].isDriver || all2[k].role === "driver"; }).map(function (k) { return acctView(all2[k]); });
-        return Promise.resolve({ drivers: list2 });
-      }
       case "bblListActivity": return Promise.resolve({ activity: [], events: [] });
-      case "bblSaveDriver": case "bblGrantRole": case "bblDeleteDriver":
-      case "bblAssignDriver": case "bblSetBookingStatus":
+      case "bblGrantRole":
         return Promise.resolve({ ok: true, demo: true });
       default:
         return Promise.resolve({ ok: true, demo: true });
@@ -942,7 +960,7 @@ $("accountsRefresh").addEventListener("click",function(){loadAccounts()});
    parameters it renders the Boulder Black Line identity. Fare parameters
    are never read: pricing stays exactly Boulder's. */
 (function () {
-  var DEF = { co: "Boulder Black Line", owner: "Boulder Black Line", ph: "(720) 326-4652", em: "info@boulderblackline.com", veh: "black-suv" };
+  var DEF = { co: "Boulder Black Line", owner: "Boulder Black Line", ph: "(720) 326-4652", em: "dipsdhakal1@gmail.com", veh: "black-suv" };
   var CAP = { co: 60, owner: 60, ph: 32, em: 80 };
   var q = {};
   try { q = Object.fromEntries(new URLSearchParams(window.location.search).entries()); } catch (e) { q = {}; }
@@ -983,7 +1001,7 @@ $("accountsRefresh").addEventListener("click",function(){loadAccounts()});
         var v = node.nodeValue; if (!v) return;
         var nv = v.split("Boulder Black Line").join(co)
                   .split("(720) 326-4652").join(ph)
-                  .split("info@boulderblackline.com").join(em);
+                  .split("dipsdhakal1@gmail.com").join(em);
         if (nv !== v) { node.nodeValue = nv; changed = true; }
       });
     }
@@ -1013,17 +1031,17 @@ $("accountsRefresh").addEventListener("click",function(){loadAccounts()});
       b.replaceChildren(frag);
       b.setAttribute("data-bbl-brand", ID.co);
     }
-    document.title = document.title.split("Boulder Black Line").join(co).split("(720) 326-4652").join(ph).split("info@boulderblackline.com").join(em);
+    document.title = document.title.split("Boulder Black Line").join(co).split("(720) 326-4652").join(ph).split("dipsdhakal1@gmail.com").join(em);
     var as = document.querySelectorAll("a[href]");
     for (var i = 0; i < as.length; i++) {
       var a = as[i], href = a.getAttribute("href") || "", nh = href;
       if (href.indexOf("tel:+17203264652") === 0 && phDigits) nh = "tel:" + phDigits;
-      else if (href.indexOf("mailto:info@boulderblackline.com") === 0) nh = "mailto:" + em;
-      else if (href.indexOf("info@boulderblackline.com") !== -1) nh = href.split("info@boulderblackline.com").join(em);
+      else if (href.indexOf("mailto:dipsdhakal1@gmail.com") === 0) nh = "mailto:" + em;
+      else if (href.indexOf("dipsdhakal1@gmail.com") !== -1) nh = href.split("dipsdhakal1@gmail.com").join(em);
       if (nh !== href) { a.setAttribute("href", nh); changed = true; }
     }
     var meta = document.querySelector('meta[name="description"]');
-    if (meta) { var c = meta.getAttribute("content") || ""; var nc = c.split("Boulder Black Line").join(co).split("(720) 326-4652").join(ph).split("info@boulderblackline.com").join(em); if (nc !== c) meta.setAttribute("content", nc); }
+    if (meta) { var c = meta.getAttribute("content") || ""; var nc = c.split("Boulder Black Line").join(co).split("(720) 326-4652").join(ph).split("dipsdhakal1@gmail.com").join(em); if (nc !== c) meta.setAttribute("content", nc); }
     /* Owner name: the set keeps exactly one owner-name position, the
        owner-page sign-in heading (marked data-bbl-owner at build time).
        Where a page has no such slot the value is carried, not shown. */
