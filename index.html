@@ -794,6 +794,21 @@ body.qpage .qhero .continue-btn{height:48px;min-height:48px}
   body.qpage .qhero .mode-toggle button{height:38px;min-height:38px}
   body.qpage .qhero .continue-btn{height:44px;min-height:44px}
 }
+/* FIX-6 spacing (user, 2026-11-19 05:06 MST): on tall phones the
+   form rows breathe — more air between the address fields and
+   Date/Time, and more air above the Point To Point / Hourly
+   toggle under the map. The map (the flex absorber) funds every
+   added pixel, so the first view still fills exactly one screen
+   and Continue keeps its seat above the Call/Text bar. Shorter
+   phones keep the spacing they already fit with; the booking
+   view (bk-on) keeps its own compact tier. */
+@media (min-height:900px){
+  body.qpage .qhero .app-panel{padding:18px 14px 10px;gap:13px}
+  body.qpage .qhero .route-fields{gap:13px}
+}
+@media (min-height:900px) and (min-width:561px){
+  body.qpage .qhero .app-panel{padding:18px 18px 10px}
+}
 </style>
 
 
@@ -1751,7 +1766,22 @@ function gfRefresh(sourceId) {
          a real tap opens them. */
       if (target.id !== "qDate" && target.id !== "qTime") {
         var w = gfFieldWrap(target);
-        if (w && w.scrollIntoView) w.scrollIntoView({ behavior: "smooth", block: "center" });
+        if (w && w.scrollIntoView) {
+          /* Scroll only when the next field is not already fully
+             on screen (FIX-6, user 2026-11-19): scrollIntoView
+             with block:"center" on an already-visible field yanks
+             the whole one-screen first view upward — on a fresh
+             load, the current-location pickup fill advanced to
+             the drop-off and dragged the page up with it, pulling
+             the vehicle slideshow into the first screen and the
+             headline's first line off the top (his 05:04
+             screenshot). When the field sits behind the keyboard
+             or off the edge, the scroll still happens as before. */
+          var r = null;
+          try { r = w.getBoundingClientRect ? w.getBoundingClientRect() : null; } catch (e) {}
+          var vh = (window.visualViewport && window.visualViewport.height) || window.innerHeight || 0;
+          if (!r || !vh || r.top < 8 || r.bottom > vh - 8) w.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
         if (target.focus) target.focus({ preventScroll: true });
       }
     }
@@ -2501,7 +2531,12 @@ function maybeDefaultPickupFromLocation() {
    or how far the keyboard animation has run. Re-fits on typing,
    on keyboard-driven viewport changes, and whenever Google
    re-places the list; the fit signature carries the viewport
-   size, so a settled keyboard always re-fits. */
+   size, so a settled keyboard always re-fits.
+   AMENDED 2026-11-19 (FIX-6, user 05:11 MST): the popup no
+   longer opens over the map — it starts below the map's bottom
+   edge so the map and its route line stay visible while
+   typing; the viewport-top pin remains only as the fallback
+   for when the map has scrolled off the top. */
 (function () {
   var pacIds = ["qPickup", "qDropoff", "qStop"];
   var pacActive = null, pacSig = "", pacTimer = 0;
@@ -2515,8 +2550,24 @@ function maybeDefaultPickupFromLocation() {
     if (!vv || !pacActive) return;
     var pac = pacOpen(); if (!pac) return;
     var need = pac.scrollHeight || 230;
-    var maxH = Math.max(150, Math.min(need, Math.floor(vv.height * 0.6)));
-    var top = Math.round(vv.offsetTop) + 10;
+    /* The map stays visible while typing (FIX-6, user
+       2026-11-19 05:11 MST): the popup opens BELOW the map's
+       bottom edge, never over it, so the map and its route line
+       stay on screen from the first letter to the pick. The
+       edge is read live on every fit (it moves as the page
+       scrolls and the keyboard settles) and rides in the fit
+       signature. When the map has scrolled off the top there
+       is nothing left to cover, and the popup takes the
+       viewport top as before. */
+    var topBase = Math.round(vv.offsetTop) + 10;
+    var top = topBase;
+    var mapEl = document.getElementById("qMap");
+    if (mapEl && mapEl.getBoundingClientRect) {
+      var mb = Math.round(vv.offsetTop + mapEl.getBoundingClientRect().bottom) + 8;
+      if (mb > topBase && mb < Math.round(vv.offsetTop + vv.height) - 140) top = mb;
+    }
+    var avail = Math.round(vv.offsetTop + vv.height) - top - 10;
+    var maxH = Math.max(120, Math.min(need, avail));
     var left = Math.round(vv.offsetLeft) + 12;
     var width = Math.max(200, Math.round(vv.width) - 24);
     var sig = top + "|" + maxH + "|" + left + "|" + width + "|" + Math.round(vv.height) + "|" + need;
