@@ -61,7 +61,20 @@
         fare: null); the customer calls or texts and the office
         quotes it, exactly as RideWave's closed list works.
      Stops never trigger any zone rule — only pickup and drop-off
-     are tested. Hourly charters never enter the zone rules.
+     are tested.
+     5. Hourly eligibility (owner order 2026-11-20): hourly is a
+        Denver-metro product only. An hourly charter prices by the
+        hour ONLY when both endpoints are covered (the same closed
+        list as the gate in 4) AND no flat-fare zone governs the
+        ride AND no stadium / venue zone governs it either (owner
+        order 2026-11-20, the venue extension). If either endpoint
+        sits in a flat-fare zone, the flat fare governs — never
+        the hourly rate; if either endpoint sits in a stadium
+        zone, the venue fare in 3 governs — never the hourly rate;
+        if either endpoint is covered by nothing, the gate in 4
+        governs in every mode. hourlyEligibility() below is the
+        test; the page enforces it in its fare path and falls back
+        to Point To Point when it answers no.
 
    ISOLATION RULE (owner order, 2026-11-17):
    This file is the ONLY pricing source for the Boulder Black Line
@@ -448,6 +461,34 @@
     return { fare: open ? null : fare, meterFare: meter, stadium: stad, mountain: mtn, openCountry: open };
   };
 
+  /* Hourly eligibility (owner order 2026-11-20): may this ride
+     price by the hour at all? Only a covered metro pair with no
+     flat-fare zone and no stadium zone may. A flat-fare zone
+     (mountainRuleFor) wins first — its flat fare governs the
+     ride in every mode; then the gate: an endpoint covered by
+     nothing (openCountryFor, the gate's own test) means no
+     instant price in any mode; then the venue rule
+     (stadiumRuleFor): a stadium endpoint's ride prices by rule
+     3 — flat $200 with a metro other end, meter with the $200
+     minimum without one — never by the hour. The gate precedes
+     venue on purpose: stadiumRuleFor alone does not null a
+     venue endpoint paired with an uncovered end (Longmont ->
+     Coors Field), but priceRide still refuses that pair, so the
+     gate governs it in every mode — the same treatment a flat
+     endpoint + uncovered end gets (Vail -> Grand Junction).
+     Returns { allowed, reason: "flat" | "gate" | "venue" | null,
+     mountain, stadium, openCountry } for the ride-shaped data
+     object. */
+  BBL_PRICING.hourlyEligibility = function (data) {
+    var mtn = BBL_PRICING.mountainRuleFor(data);
+    if (mtn) return { allowed: false, reason: "flat", mountain: mtn, stadium: null, openCountry: false };
+    var open = BBL_PRICING.adminRequestGate ? BBL_PRICING.openCountryFor(data) : false;
+    if (open) return { allowed: false, reason: "gate", mountain: null, stadium: null, openCountry: true };
+    var stad = BBL_PRICING.stadiumRuleFor(data);
+    if (stad) return { allowed: false, reason: "venue", mountain: null, stadium: stad, openCountry: false };
+    return { allowed: true, reason: null, mountain: null, stadium: null, openCountry: false };
+  };
+
   /* Hourly — the rider page's own formula: first hour, then the
      hourly rate for each additional hour. */
   BBL_PRICING.hourlyFare = function (hours) {
@@ -460,7 +501,7 @@
     snapshotDate: "2026-11-18",
     sourceFiles: ["functions/index.js (ridewave-functions)", "app.html (ridewave-web)"],
     sourceBlobs: ["17e751439ffe81247b63635c84cc2c7b48e2763c", "48f41448e533c1a719bdd4a62b1297ba844ecb22"],
-    note: "Snapshot only — no live link to RideWave pricing in either direction. Rates made identical to RideWave's live fare stack at the owner's order, 2026-11-18. BBL-only change 2026-11-19 (staged, not deployed): the airport surcharge now covers every Denver-metro airport, not DIA only. BBL addition 2026-11-20 (staged on preview, not deployed): Castle Rock and Evergreen (incl. Evergreen Lake) join the flat table at $250 each."
+    note: "Snapshot only — no live link to RideWave pricing in either direction. Rates made identical to RideWave's live fare stack at the owner's order, 2026-11-18. BBL-only change 2026-11-19 (staged, not deployed): the airport surcharge now covers every Denver-metro airport, not DIA only. BBL addition 2026-11-20 (staged on preview, not deployed): Castle Rock and Evergreen (incl. Evergreen Lake) join the flat table at $250 each. BBL rule 2026-11-20 (staged on preview, not deployed): hourly prices only for a covered metro pair with no flat-fare zone governing — flat-fare towns are flat-only and uncovered pairs stay gated in every mode (hourlyEligibility). BBL rule extension 2026-11-20 (owner order, staged on preview, not deployed): stadium / venue endpoints are hourly-blocked too — the venue fare governs those rides in every mode (hourlyEligibility reason venue)."
   };
 
   /* Version stamp — the quote page pins its script URL to this
@@ -472,6 +513,6 @@
      served against the current page forever). ANY edit to this
      file MUST bump the stamp here AND the page's
      PRICING_STAMP_EXPECTED + script-tag query together. */
-  BBL_PRICING.stamp = "2026-11-20-city250";
+  BBL_PRICING.stamp = "2026-11-20-hourlyvenue";
   window.BBL_PRICING = BBL_PRICING;
 })();

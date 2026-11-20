@@ -1276,7 +1276,7 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
       <div><h3>Good to know</h3><p>Licensed &amp; insured, LLC #LL04950<br>A locally owned Boulder business. Rides are first booked, first served.<br>Airport pickups include flight tracking.</p></div>
     </div>
     <div class="fine">© 2026 Boulder Black Line <a href="/privacy.html">Privacy Policy</a><a href="/terms.html">Terms of Service</a><a href="/owner.html">Admin</a></div>
-    <div class="fine build-line">Build 13 · v2026.11.20-city250 · 2026-11-20</div>
+    <div class="fine build-line">Build 14 · v2026.11.20-hourlyvenue · 2026-11-20</div>
   </div>
 </footer>
 
@@ -1285,7 +1285,7 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
   <a href="sms:+17203264652">Text</a>
 </nav>
 
-<script src="bbl-pricing.js?v=2026-11-20-city250"></script>
+<script src="bbl-pricing.js?v=2026-11-20-hourlyvenue"></script>
 <script src="bbl-backend.js"></script>
 <script>
 "use strict";
@@ -1516,12 +1516,12 @@ function refreshWidgetFare() {
     return;
   }
   var svc = state.service;
-  if (svc === "hourly") {
+  if (svc === "hourly" && !hourlyBlock()) {
     el.hidden = false;
     el.textContent = "Hourly rate: $" + FARE_CONFIG.hourlyFirstHour + " for the first hour, then $" + FARE_CONFIG.hourlyRate + " per hour, " + FARE_CONFIG.hourlyMinHours + " hour minimum. Your total is set by the hours you pick in booking.";
     return;
   }
-  if (!ROUTE_SERVICES[svc]) {
+  if (!ROUTE_SERVICES[svc] && svc !== "hourly") {
     if (svc) { el.hidden = false; el.textContent = "Not priced yet"; return; }
     el.hidden = true; el.textContent = "";
     return;
@@ -1622,6 +1622,56 @@ function computeGeoQuote() {
   } catch (e) { geoQuote = null; }
 }
 
+/* ---------- hourly eligibility (owner, 2026-11-20) ----------
+   Hourly is a Denver-metro product only, and flat-fare towns are
+   flat-only: hourly prices a ride ONLY when both endpoints pass
+   the same coverage test as the by-request gate AND no flat-fare
+   zone governs the ride AND no stadium / venue zone governs it
+   either (venue extension, owner 2026-11-20). Judged from the
+   picked places (their resolved geometry, through the pricing
+   snapshot), never from typed text. With both places picked the
+   snapshot's hourlyEligibility() decides the pair; with only one
+   place picked, that endpoint alone can already settle it — a
+   flat-zone endpoint, a venue endpoint, or an endpoint covered
+   by nothing blocks hourly whatever the other end turns out to
+   be. Returns null when hourly may price the ride, else
+   {kind:"flat", mountain}, {kind:"venue", stadium} or
+   {kind:"gate"}. */
+function hourlyBlock() {
+  var p = placeById.qPickup, d = placeById.qDropoff;
+  if (!p && !d) return null;
+  if (typeof FARE_CONFIG.hourlyEligibility !== "function") return null;
+  if (p && d) {
+    var e = FARE_CONFIG.hourlyEligibility({
+      pickup: p.address || "", dropoff: d.address || "",
+      pickupLat: p.lat, pickupLng: p.lng, dropoffLat: d.lat, dropoffLng: d.lng
+    });
+    if (e.allowed) return null;
+    if (e.reason === "flat") return { kind: "flat", mountain: e.mountain };
+    if (e.reason === "venue") return { kind: "venue", stadium: e.stadium };
+    return { kind: "gate" };
+  }
+  var one = p || d;
+  var mz = FARE_CONFIG.mountainZoneOf(one.lat, one.lng, one.address || "");
+  if (mz) return { kind: "flat", mountain: { name: mz.name, flat: mz.flat, amount: mz.flat } };
+  var sz = FARE_CONFIG.stadiumZoneOf(one.lat, one.lng, one.address || "");
+  if (sz) return { kind: "venue", stadium: { name: sz.name } };
+  if (!FARE_CONFIG.endpointCovered(one.lat, one.lng, one.address || "")) return { kind: "gate" };
+  return null;
+}
+/* When hourly is blocked for the picked ride, the form falls
+   back to Point To Point: the flat fare, the venue fare (or the
+   by-request gate) then shows through the normal route pricing,
+   the hours picker leaves the booking sheet, and the booking
+   records that fare with no hours. Quiet by design — no error
+   scolding; the fare line itself explains the price. */
+function enforceHourlyRule() {
+  if (state.service !== "hourly") return false;
+  if (!hourlyBlock()) return false;
+  setService("standard");
+  return true;
+}
+
 function routeWidget() {
   if (!mapsReady) { refreshWidgetFare(); return; }
   refreshFlightFields();
@@ -1629,11 +1679,13 @@ function routeWidget() {
   var stop = !$("stopRow").hidden ? placeById.qStop : null;
   if (!p || !d) {
     routeQuote = null; routeFailed = false; geoQuote = null;
+    enforceHourlyRule();
     paintMap(null);
     refreshWidgetFare();
     return;
   }
   computeGeoQuote();
+  enforceHourlyRule();
   refreshWidgetFare();
   var seq = ++routeSeq;
   runRoute(p, stop, d, function (rq) {
@@ -1651,6 +1703,7 @@ function routeWidget() {
       stadium: priced.stadium, mountain: priced.mountain,
       openCountry: priced.openCountry, hasAirport: hasAir
     };
+    enforceHourlyRule();
     paintMap(rq.result);
     refreshWidgetFare();
     updatePrice();
@@ -1900,6 +1953,12 @@ function setService(k) {
      lives only in state — the generic "standard" ride unless a
      service card's Book this (or the Hourly toggle) sets one. */
   k = k || "standard";
+  /* Hourly never takes a flat-fare, venue or gated ride (owner,
+     2026-11-20): asking for hourly with such a ride picked lands
+     on Point To Point instead, where the flat fare, the venue
+     fare — or the by-request gate — shows through the normal
+     route pricing. */
+  if (k === "hourly" && hourlyBlock()) k = "standard";
   state.service = k;
   setMode(k === "hourly");
   refreshFlightFields();
@@ -2339,7 +2398,21 @@ function airlineGateDropoff() {
 function calcPrice() {
   var s = SERVICES[state.service];
   if (!s) return 0;
-  if (state.service === "hourly") { var h = parseInt($("bHours").value || "2", 10); return FARE_CONFIG.hourlyFare(h); }
+  if (state.service === "hourly") {
+    /* The fare computation itself refuses hourly for a flat-fare,
+       venue or gated ride (owner, 2026-11-20), whatever state the
+       form is in: the flat or venue amount governs; a gated ride
+       has no price. */
+    var hb = hourlyBlock();
+    if (!hb) { var h = parseInt($("bHours").value || "2", 10); return FARE_CONFIG.hourlyFare(h); }
+    if (hb.kind === "gate") return 0;
+    var frq = quoteMatches(routeQuote, bk.pickup, bk.dropoff) ? routeQuote : null;
+    if (frq && frq.fare != null) return frq.fare;
+    var fgq = quoteMatches(geoQuote, bk.pickup, bk.dropoff) ? geoQuote : null;
+    if (fgq && fgq.fare != null) return fgq.fare;
+    if (hb.kind === "flat") return hb.mountain && hb.mountain.amount != null ? hb.mountain.amount : 0;
+    return hb.stadium && hb.stadium.flat ? FARE_CONFIG.stadiumFare : 0;
+  }
   if (ROUTE_SERVICES[state.service]) {
     var rq = quoteMatches(routeQuote, bk.pickup, bk.dropoff) ? routeQuote : null;
     if (rq && rq.fare != null) return rq.fare;
@@ -2379,7 +2452,7 @@ function updatePrice() {
   var rq = quoteMatches(routeQuote, bk.pickup, bk.dropoff) ? routeQuote : null;
   var gq = !rq && quoteMatches(geoQuote, bk.pickup, bk.dropoff) ? geoQuote : null;
   var meta = fmtDate(bk.date) + (bk.time ? ", " + fmtTime(bk.time) : "");
-  if (state.service === "hourly") { meta += ", " + ($("bHours").value || "2") + " hours"; }
+  if (state.service === "hourly" && !hourlyBlock()) { meta += ", " + ($("bHours").value || "2") + " hours"; }
   else if (rq) { meta += ", " + rq.miles.toFixed(1) + " mi, about " + Math.max(1, Math.round(rq.mins)) + " min"; }
   if (rq && rq.mountain) { meta += ", " + ((rq.mountain.name === "Colorado Springs" || rq.mountain.name === "Fort Collins" || rq.mountain.name === "Castle Rock" || rq.mountain.name === "Evergreen") ? "Flat fare" : "Mountain fare") + ": " + rq.mountain.name + ", flat $" + fmtMoney(rq.mountain.amount); }
   else if (rq && rq.stadium) { meta += ", Stadium fare: " + rq.stadium.name + (rq.stadium.flat ? ", flat $200" : ", $200 minimum"); }
@@ -2429,6 +2502,7 @@ function closeBookView() {
 $("quickForm").addEventListener("submit", function (e) {
   e.preventDefault();
   if (pricingBroken) { try { location.reload(); } catch (e2) {} return; }
+  enforceHourlyRule();
   var bad = null;
   ["qPickup", "qDate", "qTime"].forEach(function (id) {
     var el = $(id);
@@ -2939,13 +3013,14 @@ setTimeout(function () { if (!mapsReady) qzMapsFailed(); }, 10000);
    cache-busted reload; success re-points FARE_CONFIG and
    re-prices, failure is stated plainly on the fare line
    (pricingBroken) instead of wedging. */
-var PRICING_STAMP_EXPECTED = "2026-11-20-city250";
+var PRICING_STAMP_EXPECTED = "2026-11-20-hourlyvenue";
 var pricingBroken = false;
 function pricingSnapshotOk(P) {
   return !!P && P.stamp === PRICING_STAMP_EXPECTED &&
     typeof P.computeFare === "function" && typeof P.priceRide === "function" &&
     typeof P.mountainRuleFor === "function" && typeof P.stadiumRuleFor === "function" &&
     typeof P.openCountryFor === "function" && typeof P.hourlyFare === "function" &&
+    typeof P.hourlyEligibility === "function" &&
     typeof P.hourlyFirstHour === "number" && typeof P.hourlyRate === "number" &&
     typeof P.hourlyMinHours === "number" && typeof P.stadiumFare === "number" &&
     typeof P.adminRequestGate === "boolean" && typeof P.adminRequestMsg === "string" &&
