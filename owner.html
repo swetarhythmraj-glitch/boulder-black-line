@@ -134,48 +134,50 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
 .tabbar-in button.on{background:var(--dark);color:#F2D492}
 .tabbar-in button:active{transform:scale(.97)}
 .tabpage h2.sec{margin-top:0!important}
+/* Sign-in role badge (Build 17 prep): the roleLabel pill moved out of
+   the Live bookings button row into the site header, on its own
+   centred line under the brand. Same amber pill colours as the BOOKED
+   status pill (.status: --amber-soft bg, --amber-strong text); no
+   uppercase transform, so the label reads exactly as set. The
+   [hidden] rule is required: the class display would otherwise beat
+   the UA [hidden] rule and the badge could never hide. */
+.role-badge-row{text-align:center}
+.role-badge{display:inline-block;margin:0 0 10px;padding:6px 16px;border-radius:999px;background:var(--amber-soft);color:var(--amber-strong);font-weight:800;font-size:13.5px;letter-spacing:.02em;white-space:nowrap}
+.role-badge[hidden]{display:none}
 @media(max-width:560px){.tabbar-in button{font-size:13px}}
 </style>
 </head>
 <body>
-<div id="supportBanner" hidden style="background:#A8741A;color:#FFF8EA;font-weight:700;text-align:center;padding:10px 16px;font-size:14.5px">Support mode: you are signed in with the platform operator account. Every change you make here is logged for the business owner.</div>
 <header class="site">
   <div class="wrap nav">
     <span class="brand">Boulder <span>Black Line</span><small>Owner Page · Denver Metro, CO</small></span>
-    <div class="owner-area" id="ownerArea"></div>
   </div>
+  <div class="role-badge-row"><span id="roleLabel" class="role-badge" hidden></span></div>
 </header>
 
 <main>
-<!-- SIGN IN -->
-<section id="authSection">
+<!-- GATE -->
+<section id="gateScreen">
   <div class="wrap">
-    <div class="auth-card" style="margin-bottom:20px">
-      <div class="kicker" data-bbl-owner>Boulder Black Line</div>
-      <h2>Sign in with your owner account</h2>
-      <p class="sub">Your owner account works on any device. It opens the live day view, your drivers, and every booking in the central system.</p>
-      <div class="auth-tabs" role="group" aria-label="Sign in or create account">
-        <button type="button" id="acTabSignIn" class="on" aria-pressed="true">Sign In</button>
-        <button type="button" id="acTabCreate" aria-pressed="false">Create account</button>
-      </div>
-      <form id="acSignInForm" class="auth-form on" novalidate>
-        <div class="field"><label class="flabel" for="acEmail">Email *</label><input id="acEmail" type="email" autocomplete="email" placeholder="you@example.com"><div class="err">Please enter your email address.</div></div>
-        <div class="field"><label class="flabel" for="acPass">Password *</label><input id="acPass" type="password" autocomplete="current-password" placeholder="Your password"><div class="err">Please enter your password.</div></div>
-        <button class="btn btn-amber btn-block" type="submit">Sign In</button>
-      </form>
-      <form id="acCreateForm" class="auth-form" novalidate>
-        <div class="field"><label class="flabel" for="accName">Full name *</label><input id="accName" type="text" autocomplete="name" placeholder="e.g. Alex Morgan"><div class="err">Please enter your full name.</div></div>
-        <div class="field"><label class="flabel" for="accEmail">Email *</label><input id="accEmail" type="email" autocomplete="email" placeholder="you@example.com"><div class="err">Please enter a valid email address.</div></div>
-        <div class="field"><label class="flabel" for="accPass">Password *</label><input id="accPass" type="password" autocomplete="new-password" placeholder="At least 6 characters"><div class="err">Please enter a password of at least 6 characters.</div></div>
-        <button class="btn btn-amber btn-block" type="submit">Create account</button>
-      </form>
-      <p class="auth-note" id="acNote">New accounts start as rider accounts. Owner access is granted by the platform operator, never by the account itself.</p>
-    </div>
     <div class="auth-card">
-      <h3 style="font-size:19px;margin:0 0 8px">Owner code</h3>
-      <p class="sub" style="margin:0 0 14px">No account needed. If you have the owner code, enter it here to open the live bookings, your drivers and the business settings.</p>
+      <h3 style="font-size:19px;margin:0 0 8px">Gate code</h3>
+      <p class="sub" style="margin:0 0 14px">Enter the gate code to continue.</p>
+      <form id="gateEntryForm" class="auth-form on" novalidate>
+        <div class="field"><label class="flabel" for="gateEntryCode">Gate code</label><input id="gateEntryCode" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="Gate code"><div class="err">Please enter the gate code.</div></div>
+        <div style="margin-top:14px"><button class="btn btn-amber btn-block" type="submit">Enter</button></div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- SIGN IN -->
+<section id="authSection" hidden>
+  <div class="wrap">
+    <div class="auth-card">
+      <h3 style="font-size:19px;margin:0 0 8px">Access code</h3>
+      <p class="sub" style="margin:0 0 14px">Enter your access code to open the live bookings, your drivers and the business settings.</p>
       <form id="gateForm2" class="auth-form on" novalidate>
-        <div class="field"><label class="flabel" for="gateCode2">Owner code</label><input id="gateCode2" type="password" autocomplete="off" placeholder="Owner code"><div class="err">Please enter the owner code.</div></div>
+        <div class="field"><label class="flabel" for="gateCode2">Access code</label><input id="gateCode2" type="password" autocomplete="off" placeholder="Access code"><div class="err">Please enter the access code.</div></div>
         <label style="display:flex;align-items:center;gap:8px;margin-top:12px;font-size:14.5px;color:var(--ink2);cursor:pointer"><input type="checkbox" id="gateKeep" checked style="width:17px;height:17px;margin:0;accent-color:var(--amber)"> Keep me signed in on this browser</label>
         <div style="margin-top:14px"><button class="btn btn-amber btn-block" type="submit">Unlock live view</button></div>
       </form>
@@ -207,7 +209,7 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
         <div style="margin-top:14px"><button class="btn btn-amber" type="submit">Unlock live view</button></div>
       </form>
       <div id="liveWrap" hidden>
-        <div style="margin-bottom:12px"><button class="btn btn-ghost" type="button" id="liveRefresh">Refresh</button> <button class="btn btn-ghost" type="button" id="liveLock" hidden>Lock live view</button> <span id="roleLabel" hidden style="font-weight:700;color:var(--ink2);font-size:14.5px"></span></div>
+        <div style="margin-bottom:12px"><button class="btn btn-ghost" type="button" id="liveRefresh">Refresh</button> <button class="btn btn-ghost" type="button" id="liveLock" hidden>Lock live view</button></div>
         <div id="liveList"></div>
       </div>
       <p id="gateNote" style="margin:12px 0 0;color:var(--ink2);font-size:14.5px"></p>
@@ -246,19 +248,6 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
 
     </div>
     <div class="tabpage" id="tabpage-settings" role="tabpanel" aria-labelledby="tabbtn-settings" hidden>
-    <div class="panel" id="activityPanel" hidden style="margin-bottom:24px">
-      <h3>Support activity</h3>
-      <p style="margin:0 0 14px;color:var(--ink2);font-size:14.5px">Every change the platform operator makes in support mode is listed here, with who made it and when. Nobody can edit or delete this list.</p>
-      <div style="margin-bottom:12px"><button class="btn btn-ghost" type="button" id="activityRefresh">Refresh</button></div>
-      <div id="activityList"></div>
-    </div>
-    <div class="panel" id="accountsPanel" hidden style="margin-bottom:24px">
-      <h3>Accounts and roles</h3>
-      <p style="margin:0 0 14px;color:var(--ink2);font-size:14.5px">Sign-in accounts for Boulder and the role each one holds. Roles are set here on the server, never by the account itself. A driver account also needs its driver profile picked here, unless it linked itself by matching mobile number.</p>
-      <div style="margin-bottom:12px"><button class="btn btn-ghost" type="button" id="accountsRefresh">Refresh</button></div>
-      <div id="accountsList"></div>
-      <p id="accountsNote" style="margin:12px 0 0;color:var(--ink2);font-size:14.5px"></p>
-    </div>
     <div class="panel" id="codeChangePanel" hidden style="margin-bottom:24px">
       <h3>Change your sign-in code</h3>
       <p style="margin:0 0 14px;color:var(--ink2);font-size:14.5px">Change the sign-in code you used to open this page — your own code, whichever one that is. The old code stops working as soon as the new one is saved.</p>
@@ -278,6 +267,19 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
         <div style="margin-top:14px"><button class="btn btn-amber" type="submit">Set support code</button> <button class="btn btn-ghost" type="button" id="supRemove">Remove support code</button></div>
       </form>
       <p id="supportNote" style="margin:12px 0 0;color:var(--ink2);font-size:14.5px"></p>
+    </div>
+    <div class="panel" id="gateCodePanel" hidden style="margin-bottom:24px">
+      <h3>Gate codes</h3>
+      <p style="margin:0 0 14px;color:var(--ink2);font-size:14.5px">The gate is the plain first step in front of the sign-in — it hides the sign-in from casual eyes; the access codes behind it are the real lock. Two gate codes open it, one for each of you, and only the owner sign-in can change them. The current codes are never shown here — setting a new one replaces it.</p>
+      <form id="gateOwnerForm" novalidate>
+        <div class="field"><label class="flabel" for="gateOwnerCode">Deepak's gate code</label><input id="gateOwnerCode" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="4 digits"><div class="err">Gate codes are exactly 4 digits.</div></div>
+        <div style="margin-top:14px"><button class="btn btn-amber" type="submit">Set Deepak's gate code</button></div>
+      </form>
+      <form id="gateSupportForm" novalidate style="margin-top:18px">
+        <div class="field"><label class="flabel" for="gateSupportCode">Support gate code</label><input id="gateSupportCode" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="4 digits"><div class="err">Gate codes are exactly 4 digits.</div></div>
+        <div style="margin-top:14px"><button class="btn btn-amber" type="submit">Set support gate code</button></div>
+      </form>
+      <p id="gateCodeNote" style="margin:12px 0 0;color:var(--ink2);font-size:14.5px"></p>
     </div>
     <div class="panel" id="settingsPanel" hidden style="margin-bottom:24px">
       <h3>Business settings</h3>
@@ -334,7 +336,7 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
     <h3>Boulder Black Line</h3>
     <p style="margin:0">Private SUV rides in the Denver metro. Call <a href="tel:+17203264652">(720) 326-4652</a> or email <a href="mailto:boulderblack1@gmail.com">boulderblack1@gmail.com</a>.</p>
     <p class="fine">Owner page for the preview. This page has its own address and its own sign in, and it is not linked from the rider site.<br><a href="/privacy.html">Privacy Policy</a> · <a href="/terms.html">Terms of Service</a></p>
-    <p class="fine build-line">Build 16 · v2026.11.20-dashcodes · 2026-11-20</p>
+    <p class="fine build-line">Build 17 · v2026.11.20-rolebadge · 2026-11-20</p>
   </div>
 </footer>
 
@@ -528,18 +530,20 @@ var CODE_ROLE="",SUPPORT_SET=false;
    after a code unlock the page asks the backend (bblCheckCode)
    which code was presented — the role comes from the server,
    never from anything typed or stored on this device. The header
-   label ("Owner sign-in" / "Support sign-in") and the owner-only
+   label ("Owner / Admin sign-in" / "Support sign-in") and the owner-only
    Support access block both render from that answer, and silent
    re-entry re-checks it through the same unlock path. */
 function applyRoleUI(){
   var lbl=$("roleLabel");
   if(lbl){
-    if(CODE_SESSION&&CODE_ROLE==="owner"){lbl.textContent="Owner sign-in";lbl.hidden=false}
+    if(CODE_SESSION&&CODE_ROLE==="owner"){lbl.textContent="Owner / Admin sign-in";lbl.hidden=false}
     else if(CODE_SESSION&&CODE_ROLE==="support"){lbl.textContent="Support sign-in";lbl.hidden=false}
     else lbl.hidden=true;
   }
   var scp=$("supportCodePanel");
   if(scp)scp.hidden=!(CODE_SESSION&&CODE_ROLE==="owner");
+  var gcp=$("gateCodePanel");
+  if(gcp)gcp.hidden=!(CODE_SESSION&&CODE_ROLE==="owner");
   var st=$("supportState");
   if(st)st.textContent=SUPPORT_SET?"A support code is set.":"No support code is set.";
   var note=$("gateNote");
@@ -558,6 +562,7 @@ function refreshCodeRole(code){
 }
 function enterCodeChrome(){
   CODE_SESSION=true;
+  var gs=$("gateScreen");if(gs)gs.hidden=true;
   $("authSection").hidden=true;
   $("daySection").hidden=false;
   var sp=$("settingsPanel");if(sp)sp.hidden=false;
@@ -583,6 +588,7 @@ function unlockWithCode(code,fieldEl){
     setGateCode("");
     CODE_SESSION=false;
     if(fieldEl)flagMsg(fieldEl,"That code did not match. Try again.",true);
+    else showGate();
     return false;
   });
 }
@@ -601,15 +607,43 @@ function lockLiveView(){
   var sp=$("settingsPanel");if(sp)sp.hidden=true;
   var ccp=$("codeChangePanel");if(ccp)ccp.hidden=true;
   var scp=$("supportCodePanel");if(scp)scp.hidden=true;
+  var gcp=$("gateCodePanel");if(gcp)gcp.hidden=true;
   var rl=$("roleLabel");if(rl)rl.hidden=true;
   $("daySection").hidden=true;
-  $("authSection").hidden=false;
+  GATE_PASSED=false;
+  var ge=$("gateEntryForm");if(ge&&ge.reset)ge.reset();
+  showGate();
   var n=$("gateNote");if(n)n.textContent="";
   var f2=$("gateForm2");if(f2&&f2.reset)f2.reset();
 }
+/* Front-door gate (Build 17 round): before the sign-in, the page
+   asks for a 4-digit gate code - either phone's last four digits
+   (the owner's or support's). The codes live server-side as hashes
+   in bbl_config/gate and are checked through bblCheckGateCode; the
+   owner can change them from Settings (bblSetGateCode). The gate
+   stays an obscurity layer only: it hides the sign-in from casual
+   eyes and is NOT a security boundary. The access codes remain
+   the real, server-verified credentials (bblCheckCode). A stored
+   login that silently re-enters never sees the gate; Lock
+   returns here. */
+var GATE_PASSED=false;
+function showGate(){var g=$("gateScreen");if(g)g.hidden=false;var a=$("authSection");if(a)a.hidden=true}
+function showSignIn(){var g=$("gateScreen");if(g)g.hidden=true;var a=$("authSection");if(a)a.hidden=false}
+$("gateEntryForm").addEventListener("submit",function(e){e.preventDefault();
+  var inp=$("gateEntryCode"),v=inp.value.trim();
+  if(!v){flagMsg(inp,"Please enter the gate code.",true);return}
+  if(typeof window.__bblCall!=="function"){flagMsg(inp,"The gate check is not available right now. Please reload the page.",true);return}
+  inp.disabled=true;
+  window.__bblCall("bblCheckGateCode",{code:v}).then(function(res){
+    inp.disabled=false;
+    if(res&&res.ok){clearField(inp);inp.value="";GATE_PASSED=true;showSignIn()}
+    else flagMsg(inp,"That gate code did not match. Try again.",true);
+  }).catch(function(){inp.disabled=false;flagMsg(inp,"That gate code did not match. Try again.",true)});
+});
+if(gateCode()){var gs0=$("gateScreen");if(gs0)gs0.hidden=true;var as0=$("authSection");if(as0)as0.hidden=true}
 $("gateForm2").addEventListener("submit",function(e){e.preventDefault();
   var v=$("gateCode2").value.trim();
-  if(!v){flagMsg($("gateCode2"),"Please enter the owner code.",true);return}
+  if(!v){flagMsg($("gateCode2"),"Please enter the access code.",true);return}
   unlockWithCode(v,$("gateCode2"));
 });
 $("liveLock").addEventListener("click",function(){lockLiveView()});
@@ -674,6 +708,30 @@ $("supRemove").addEventListener("click",function(){
     var note=$("supportNote");if(note)note.textContent=((err&&err.message)||"Something went wrong. Please try again.");
   });
 });
+
+/* Gate codes (owner sessions only): set / replace either gate code
+   through bblSetGateCode, which itself refuses a support code —
+   and this block is never even shown to a support session
+   (applyRoleUI gates it on the server-reported role). A code that
+   is not exactly 4 digits flags the box itself before any call.
+   The current codes are never displayed — only their hashes exist
+   server-side. The bridge attaches the stored owner code. */
+function bindGateForm(formId,inputId,which){
+  var f=$(formId);if(!f)return;
+  f.addEventListener("submit",function(e){e.preventDefault();
+    var inp=$(inputId),v=inp.value.trim();
+    if(!/^[0-9]{4}$/.test(v)){flagMsg(inp,"Gate codes are exactly 4 digits.",true);return}
+    if(typeof window.__bblCall!=="function"){flagMsg(inp,"Live view is unavailable right now.",true);return}
+    window.__bblCall("bblSetGateCode",{which:which,newCode:v}).then(function(){
+      inp.value="";
+      var note=$("gateCodeNote");if(note)note.textContent="Gate code saved.";
+    }).catch(function(err){
+      flagMsg(inp,((err&&err.message)||"Something went wrong. Please try again."),true);
+    });
+  });
+}
+bindGateForm("gateOwnerForm","gateOwnerCode","owner");
+bindGateForm("gateSupportForm","gateSupportCode","support");
 
 /* Business settings — a checking view, read-only by construction
    (it renders rows; there is nothing in it to submit). Every
@@ -742,20 +800,6 @@ function renderSettings(){
   body.innerHTML=html;
 }
 
-/* the header identity follows the owner account sign in: the name
-   and the Log Out button live here, and Log Out signs the account
-   out. onFbOwner below calls this on every account change. */
-function renderOwnerArea(){
-  var area=$("ownerArea");if(!area)return;
-  if(FB_USER){
-    var p=fbProfile();
-    var first=(p.name||p.email||"Owner").split(/\s+/)[0];
-    area.innerHTML='<span class="rider-name">Hi, '+escHtml(first)+'</span><button type="button" class="btn btn-ghost" id="logoutBtn">Log Out</button>';
-    $("logoutBtn").addEventListener("click",function(){if(window.__bblAuth)window.__bblAuth.signOut()});
-  }else{
-    area.innerHTML="";
-  }
-}
 
 /* the day view: sample rides plus the preview bookings stored by the
    rider page in this browser (the shared bbl_bookings_v1 list) */
@@ -994,115 +1038,15 @@ window.addEventListener("focus",function(){if(FB_USER){renderDrivers();renderDay
 document.addEventListener("visibilitychange",function(){if(!document.hidden&&FB_USER){renderDrivers();renderDay()}});
 
 
-/* Phase B: real owner accounts (Firebase Auth). This is the only
-   sign in on the page; it opens the day view below for owner and
-   operator accounts, and the owner code still unlocks the live
-   view as a fallback. Roles live on the server: this page only
-   ever learns the role the server reports. */
+/* Sign-in on this page is by access code only (Build 17 round):
+   the demo account sign-in was removed, so the auth callback the
+   bridge fires on load now only triggers the saved-code
+   auto-unlock. The FB_* state stays declared (always empty)
+   because the payload and profile helpers still read it. */
 var FB_USER=null,FB_ACCT=null,FB_UID="";
-function fbAuthError(err,emailEl,passEl){
-  var code=(err&&err.code)||"";
-  if(code==="auth/email-already-in-use"){flagMsg(emailEl,"An account with this email already exists. Sign in instead.",true);return}
-  if(code==="auth/weak-password"){flagMsg(passEl,"Please use a password of at least 6 characters.",true);return}
-  if(code==="auth/invalid-email"){flagMsg(emailEl,"Please enter a valid email address.",true);return}
-  if(code==="auth/invalid-credential"||code==="auth/wrong-password"||code==="auth/user-not-found"){flagMsg(passEl,"That email and password do not match. Try again.",true);return}
-  if(code==="auth/too-many-requests"){flagMsg(passEl,"Too many tries. Please wait a bit and try again.",true);return}
-  flagMsg(passEl,"Something went wrong. Please try again.",true);
-}
-function setAcctMode(create){$("acTabSignIn").classList.toggle("on",!create);$("acTabSignIn").setAttribute("aria-pressed",create?"false":"true");$("acTabCreate").classList.toggle("on",create);$("acTabCreate").setAttribute("aria-pressed",create?"true":"false");$("acSignInForm").classList.toggle("on",!create);$("acCreateForm").classList.toggle("on",create)}
-$("acTabSignIn").addEventListener("click",function(){setAcctMode(false)});
-$("acTabCreate").addEventListener("click",function(){setAcctMode(true)});
-$("acSignInForm").addEventListener("submit",function(e){e.preventDefault();var em=$("acEmail"),pw=$("acPass"),bad=null;
-  var email=em.value.trim().toLowerCase();
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){flagMsg(em,"Please enter a valid email address.",false);bad=bad||em}
-  if(!pw.value){flagMsg(pw,"Please enter your password.",false);bad=bad||pw}
-  if(bad){flagField(bad,true);return}
-  if(!window.__bblAuth){flagMsg(pw,"Account sign in is unavailable right now.",true);return}
-  window.__bblAuth.signIn(email,pw.value).then(function(){},function(err){fbAuthError(err,em,pw)});
-});
-$("acCreateForm").addEventListener("submit",function(e){e.preventDefault();var nm=$("accName"),em=$("accEmail"),pw=$("accPass"),bad=null;
-  var email=em.value.trim().toLowerCase();var name=nm.value.trim();
-  if(name.length<2){flagMsg(nm,"Please enter your full name.",false);bad=bad||nm}
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){flagMsg(em,"Please enter a valid email address.",false);bad=bad||em}
-  if(pw.value.length<6){flagMsg(pw,"Please enter a password of at least 6 characters.",false);bad=bad||pw}
-  if(bad){flagField(bad,true);return}
-  if(!window.__bblAuth){flagMsg(pw,"Account sign in is unavailable right now.",true);return}
-  window.__bblPendingProfile={name:name,mobile:""};
-  window.__bblAuth.signUp(email,pw.value).then(function(){try{window.__bblAuth.verify()}catch(err){}},function(err){window.__bblPendingProfile=null;fbAuthError(err,em,pw)});
-});
-window.__bblOnAuth=function(u){
-  FB_USER=u||null;
-  if(!u){var hadUser=!!FB_UID;FB_ACCT=null;FB_UID="";onFbOwner();if(hadUser){CODE_AUTOTRIED=true;setGateCode("")}else maybeAutoUnlock();return}
-  if(FB_UID===u.uid&&FB_ACCT){onFbOwner();return}
-  FB_UID=u.uid;
-  var p=window.__bblPendingProfile||{};window.__bblPendingProfile=null;
-  if(typeof window.__bblCall==="function"){
-    window.__bblCall("bblRegisterAccount",{name:p.name||"",mobile:p.mobile||""}).then(function(a){FB_ACCT=a||null;onFbOwner();maybeAutoUnlock()},function(){FB_ACCT=null;onFbOwner();maybeAutoUnlock()});
-  }else{FB_ACCT=null;onFbOwner();maybeAutoUnlock()}
-};
-function onFbOwner(){
-  var b=$("supportBanner");if(b)b.hidden=!(FB_ACCT&&FB_ACCT.isOperator);
-  renderOwnerArea();
-  var note=$("acNote");
-  if(FB_USER&&FB_ACCT&&(FB_ACCT.role==="owner"||FB_ACCT.isOperator)){
-    $("authSection").hidden=true;
-    $("daySection").hidden=false;
-    renderDrivers();renderDay();renderBlocked();
-    if(note)note.textContent="Signed in as "+(FB_ACCT.email||FB_USER.email||"")+(FB_ACCT.isOperator?" (support mode).":".");
-    loadCentral(true);loadActivity();loadAccounts();
-  }else{
-    if(FB_USER&&note)note.textContent="This account does not have owner access yet. Roles are granted by the business owner or the platform operator, never by the account itself.";
-    if(!CODE_SESSION){$("daySection").hidden=true;if(!FB_USER)$("authSection").hidden=false}
-  }
-  var ap=$("activityPanel");if(ap)ap.hidden=!(FB_ACCT&&(FB_ACCT.role==="owner"||FB_ACCT.isOperator));
-  var cp=$("accountsPanel");if(cp)cp.hidden=!(FB_ACCT&&(FB_ACCT.role==="owner"||FB_ACCT.isOperator));
-  var sp=$("settingsPanel");if(sp)sp.hidden=!(fbOwnerLevel()||CODE_SESSION);
-  var ccp=$("codeChangePanel");if(ccp)ccp.hidden=!(fbOwnerLevel()||CODE_SESSION);
-  var scp=$("supportCodePanel");if(scp)scp.hidden=!(CODE_SESSION&&CODE_ROLE==="owner");
-  var rl=$("roleLabel");if(rl)rl.hidden=!(CODE_SESSION&&CODE_ROLE);
-  if(sp&&!sp.hidden)renderSettings();
-  var lk=$("liveLock");if(lk)lk.hidden=!CODE_SESSION;
-}
+window.__bblOnAuth=function(){maybeAutoUnlock()};
 function fmtStamp(iso){if(!iso)return"";var d=new Date(iso);if(!isFinite(d.getTime()))return"";return d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})+", "+d.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"})}
-function loadActivity(){
-  if(typeof window.__bblCall!=="function")return;
-  if(!(FB_ACCT&&(FB_ACCT.role==="owner"||FB_ACCT.isOperator)))return;
-  window.__bblCall("bblListActivity",{}).then(function(res){
-    var box=$("activityList");if(!box)return;
-    var list=(res&&res.activity)||[];
-    if(!list.length){box.innerHTML='<p class="empty-note">No support changes yet. When the platform operator makes a change in support mode, it shows here with the time.</p>';return}
-    box.innerHTML=list.map(function(a){
-      return '<div class="owner-row"><div class="info"><b>'+escHtml(a.summary||a.action||"Change")+'</b><span>Support mode \u00B7 '+escHtml(a.email||"")+' \u00B7 '+escHtml(fmtStamp(a.at))+'</span></div></div>';
-    }).join("");
-  },function(){});
-}
-function loadAccounts(){
-  if(typeof window.__bblCall!=="function")return;
-  if(!(FB_ACCT&&(FB_ACCT.role==="owner"||FB_ACCT.isOperator)))return;
-  window.__bblCall("bblListAccounts",{}).then(function(res){
-    var box=$("accountsList");if(!box)return;
-    var list=(res&&res.accounts)||[];
-    if(!list.length){box.innerHTML='<p class="empty-note">No accounts yet.</p>';return}
-    box.innerHTML=list.map(function(a){
-      var roles=["rider","owner","driver"].map(function(r){return '<option value="'+r+'"'+(a.role===r?" selected":"")+'>'+r+'</option>'}).join("");
-      var profs='<option value="">Pick a driver profile</option>'+(LIVE_DRIVERS||[]).map(function(d){return '<option value="'+escHtml(d.id)+'"'+(a.driverProfileId===d.id?" selected":"")+'>'+escHtml(d.name)+'</option>'}).join("");
-      return '<div class="owner-row"><div class="info"><b>'+escHtml(a.name||a.email||a.uid)+'</b><span>'+escHtml(a.email||"")+(a.mobile?" \u00B7 "+escHtml(a.mobile):"")+'</span></div>'
-        +'<div class="row-actions"><select class="assign-sel" data-acct-role="'+escHtml(a.uid)+'" aria-label="Role">'+roles+'</select>'
-        +'<select class="assign-sel" data-acct-prof="'+escHtml(a.uid)+'" aria-label="Driver profile">'+profs+'</select>'
-        +'<button class="mini-btn" type="button" data-acct-save="'+escHtml(a.uid)+'">Save role</button></div></div>';
-    }).join("");
-    box.querySelectorAll("[data-acct-save]").forEach(function(btn){btn.addEventListener("click",function(){
-      var uid=btn.getAttribute("data-acct-save");
-      var role=box.querySelector('[data-acct-role="'+uid+'"]').value;
-      var prof=box.querySelector('[data-acct-prof="'+uid+'"]').value;
-      window.__bblCall("bblGrantRole",{uid:uid,role:role,driverProfileId:prof}).then(function(){loadAccounts()},function(err){
-        var n=$("accountsNote");if(n)n.textContent=(err&&err.message)||"That change could not be saved.";
-      });
-    })});
-  },function(){});
-}
-$("activityRefresh").addEventListener("click",function(){loadActivity()});
-$("accountsRefresh").addEventListener("click",function(){loadAccounts()});
+
 
 </script>
 <script>
@@ -1266,7 +1210,7 @@ $("accountsRefresh").addEventListener("click",function(){loadAccounts()});
      and the rider-side booking mirror below stay on the local
      demo store. */
   var BBL_FN_BASE = "https://us-central1-blackcarservice4u-57d2a.cloudfunctions.net/";
-  var BBL_LIVE_FNS = { bblListBookings: 1, bblListDrivers: 1, bblSaveDriver: 1, bblDeleteDriver: 1, bblAssignDriver: 1, bblSetBookingStatus: 1, bblChangeOwnerCode: 1, bblCheckCode: 1, bblSetSupportCode: 1 };
+  var BBL_LIVE_FNS = { bblListBookings: 1, bblListDrivers: 1, bblSaveDriver: 1, bblDeleteDriver: 1, bblAssignDriver: 1, bblSetBookingStatus: 1, bblChangeOwnerCode: 1, bblCheckCode: 1, bblSetSupportCode: 1, bblCheckGateCode: 1, bblSetGateCode: 1 };
   function bblFnCall(name, data) {
     var code = "";
     try { code = localStorage.getItem("bbl_owner_gate_v1") || sessionStorage.getItem("bbl_owner_gate_v1") || ""; } catch (e) {}
