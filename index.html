@@ -1276,7 +1276,7 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
       <div><h3>Good to know</h3><p>Licensed &amp; insured, LLC #LL04950<br>A locally owned Boulder business. Rides are first booked, first served.<br>Airport pickups include flight tracking.</p></div>
     </div>
     <div class="fine">© 2026 Boulder Black Line <a href="/privacy.html">Privacy Policy</a><a href="/terms.html">Terms of Service</a><a href="/owner.html">Admin</a></div>
-    <div class="fine build-line">Build 12 · v2026.11.19-local · 2026-11-19</div>
+    <div class="fine build-line">Build 13 · v2026.11.20-city250 · 2026-11-20</div>
   </div>
 </footer>
 
@@ -1285,7 +1285,7 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
   <a href="sms:+17203264652">Text</a>
 </nav>
 
-<script src="bbl-pricing.js?v=2026-11-19-airport20"></script>
+<script src="bbl-pricing.js?v=2026-11-20-city250"></script>
 <script src="bbl-backend.js"></script>
 <script>
 "use strict";
@@ -2381,9 +2381,9 @@ function updatePrice() {
   var meta = fmtDate(bk.date) + (bk.time ? ", " + fmtTime(bk.time) : "");
   if (state.service === "hourly") { meta += ", " + ($("bHours").value || "2") + " hours"; }
   else if (rq) { meta += ", " + rq.miles.toFixed(1) + " mi, about " + Math.max(1, Math.round(rq.mins)) + " min"; }
-  if (rq && rq.mountain) { meta += ", " + ((rq.mountain.name === "Colorado Springs" || rq.mountain.name === "Fort Collins") ? "Flat fare" : "Mountain fare") + ": " + rq.mountain.name + ", flat $" + fmtMoney(rq.mountain.amount); }
+  if (rq && rq.mountain) { meta += ", " + ((rq.mountain.name === "Colorado Springs" || rq.mountain.name === "Fort Collins" || rq.mountain.name === "Castle Rock" || rq.mountain.name === "Evergreen") ? "Flat fare" : "Mountain fare") + ": " + rq.mountain.name + ", flat $" + fmtMoney(rq.mountain.amount); }
   else if (rq && rq.stadium) { meta += ", Stadium fare: " + rq.stadium.name + (rq.stadium.flat ? ", flat $200" : ", $200 minimum"); }
-  else if (gq && gq.mountain) { meta += ", " + ((gq.mountain.name === "Colorado Springs" || gq.mountain.name === "Fort Collins") ? "Flat fare" : "Mountain fare") + ": " + gq.mountain.name + ", flat $" + fmtMoney(gq.mountain.amount); }
+  else if (gq && gq.mountain) { meta += ", " + ((gq.mountain.name === "Colorado Springs" || gq.mountain.name === "Fort Collins" || gq.mountain.name === "Castle Rock" || gq.mountain.name === "Evergreen") ? "Flat fare" : "Mountain fare") + ": " + gq.mountain.name + ", flat $" + fmtMoney(gq.mountain.amount); }
   else if (gq && gq.stadium) { meta += ", Stadium fare: " + gq.stadium.name + ", flat $200"; }
   var unpriced = !!ROUTE_SERVICES[state.service] && !rq && !(gq && gq.fare != null) && !routeFailed && mapsReady;
   var amtTxt = unpriced ? "Not priced yet" : ("$" + fmtMoney(state.price));
@@ -2939,7 +2939,7 @@ setTimeout(function () { if (!mapsReady) qzMapsFailed(); }, 10000);
    cache-busted reload; success re-points FARE_CONFIG and
    re-prices, failure is stated plainly on the fare line
    (pricingBroken) instead of wedging. */
-var PRICING_STAMP_EXPECTED = "2026-11-19-airport20";
+var PRICING_STAMP_EXPECTED = "2026-11-20-city250";
 var pricingBroken = false;
 function pricingSnapshotOk(P) {
   return !!P && P.stamp === PRICING_STAMP_EXPECTED &&

@@ -47,6 +47,9 @@
         Colorado Springs to the by-request gate below. Fort
         Collins sits in the same table at a flat $300 (owner
         order 2026-11-19) — RideWave gates it the same way.
+        Castle Rock and Evergreen (including Evergreen Lake)
+        sit in the same table at a flat $250 each (owner order
+        2026-11-20), on the same terms.
      3. Stadium / venue fare: an endpoint inside a stadium zone
         with the other endpoint inside the metro prices FLAT $200;
         with the other endpoint outside the metro, the meter fare
@@ -189,7 +192,26 @@
      as Colorado Springs — it pairs with the metro (and takes
      the higher flat against Colorado Springs or a mountain
      town), and the gate covers it. Its circle is city-sized
-     (11 km). The sheet labels it "Flat fare" as well. */
+     (11 km). The sheet labels it "Flat fare" as well.
+     BBL ADDITION (owner order 2026-11-20): Castle Rock rides
+     at a flat $250 in this same table, on the same terms as
+     Colorado Springs and Fort Collins — it pairs with the
+     metro (and takes the higher flat against Colorado Springs,
+     Fort Collins or a mountain town), and the gate covers it.
+     Its circle is city-sized (12 km); Castle Pines, at the
+     circle's northern edge, rides at the same $250. The sheet
+     labels it "Flat fare" as well.
+     BBL ADDITION (owner order 2026-11-20): Evergreen,
+     including Evergreen Lake, rides at a flat $250 in this
+     same table, on the same terms. Its circle is centred
+     between downtown Evergreen and Evergreen Lake (both
+     ~0.5 km from the centre) at an 8 km radius — deliberately
+     NOT the city-sized 12 km of the other BBL towns: the Red
+     Rocks Amphitheatre venue point sits 10.7 km from the
+     centre, inside a 12 km circle, and capturing it would
+     break the stadium rule for Red Rocks rides. At 8 km the
+     venue centre and its whole 1.2 km venue circle stay
+     outside this zone. The sheet labels it "Flat fare" too. */
   BBL_PRICING.mountainZones = [
     { name: "Aspen",             lat: 39.1907, lng: -106.8192, radiusM: 2500, flat: 1200, names: ["aspen, co", "aspen, colorado"] },
     { name: "Aspen",             lat: 39.1826, lng: -106.8553, radiusM: 1000, flat: 1200, names: ["aspen highlands"] },
@@ -206,7 +228,9 @@
     { name: "Eagle",             lat: 39.6553, lng: -106.8287, radiusM: 2500, flat: 800,  names: ["eagle, co", "eagle, colorado"] },
     { name: "Eagle",             lat: 39.6426, lng: -106.9177, radiusM: 1500, flat: 800,  names: ["eagle county regional", "eagle county airport"] },
     { name: "Colorado Springs",  lat: 38.8339, lng: -104.8214, radiusM: 12000, flat: 350, names: ["colorado springs"] },
-    { name: "Fort Collins",     lat: 40.5853, lng: -105.0844, radiusM: 11000, flat: 300, names: ["fort collins"] }
+    { name: "Fort Collins",     lat: 40.5853, lng: -105.0844, radiusM: 11000, flat: 300, names: ["fort collins"] },
+    { name: "Castle Rock",      lat: 39.3722, lng: -104.8561, radiusM: 12000, flat: 250, names: ["castle rock"] },
+    { name: "Evergreen",        lat: 39.6317, lng: -105.3221, radiusM: 8000,  flat: 250, names: ["evergreen, co", "evergreen, colorado", "evergreen lake"] }
   ];
 
   /* The meter formula, copied from the shipped computedFare():
@@ -436,7 +460,7 @@
     snapshotDate: "2026-11-18",
     sourceFiles: ["functions/index.js (ridewave-functions)", "app.html (ridewave-web)"],
     sourceBlobs: ["17e751439ffe81247b63635c84cc2c7b48e2763c", "48f41448e533c1a719bdd4a62b1297ba844ecb22"],
-    note: "Snapshot only — no live link to RideWave pricing in either direction. Rates made identical to RideWave's live fare stack at the owner's order, 2026-11-18. BBL-only change 2026-11-19 (staged, not deployed): the airport surcharge now covers every Denver-metro airport, not DIA only."
+    note: "Snapshot only — no live link to RideWave pricing in either direction. Rates made identical to RideWave's live fare stack at the owner's order, 2026-11-18. BBL-only change 2026-11-19 (staged, not deployed): the airport surcharge now covers every Denver-metro airport, not DIA only. BBL addition 2026-11-20 (staged on preview, not deployed): Castle Rock and Evergreen (incl. Evergreen Lake) join the flat table at $250 each."
   };
 
   /* Version stamp — the quote page pins its script URL to this
@@ -448,6 +472,6 @@
      served against the current page forever). ANY edit to this
      file MUST bump the stamp here AND the page's
      PRICING_STAMP_EXPECTED + script-tag query together. */
-  BBL_PRICING.stamp = "2026-11-19-airport20";
+  BBL_PRICING.stamp = "2026-11-20-city250";
   window.BBL_PRICING = BBL_PRICING;
 })();
