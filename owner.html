@@ -157,6 +157,15 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
       </form>
       <p class="auth-note" id="acNote">New accounts start as rider accounts. Owner access is granted by the platform operator, never by the account itself.</p>
     </div>
+    <div class="auth-card">
+      <h3 style="font-size:19px;margin:0 0 8px">Owner code</h3>
+      <p class="sub" style="margin:0 0 14px">No account needed. If you have the owner code, enter it here to open the live bookings, your drivers and the business settings.</p>
+      <form id="gateForm2" class="auth-form on" novalidate>
+        <div class="field"><label class="flabel" for="gateCode2">Owner code</label><input id="gateCode2" type="password" autocomplete="off" placeholder="Owner code"><div class="err">Please enter the owner code.</div></div>
+        <div style="margin-top:14px"><button class="btn btn-amber btn-block" type="submit">Unlock live view</button></div>
+      </form>
+      <p class="auth-note" style="margin:12px 0 0">The code is kept on this tab only. It is the same code the owner uses on any device.</p>
+    </div>
   </div>
 </section>
 
@@ -171,7 +180,7 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
         <div style="margin-top:14px"><button class="btn btn-amber" type="submit">Unlock live view</button></div>
       </form>
       <div id="liveWrap" hidden>
-        <div style="margin-bottom:12px"><button class="btn btn-ghost" type="button" id="liveRefresh">Refresh</button></div>
+        <div style="margin-bottom:12px"><button class="btn btn-ghost" type="button" id="liveRefresh">Refresh</button> <button class="btn btn-ghost" type="button" id="liveLock" hidden>Lock live view</button></div>
         <div id="liveList"></div>
       </div>
       <p id="gateNote" style="margin:12px 0 0;color:var(--ink2);font-size:14.5px"></p>
@@ -188,6 +197,12 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
       <div style="margin-bottom:12px"><button class="btn btn-ghost" type="button" id="accountsRefresh">Refresh</button></div>
       <div id="accountsList"></div>
       <p id="accountsNote" style="margin:12px 0 0;color:var(--ink2);font-size:14.5px"></p>
+    </div>
+    <div class="panel" id="settingsPanel" hidden style="margin-bottom:24px">
+      <h3>Business settings</h3>
+      <p style="margin:0 0 14px;color:var(--ink2);font-size:14.5px">The current setup, read live from the same sources the site itself uses: the pricing file the booking page runs on, the live driver list, and the days blocked on this device. This panel is for checking only — nothing on it can be changed from here.</p>
+      <div style="margin-bottom:12px"><button class="btn btn-ghost" type="button" id="settingsRefresh">Refresh</button></div>
+      <div id="settingsBody"></div>
     </div>
     <div class="kicker">For the owner</div>
     <h2 class="sec">Your day, on one simple screen</h2>
@@ -263,9 +278,11 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
     <h3>Boulder Black Line</h3>
     <p style="margin:0">Private SUV rides in the Denver metro. Call <a href="tel:+17203264652">(720) 326-4652</a> or email <a href="mailto:boulderblack1@gmail.com">boulderblack1@gmail.com</a>.</p>
     <p class="fine">Owner page for the preview. This page has its own address and its own sign in, and it is not linked from the rider site.<br><a href="/privacy.html">Privacy Policy</a> · <a href="/terms.html">Terms of Service</a></p>
+    <p class="fine build-line">Build 15 · v2026.11.20-ownerview · 2026-11-20</p>
   </div>
 </footer>
 
+<script src="bbl-pricing.js"></script>
 <script>
 "use strict";
 var $=function(id){return document.getElementById(id)};
@@ -404,12 +421,12 @@ function loadCentralDrivers(){
         lsSet("bbl_drivers_migrated_v1",true);
         return window.__bblCall("bblListDrivers",centralPayload({})).then(function(res2){
           LIVE_DRIVERS=(res2&&res2.drivers)||LIVE_DRIVERS;
-          mirrorDriversLocal();renderDrivers();renderDay();if(LIVE_BOOKINGS)renderLive(LIVE_BOOKINGS);
+          mirrorDriversLocal();renderDrivers();renderSettings();renderDay();if(LIVE_BOOKINGS)renderLive(LIVE_BOOKINGS);
           return true;
         });
       });
     }
-    mirrorDriversLocal();renderDrivers();renderDay();if(LIVE_BOOKINGS)renderLive(LIVE_BOOKINGS);
+    mirrorDriversLocal();renderDrivers();renderSettings();renderDay();if(LIVE_BOOKINGS)renderLive(LIVE_BOOKINGS);
     return true;
   }).catch(function(){return false});
 }
@@ -422,6 +439,139 @@ $("liveRefresh").addEventListener("click",function(){
   if(typeof window.__bblCall!=="function"){flagMsg($("gateCode"),"Live view is unavailable right now.",true);return}
   loadLive(c,false);
 });
+
+/* Owner code without an account (owner-access fix, 2026-11-20,
+   found from the owner's screenshot: the code gate used to sit
+   inside the day view, which only an owner account could open,
+   so a logged-out owner had nowhere to type the code). The code
+   card on the sign-in screen unlocks the same day view the
+   account path gives, minus the two account panels (Support
+   activity, Accounts and roles), which belong to the account
+   system and stay account-only. The code stays per-tab in
+   session storage, exactly as the in-page gate has always kept
+   it, and a tab that already holds a code re-enters on load. */
+var CODE_SESSION=false,CODE_AUTOTRIED=false;
+function enterCodeChrome(){
+  CODE_SESSION=true;
+  $("authSection").hidden=true;
+  $("daySection").hidden=false;
+  var sp=$("settingsPanel");if(sp)sp.hidden=false;
+  var lk=$("liveLock");if(lk)lk.hidden=false;
+}
+function unlockWithCode(code,fieldEl){
+  if(typeof window.__bblCall!=="function"){if(fieldEl)flagMsg(fieldEl,"Live view is unavailable right now.",true);return Promise.resolve(false)}
+  setGateCode(code);
+  return window.__bblCall("bblListBookings",{code:code}).then(function(res){
+    enterCodeChrome();
+    renderLive((res&&res.bookings)||[]);
+    $("liveWrap").hidden=false;
+    $("gateForm").hidden=true;
+    var note=$("gateNote");
+    if(note)note.textContent="Live view unlocked for this tab with the owner code.";
+    renderDrivers();renderDay();renderBlocked();renderSettings();
+    return loadCentralDrivers().then(function(){renderSettings();return true});
+  }).catch(function(){
+    setGateCode("");
+    CODE_SESSION=false;
+    if(fieldEl)flagMsg(fieldEl,"That code did not match. Try again.",true);
+    return false;
+  });
+}
+function maybeAutoUnlock(){
+  if(CODE_AUTOTRIED||CODE_SESSION||fbOwnerLevel())return;
+  CODE_AUTOTRIED=true;
+  var c=gateCode();
+  if(c)unlockWithCode(c,null);
+}
+function lockLiveView(){
+  setGateCode("");
+  CODE_SESSION=false;LIVE_BOOKINGS=null;LIVE_DRIVERS=null;
+  $("liveWrap").hidden=true;
+  $("gateForm").hidden=false;
+  var lk=$("liveLock");if(lk)lk.hidden=true;
+  var sp=$("settingsPanel");if(sp)sp.hidden=true;
+  $("daySection").hidden=true;
+  $("authSection").hidden=false;
+  var n=$("gateNote");if(n)n.textContent="";
+  var f2=$("gateForm2");if(f2&&f2.reset)f2.reset();
+}
+$("gateForm2").addEventListener("submit",function(e){e.preventDefault();
+  var v=$("gateCode2").value.trim();
+  if(!v){flagMsg($("gateCode2"),"Please enter the owner code.",true);return}
+  unlockWithCode(v,$("gateCode2"));
+});
+$("liveLock").addEventListener("click",function(){lockLiveView()});
+$("settingsRefresh").addEventListener("click",function(){
+  renderSettings();
+  if(fbOwnerLevel()||gateCode())loadCentral(true);
+});
+
+/* Business settings — a checking view, read-only by construction
+   (it renders rows; there is nothing in it to submit). Every
+   value is read at render time from the same source the site
+   itself uses, never from a copy typed into this page: business
+   identity from the page identity runtime, drivers from the
+   live central list, blocked days from this device's store
+   (labelled as such), and pricing from window.BBL_PRICING — the
+   very object the booking page prices with. If a source is not
+   available the panel says so instead of inventing a value. */
+function settingsRow(label,value){
+  return '<div class="owner-row"><div class="info"><b>'+escHtml(label)+'</b><span>'+escHtml(value)+'</span></div></div>';
+}
+function settingsHead(t){return '<h3 style="margin:20px 0 10px;font-size:16.5px">'+escHtml(t)+'</h3>'}
+function renderSettings(){
+  var body=$("settingsBody");if(!body)return;
+  var id=window.__bblId||null;
+  var html="";
+  html+=settingsHead("Business");
+  if(id&&id.co){
+    html+=settingsRow("Business name",id.co);
+    html+=settingsRow("Phone",id.ph||"");
+    html+=settingsRow("Email",id.em||"");
+  }else{
+    html+='<p class="empty-note">The business identity did not load on this page. Reload to check it.</p>';
+  }
+  html+=settingsHead("Booking alerts");
+  if(id&&(id.ph||id.em)){
+    html+=settingsRow("Alerts go to the owner at",[id.ph,id.em].filter(Boolean).join(" \u00B7 "));
+  }
+  html+=settingsRow("How alerts fire","A new booking texts and emails the owner right away through the owner\u2019s Jotform form. When a driver is assigned, the rider gets a welcome email, and a reminder email goes out 12 hours before pickup — both sent by the site backend.");
+  html+=settingsHead("Drivers (live list)");
+  if(LIVE_DRIVERS){
+    if(!LIVE_DRIVERS.length)html+='<p class="empty-note">No drivers on the live list yet.</p>';
+    html+=LIVE_DRIVERS.map(function(d){
+      var sub=escHtml(d.mobile||"No mobile yet")+(d.vehicle?" \u00B7 "+escHtml(d.vehicle):" \u00B7 Vehicle not set")+(d.plate?" \u00B7 Plate "+escHtml(d.plate):" \u00B7 Plate not set")+(d.email?" \u00B7 "+escHtml(d.email):"");
+      return '<div class="owner-row"><div class="info"><b>'+escHtml(d.name||"Driver")+(d.self?' <span class="status go">Myself</span>':"")+'</b><span>'+sub+'</span></div></div>';
+    }).join("");
+  }else{
+    html+='<p class="empty-note">Unlock the live view above to see the live driver list here.</p>';
+  }
+  html+=settingsHead("Blocked days");
+  var days=lsGet(LS_OBLOCK,[]);
+  if(days.length){
+    html+=days.slice().sort().map(function(d){return settingsRow(fmtDate(d),"Blocked day \u00B7 saved on this device")}).join("");
+  }else{
+    html+='<p class="empty-note">No days blocked on this device.</p>';
+  }
+  html+=settingsHead("Pricing (the booking page\u2019s own pricing file)");
+  var P=window.BBL_PRICING;
+  if(P&&P.rates&&P.rates[P.tier]){
+    var rt=P.rates[P.tier];
+    html+=settingsRow("Meter fare","$"+fmtMoney(rt.base)+" base + $"+fmtMoney(rt.ratePerMile)+" per mile");
+    html+=settingsRow("Long distance","+$"+fmtMoney(P.longHaulPerMile[P.tier])+" per mile past "+P.longHaulAfterMiles+" miles");
+    html+=settingsRow("Airport surcharge","$"+fmtMoney(P.airportSurcharge[P.tier])+" when either end is a Denver-metro airport");
+    html+=settingsRow("Hourly","$"+fmtMoney(P.hourlyFirstHour)+" for the first hour, then $"+fmtMoney(P.hourlyRate)+" per hour \u00B7 "+P.hourlyMinHours+" to "+P.hourlyMaxHours+" hours");
+    html+=settingsRow("Stadium and venue fare","$"+fmtMoney(P.stadiumFare)+" flat when the other end is inside the metro");
+    var seen={},flats=[];
+    (P.mountainZones||[]).forEach(function(z){if(!(z.name in seen)){seen[z.name]=1;flats.push(z)}});
+    flats.sort(function(a,b){return b.flat-a.flat});
+    if(flats.length)html+=settingsRow("Flat fares",flats.map(function(z){return z.name+" $"+fmtMoney(z.flat)}).join(" \u00B7 "));
+    if(P.stamp)html+=settingsRow("Pricing version",P.stamp);
+  }else{
+    html+='<p class="empty-note">The pricing file did not load on this page, so pricing cannot be checked here. Prices themselves still come from the booking page.</p>';
+  }
+  body.innerHTML=html;
+}
 
 /* the header identity follows the owner account sign in: the name
    and the Log Out button live here, and Log Out signs the account
@@ -713,13 +863,13 @@ $("acCreateForm").addEventListener("submit",function(e){e.preventDefault();var n
 });
 window.__bblOnAuth=function(u){
   FB_USER=u||null;
-  if(!u){FB_ACCT=null;FB_UID="";onFbOwner();return}
+  if(!u){var hadUser=!!FB_UID;FB_ACCT=null;FB_UID="";onFbOwner();if(hadUser)CODE_AUTOTRIED=true;else maybeAutoUnlock();return}
   if(FB_UID===u.uid&&FB_ACCT){onFbOwner();return}
   FB_UID=u.uid;
   var p=window.__bblPendingProfile||{};window.__bblPendingProfile=null;
   if(typeof window.__bblCall==="function"){
-    window.__bblCall("bblRegisterAccount",{name:p.name||"",mobile:p.mobile||""}).then(function(a){FB_ACCT=a||null;onFbOwner()},function(){FB_ACCT=null;onFbOwner()});
-  }else{FB_ACCT=null;onFbOwner()}
+    window.__bblCall("bblRegisterAccount",{name:p.name||"",mobile:p.mobile||""}).then(function(a){FB_ACCT=a||null;onFbOwner();maybeAutoUnlock()},function(){FB_ACCT=null;onFbOwner();maybeAutoUnlock()});
+  }else{FB_ACCT=null;onFbOwner();maybeAutoUnlock()}
 };
 function onFbOwner(){
   var b=$("supportBanner");if(b)b.hidden=!(FB_ACCT&&FB_ACCT.isOperator);
@@ -733,10 +883,13 @@ function onFbOwner(){
     loadCentral(true);loadActivity();loadAccounts();
   }else{
     if(FB_USER&&note)note.textContent="This account does not have owner access yet. Roles are granted by the business owner or the platform operator, never by the account itself.";
-    $("daySection").hidden=true;if(!FB_USER)$("authSection").hidden=false
+    if(!CODE_SESSION){$("daySection").hidden=true;if(!FB_USER)$("authSection").hidden=false}
   }
   var ap=$("activityPanel");if(ap)ap.hidden=!(FB_ACCT&&(FB_ACCT.role==="owner"||FB_ACCT.isOperator));
   var cp=$("accountsPanel");if(cp)cp.hidden=!(FB_ACCT&&(FB_ACCT.role==="owner"||FB_ACCT.isOperator));
+  var sp=$("settingsPanel");if(sp)sp.hidden=!(fbOwnerLevel()||CODE_SESSION);
+  if(sp&&!sp.hidden)renderSettings();
+  var lk=$("liveLock");if(lk)lk.hidden=!CODE_SESSION;
 }
 function fmtStamp(iso){if(!iso)return"";var d=new Date(iso);if(!isFinite(d.getTime()))return"";return d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})+", "+d.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"})}
 function loadActivity(){
