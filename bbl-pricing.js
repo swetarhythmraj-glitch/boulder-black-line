@@ -45,8 +45,8 @@
         (owner order 2026-11-18 evening): Colorado Springs sits in
         this same table at a flat $350 — RideWave itself leaves
         Colorado Springs to the by-request gate below. Fort
-        Collins sits in the same table at a flat $300 (owner
-        order 2026-11-19) — RideWave gates it the same way.
+        Collins sits in the same table at a flat $250 (owner
+        order 2026-11-19; lowered from $300 on 2026-11-20) — RideWave gates it the same way.
         Castle Rock and Evergreen (including Evergreen Lake)
         sit in the same table at a flat $250 each (owner order
         2026-11-20), on the same terms.
@@ -201,7 +201,8 @@
      (see updatePrice in the page).
      BBL-ONLY ADDITION (owner order 2026-11-19, NOT in RideWave —
      RideWave gates Fort Collins as by-request): Fort Collins
-     rides at a flat $300 in this same table, on the same terms
+     rides at a flat $250 in this same table (lowered from
+     $300, owner order 2026-11-20), on the same terms
      as Colorado Springs — it pairs with the metro (and takes
      the higher flat against Colorado Springs or a mountain
      town), and the gate covers it. Its circle is city-sized
@@ -241,7 +242,7 @@
     { name: "Eagle",             lat: 39.6553, lng: -106.8287, radiusM: 2500, flat: 800,  names: ["eagle, co", "eagle, colorado"] },
     { name: "Eagle",             lat: 39.6426, lng: -106.9177, radiusM: 1500, flat: 800,  names: ["eagle county regional", "eagle county airport"] },
     { name: "Colorado Springs",  lat: 38.8339, lng: -104.8214, radiusM: 12000, flat: 350, names: ["colorado springs"] },
-    { name: "Fort Collins",     lat: 40.5853, lng: -105.0844, radiusM: 11000, flat: 300, names: ["fort collins"] },
+    { name: "Fort Collins",     lat: 40.5853, lng: -105.0844, radiusM: 11000, flat: 250, names: ["fort collins"] },
     { name: "Castle Rock",      lat: 39.3722, lng: -104.8561, radiusM: 12000, flat: 250, names: ["castle rock"] },
     { name: "Evergreen",        lat: 39.6317, lng: -105.3221, radiusM: 8000,  flat: 250, names: ["evergreen, co", "evergreen, colorado", "evergreen lake"] }
   ];
@@ -513,6 +514,6 @@
      served against the current page forever). ANY edit to this
      file MUST bump the stamp here AND the page's
      PRICING_STAMP_EXPECTED + script-tag query together. */
-  BBL_PRICING.stamp = "2026-11-20-hourlyvenue";
+  BBL_PRICING.stamp = "2026-11-20-fc250";
   window.BBL_PRICING = BBL_PRICING;
 })();
