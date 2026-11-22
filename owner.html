@@ -226,7 +226,7 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
           <div class="field"><label class="flabel" for="scName">Rider name</label><input id="scName" type="text" autocomplete="name" placeholder="Full name"><p class="err"></p></div>
           <div class="row2">
             <div class="field"><label class="flabel" for="scPhone">Rider phone</label><input id="scPhone" type="tel" autocomplete="tel" placeholder="(720) 555-0100"><p class="err"></p></div>
-            <div class="field"><label class="flabel" for="scEmail">Rider email</label><input id="scEmail" type="email" autocomplete="email" placeholder="rider@email.com"><p class="err"></p></div>
+            <div class="field"><label class="flabel" for="scEmail">Rider email (optional)</label><input id="scEmail" type="email" autocomplete="email" placeholder="rider@email.com"><p class="err"></p></div>
           </div>
           <div class="field"><label class="flabel" for="scPickup">Pickup</label><input id="scPickup" type="text" autocomplete="off" placeholder="Start typing the pickup address"><p class="err"></p></div>
           <div class="field" id="scAirlineWrap" hidden><label class="flabel" for="scAirline">Airline</label><select id="scAirline"></select><p class="err"></p></div>
@@ -282,6 +282,9 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
             </select><p class="err"></p></div>
           </div>
           <div class="field"><label class="flabel" for="scNotes">Notes for the driver</label><textarea id="scNotes" rows="2" placeholder="Gate code, child seat, anything the driver should know"></textarea><p class="err"></p></div>
+          <div style="margin-top:10px"><label style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:14.5px;cursor:pointer"><input type="checkbox" id="scManualPrice" style="width:18px;height:18px"> Manual price</label>
+            <div class="field" id="scManualWrap" hidden style="margin-top:8px"><label class="flabel" for="scManualAmt">Price amount</label><input id="scManualAmt" type="number" min="0" step="0.01" inputmode="decimal" placeholder="e.g. 150" style="max-width:220px"><p class="err"></p></div>
+          </div>
           <div id="scFare" hidden style="background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:15px;margin:4px 0 6px"></div>
           <p id="scFormNote" style="color:var(--red);font-size:13.5px;margin:8px 0 0"></p>
           <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
@@ -302,7 +305,6 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
         <div style="margin-bottom:12px"><button class="btn btn-ghost" type="button" id="liveRefresh">Refresh</button> <button class="btn btn-ghost" type="button" id="liveLock" hidden>Lock live view</button></div>
         <div id="liveList"></div>
       </div>
-      <p id="gateNote" style="margin:12px 0 0;color:var(--ink2);font-size:14.5px"></p>
     </div>
     </div>
     <div class="tabpage" id="tabpage-drivers" role="tabpanel" aria-labelledby="tabbtn-drivers" hidden>
@@ -338,6 +340,11 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
 
     </div>
     <div class="tabpage" id="tabpage-settings" role="tabpanel" aria-labelledby="tabbtn-settings" hidden>
+    <div class="panel" id="coveragePanel" hidden style="margin-bottom:24px">
+      <h3>Coverage map</h3>
+      <p style="margin:0 0 14px;color:var(--ink2);font-size:14.5px">See the coverage map — ZIP codes, venue stars and flat-rate towns — and tap ZIP codes to build a change list.</p>
+      <a class="btn btn-amber" href="/coverage.html">Open the coverage map</a>
+    </div>
     <div class="panel" id="codeChangePanel" hidden style="margin-bottom:24px">
       <h3>Change your sign-in code</h3>
       <p style="margin:0 0 14px;color:var(--ink2);font-size:14.5px">Change the sign-in code you used to open this page — your own code, whichever one that is. The old code stops working as soon as the new one is saved.</p>
@@ -426,7 +433,7 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
     <h3>Boulder Black Line</h3>
     <p style="margin:0">Private SUV rides in the Denver metro. Call <a href="tel:+17203264652">(720) 326-4652</a> or email <a href="mailto:boulderblack1@gmail.com">boulderblack1@gmail.com</a>.</p>
     <p class="fine">Owner page for the preview. This page has its own address and its own sign in, and it is not linked from the rider site.<br><a href="/privacy.html">Privacy Policy</a> · <a href="/terms.html">Terms of Service</a></p>
-    <p class="fine build-line">Build 19 · v2026.11.21-metrocover · 2026-11-22</p>
+    <p class="fine build-line">Build 20 · v2026.11.22-build20 · 2026-11-22</p>
   </div>
 </footer>
 
@@ -486,7 +493,11 @@ function stopsNotesSub(b){return stopsOf(b).map(function(a){return " \u00B7 Stop
    sms: link with the text prefilled in his Messages app (he taps send
    himself; nothing is sent by the system), plus a Copy confirmation
    button carrying the same text. The text is fare-free, mirroring the
-   rider email's fields (standing no-price rule for customer texts). */
+   rider email's fields (standing no-price rule for customer texts) —
+   EXCEPT on a booking whose price was set by hand in this dashboard
+   (owner's rule, 2026-11-22): those show the fare as a plain fare
+   line, exactly like the rider email for the same booking, and
+   nothing anywhere says how the price was set. */
 function bkConfirmText(b) {
   if (!b) return "";
   var lines = ["Boulder Black Line booking confirmation"];
@@ -503,6 +514,7 @@ function bkConfirmText(b) {
   if (b.passengers != null && b.passengers !== "") lines.push("Passengers: " + b.passengers);
   if (b.bags != null && String(b.bags) !== "") lines.push("Bags: " + b.bags);
   if (notesOf(b)) lines.push("Notes: " + notesOf(b));
+  if (b.fareCustom && b.price != null && b.price !== "") lines.push("Fare: $" + Number(b.price).toFixed(2));
   lines.push("Questions? Call or text (720) 326-4652.");
   return lines.join("\n");
 }
@@ -648,8 +660,6 @@ function loadCentral(quiet){
     renderLive((res&&res.bookings)||[]);
     $("liveWrap").hidden=false;
     $("gateForm").hidden=true;
-    var note=$("gateNote");
-    if(note)note.textContent=fbOwnerLevel()?("Live view unlocked with your account ("+(FB_ACCT.email||"")+" )."):"Live view unlocked for this tab.";
     return loadCentralDrivers();
   }).catch(function(){
     if(fbOwnerLevel()){var n2=$("gateNote");if(n2)n2.textContent="Live view needs your owner code. Enter it below to unlock the live list.";$("gateForm").hidden=false;return false}
@@ -741,11 +751,6 @@ function applyRoleUI(){
   if(gcp)gcp.hidden=!(CODE_SESSION&&CODE_ROLE==="owner");
   var st=$("supportState");
   if(st)st.textContent=SUPPORT_SET?"A support code is set.":"No support code is set.";
-  var note=$("gateNote");
-  if(note&&CODE_SESSION&&CODE_ROLE){
-    var rn=CODE_ROLE==="owner"?"owner":"support";
-    note.textContent=gateKept()?("Live view unlocked with the "+rn+" code. The code is saved on this browser."):("Live view unlocked for this tab with the "+rn+" code.");
-  }
 }
 function refreshCodeRole(code){
   if(typeof window.__bblCall!=="function")return;
@@ -761,7 +766,7 @@ function enterCodeChrome(){
   $("authSection").hidden=true;
   $("daySection").hidden=false;
   var scp=$("schedPanel");if(scp)scp.hidden=false;var sp=$("settingsPanel");if(sp)sp.hidden=false;
-  var ccp=$("codeChangePanel");if(ccp)ccp.hidden=false;
+  var ccp=$("codeChangePanel");if(ccp)ccp.hidden=false;var cvp=$("coveragePanel");if(cvp)cvp.hidden=false;
   var lk=$("liveLock");if(lk)lk.hidden=false;
 }
 function unlockWithCode(code,fieldEl){
@@ -775,8 +780,6 @@ function unlockWithCode(code,fieldEl){
     renderLive((res&&res.bookings)||[]);
     $("liveWrap").hidden=false;
     $("gateForm").hidden=true;
-    var note=$("gateNote");
-    if(note)note.textContent=gateKept()?"Live view unlocked with the owner code. The code is saved on this browser.":"Live view unlocked for this tab with the owner code.";
     renderDrivers();renderDay();renderBlocked();renderSettings();
     return loadCentralDrivers().then(function(){renderSettings();return true});
   }).catch(function(){
@@ -800,7 +803,7 @@ function lockLiveView(){
   $("gateForm").hidden=false;
   var lk=$("liveLock");if(lk)lk.hidden=true;
   var scp=$("schedPanel");if(scp)scp.hidden=true;if(window.__bblSchedLock)window.__bblSchedLock();var sp=$("settingsPanel");if(sp)sp.hidden=true;
-  var ccp=$("codeChangePanel");if(ccp)ccp.hidden=true;
+  var ccp=$("codeChangePanel");if(ccp)ccp.hidden=true;var cvp2=$("coveragePanel");if(cvp2)cvp2.hidden=true;
   var scp=$("supportCodePanel");if(scp)scp.hidden=true;
   var gcp=$("gateCodePanel");if(gcp)gcp.hidden=true;
   var rl=$("roleLabel");if(rl)rl.hidden=true;
@@ -945,6 +948,8 @@ function renderSettings(){
   var body=$("settingsBody");if(!body)return;
   var id=window.__bblId||null;
   var html="";
+  html+=settingsHead("Coverage");
+  html+='<div class="owner-row"><div class="info"><b>Coverage map</b><span><a href="/coverage.html">Open the coverage map</a> — ZIP codes, venues and flat-rate towns.</span></div></div>';
   html+=settingsHead("Business");
   if(id&&id.co){
     html+=settingsRow("Business name",id.co);
@@ -1501,7 +1506,29 @@ function scCalcFare() {
 /* The fare the form would save right now. In edit mode, until the
    route, service or hours actually change, that is the booked
    fare — an edit of the rider's name or phone never reprices. */
+/* Manual price (Build 20, owner's order 2026-11-22): when the
+   Manual price box is ticked with a valid amount, that amount is
+   the fare — it replaces whatever the route priced (or could not
+   price), in the fare box, on the booking record and in every
+   confirmation. The record carries it as fareCustom so the rider
+   confirmation can show it as a plain fare line. */
+function scManualAmt() {
+  var cb = $("scManualPrice");
+  if (!cb || !cb.checked) return null;
+  var inp = $("scManualAmt");
+  var v = parseFloat(inp ? inp.value : "");
+  if (!isFinite(v) || v <= 0 || v > 100000) return null;
+  return Math.round(v * 100) / 100;
+}
 function scCurrentFare() {
+  var manualAmt = scManualAmt();
+  if (manualAmt != null) {
+    var base = scCalcFare();
+    var mfd = { kind: "custom", fare: manualAmt };
+    if (base && base.kind === "route") mfd = { kind: "route", fare: manualAmt, miles: base.miles, minutes: base.mins };
+    else if (base && base.kind === "hourly") mfd = { kind: "hourly", fare: manualAmt, hours: base.hours };
+    return { fare: manualAmt, kind: "custom", fareDetail: mfd, mountain: base ? base.mountain : null, stadium: base ? base.stadium : null };
+  }
   if (scMode === "edit" && !scFareDirty && scOrig) {
     return { fare: scOrig.price, kind: "orig", fareDetail: scOrig.fareDetail || null };
   }
@@ -1515,13 +1542,24 @@ function scCurrentFare() {
 function scFareNote(c) {
   var note = "";
   var z = c.mountain;
-  if (z) note = ((z.name === "Colorado Springs" || z.name === "Fort Collins" || z.name === "Castle Rock" || z.name === "Evergreen") ? "Flat fare" : "Mountain fare") + ": " + z.name + ", flat $" + fmtMoney(z.amount);
+  if (z) note = ((z.name === "Colorado Springs" || z.name === "Fort Collins" || z.name === "Castle Rock" || z.name === "Evergreen" || z.name === "Loveland") ? "Flat fare" : "Mountain fare") + ": " + z.name + ", flat $" + fmtMoney(z.amount);
   else if (c.stadium) note = "Stadium fare: " + c.stadium.name + (c.stadium.flat ? ", flat $200" : ", $200 minimum");
   return note;
 }
 function scPaintFare() {
   var el = $("scFare");
   if (!el) return;
+  var manualAmtP = scManualAmt();
+  if (manualAmtP != null) {
+    el.hidden = false;
+    el.innerHTML = '<span class="q-lbl">Fare:</span> <b>$' + fmtMoney(manualAmtP) + '</b> <span>— the price you set.</span>';
+    return;
+  }
+  if ($("scManualPrice") && $("scManualPrice").checked) {
+    el.hidden = false;
+    el.textContent = "Enter the price amount for this booking.";
+    return;
+  }
   if (scMode === "edit" && !scFareDirty && scOrig) {
     el.hidden = false;
     el.innerHTML = '<span class="q-lbl">Fare:</span> <b>$' + fmtMoney(scOrig.price) + '</b> <span>as booked — change the pickup, drop-off, service or hours to reprice.</span>';
@@ -1718,6 +1756,7 @@ function scResetForm(mode, bk) {
   if (form) form.reset();
   $("scFormNote").textContent = "";
   $("scStopRow").hidden = true;
+  $("scManualWrap").hidden = true;
   $("scAddStopBtn").hidden = false;
   $("schedSubmitBtn").disabled = false;
   if (mode === "edit" && bk) {
@@ -1740,6 +1779,7 @@ function scResetForm(mode, bk) {
     $("scPax").value = bk.passengers != null ? String(bk.passengers) : "";
     $("scBags").value = bk.bags != null ? String(bk.bags) : "0";
     $("scNotes").value = bk.notes || "";
+    if (bk.fareCustom) { $("scManualPrice").checked = true; $("scManualWrap").hidden = false; $("scManualAmt").value = bk.price != null ? String(bk.price) : ""; }
     $("scAirline").value = bk.airline || "";
     $("scDropAirline").value = bk.airlineDropoff || "";
     $("scFlight").value = bk.flightNumber || "";
@@ -1811,6 +1851,8 @@ function scOpenEdit(bk) {
   });
   $("scService").addEventListener("change", function () { scFareDirty = true; scSyncService(); scRoute(); });
   $("scHours").addEventListener("change", function () { scFareDirty = true; scPaintFare(); });
+  $("scManualPrice").addEventListener("change", function () { $("scManualWrap").hidden = !$("scManualPrice").checked; scPaintFare(); });
+  $("scManualAmt").addEventListener("input", function () { scPaintFare(); });
   $("scAirline").addEventListener("change", function () { scResnap("pickup"); scSyncAirportFields(); });
   $("scDropAirline").addEventListener("change", function () { scResnap("dropoff"); scSyncAirportFields(); });
   $("scFlight").addEventListener("change", function () { scResnap("pickup"); });
@@ -1831,7 +1873,7 @@ function scOpenEdit(bk) {
     var name = $("scName"), phone = $("scPhone"), email = $("scEmail");
     need(name, (name.value || "").trim().length >= 2, "Please enter the rider's full name.");
     need(phone, (phone.value || "").replace(/\D/g, "").length >= 10, "Please enter a valid phone number (at least 10 digits).");
-    need(email, /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((email.value || "").trim()), "Please enter a valid email address.");
+    need(email, (email.value || "").trim() === "" || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((email.value || "").trim()), "Please enter a valid email address, or leave it blank.");
     if (!scPlaces.pickup) {
       flagMsg($("scPickup"), $("scPickup").value ? "Please pick the pickup from the address list so we can price the ride." : "Please enter the pickup.", false);
       if (!bad) bad = $("scPickup");
@@ -1845,17 +1887,21 @@ function scOpenEdit(bk) {
     if (!tEl.value) { flagMsg(tEl, "Please pick the pickup time.", false); if (!bad) bad = tEl; } else clearField(tEl);
     need($("scPax"), !!$("scPax").value, "Please select how many passengers (max 6).");
     if ($("scService").value === "hourly" && !$("scHours").value) { flagField($("scHours")); if (!bad) bad = $("scHours"); }
+    var manualOn = $("scManualPrice") && $("scManualPrice").checked;
+    var manualAmt = scManualAmt();
+    if (manualOn && manualAmt == null) { flagMsg($("scManualAmt"), "Enter the price amount.", false); if (!bad) bad = $("scManualAmt"); }
+    else if (manualOn) clearField($("scManualAmt"));
     var f = scCurrentFare();
-    if (f.gate) {
+    if (manualAmt == null && f.gate) {
       flagMsg($("scDropoff"), scPricing().adminRequestMsg || "This trip is booked by request.", false);
       if (!bad) bad = $("scDropoff");
-    } else if (f.routeFailed) {
+    } else if (manualAmt == null && f.routeFailed) {
       flagMsg($("scDropoff"), "We could not find a route between those addresses. Check them and try again.", false);
       if (!bad) bad = $("scDropoff");
-    } else if (f.fare == null && scMode === "create") {
+    } else if (manualAmt == null && f.fare == null && scMode === "create") {
       flagMsg($("scDropoff"), "The fare is still calculating. Give it a moment and try again.", false);
       if (!bad) bad = $("scDropoff");
-    } else if (f.fare == null && scFareDirty) {
+    } else if (manualAmt == null && f.fare == null && scFareDirty) {
       flagMsg($("scDropoff"), "The fare is still calculating. Give it a moment and try again.", false);
       if (!bad) bad = $("scDropoff");
     }
@@ -1876,6 +1922,7 @@ function scOpenEdit(bk) {
       pickup: $("scPickup").value, dropoff: $("scDropoff").value,
       stop: !$("scStopRow").hidden ? $("scStop").value : "",
       price: f.fare,
+      fareCustom: manualAmt != null,
       paymentStatus: scMode === "edit" ? (scOrig.paymentStatus || "Pay driver later") : "Pay driver later",
       rider: (name.value || "").trim(),
       phone: (phone.value || "").trim(),
@@ -1901,7 +1948,7 @@ function scOpenEdit(bk) {
         date: rec.date, time: rec.time,
         service: rec.service, serviceName: rec.serviceName,
         passengers: rec.passengers, bags: rec.bags, notes: rec.notes,
-        price: rec.price, fareDetail: rec.fareDetail,
+        price: rec.price, fareDetail: rec.fareDetail, fareCustom: rec.fareCustom,
         airline: rec.airline || "", airlineDropoff: rec.airlineDropoff || "",
         flightNumber: rec.flightNumber || "",
         paymentStatus: rec.paymentStatus
@@ -1935,7 +1982,7 @@ function scOpenEdit(bk) {
       date: rec.date, time: rec.time,
       service: rec.service, serviceName: rec.serviceName,
       passengers: rec.passengers, bags: rec.bags, notes: rec.notes,
-      price: rec.price, fareDetail: rec.fareDetail,
+      price: rec.price, fareDetail: rec.fareDetail, fareCustom: rec.fareCustom,
       airline: rec.airline || "", airlineDropoff: rec.airlineDropoff || "",
       flightNumber: rec.flightNumber || "",
       paymentStatus: rec.paymentStatus
@@ -1953,6 +2000,7 @@ function scOpenEdit(bk) {
         msg += " (Rider texts are not set up for Boulder Black Line — the rider's confirmation is by email.)";
       } else if (n) {
         if (n.riderEmail && n.riderEmail.sent) msg += " Confirmation email sent to " + rec.email + ".";
+        else if (n.riderEmail && n.riderEmail.skipped) msg += " No rider email was given, so no confirmation email was sent.";
         else msg += " The booking saved, but the confirmation email to the rider could not be sent — please give the rider the details directly.";
         if (n.ownerEmail && n.ownerEmail.sent) msg += " Deepak's email alert was sent.";
         else msg += " Deepak's email alert could not be sent — please let him know about this booking.";
@@ -2229,7 +2277,7 @@ function scOpenEdit(bk) {
   /* Propagate the identity to the other preview pages (the pages are
      separate documents; the share-link identity would otherwise be lost
      on the first tap). Only the five keys, only same-site preview links. */
-  var LINKS = { "/": 1, "/index.html": 1, "/owner.html": 1, "/privacy.html": 1, "/terms.html": 1 };
+  var LINKS = { "/": 1, "/index.html": 1, "/owner.html": 1, "/coverage.html": 1, "/privacy.html": 1, "/terms.html": 1 };
   function carryAll() {
     var as = document.querySelectorAll("a[href]");
     for (var i = 0; i < as.length; i++) {

@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light" />
+<link rel="icon" href="data:," />
+<title>Coverage map — Boulder Black Line</title>
+<link rel="stylesheet" href="assets/bbl-coverage/leaflet.css" />
+<style>
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;padding:0}
+  body{font-family: ui-sans-system, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color:#111827; background:#e5e7eb; overflow:hidden}
+  button,[role="button"]{min-height:36px}
+
+  #map{position:absolute;inset:0;z-index:0;background:#ddd}
+
+  /* Panel — always white / dark text per owner's readable-pages rule */
+  .panel{
+    position:absolute; z-index:1000;
+    left:12px; top:12px;
+    width: min(380px, calc(100vw - 24px));
+    max-height: calc(100dvh - 24px);
+    overflow:auto;
+    background:#ffffff;
+    border:1px solid #d1d5db;
+    border-radius:16px;
+    box-shadow:0 10px 30px rgba(0,0,0,.18), 0 2px 8px rgba(0,0,0,.12);
+    padding:16px 16px 14px;
+  }
+  .panel::-webkit-scrollbar{width:6px}
+  .panel::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:999px}
+
+  .eyebrow{font-size:11px; letter-spacing:.08em; text-transform:uppercase; font-weight:700; color:#6b7280; margin:0 0 4px}
+  h1{font-size:22px; line-height:1.15; letter-spacing:-.02em; margin:0; font-weight:800; color:#0f172a}
+  .subtitle{font-size:13.5px; line-height:1.5; color:#1f2937; margin:8px 0 0}
+
+  .legend{display:flex; gap:8px; margin-top:12px}
+  .legend-item{
+    flex:1; display:flex; align-items:center; gap:8px;
+    border:1px solid #e5e7eb; border-radius:10px; padding:8px 10px;
+    font-size:13px; font-weight:700; color:#111827; line-height:1.3;
+  }
+  .legend-swatch{width:22px; height:22px; border-radius:6px; flex-shrink:0}
+  .swatch-green{background:#4ade80; border:2px solid #15803d}
+  .swatch-white{background:#ffffff; border:2px solid #6b7280}
+
+  .actions{display:flex; gap:8px; margin-top:12px; flex-wrap:wrap}
+  .btn{
+    appearance:none; border:1px solid #111827; background:#111827; color:#fff;
+    font-size:13px; font-weight:700; padding:8px 12px; border-radius:999px; cursor:pointer; min-height:38px;
+  }
+  .btn.secondary{background:#fff; color:#111827; border-color:#9ca3af}
+  .btn.green{background:#15803d; border-color:#14532d}
+  .btn:active{transform:scale(.98)}
+
+  .count-box{
+    margin-top:14px; background:#f0fdf4; border:1.5px solid #16a34a; border-radius:12px; padding:12px;
+    text-align:center;
+  }
+  .count-big{font-size:30px; font-weight:900; color:#14532d; line-height:1}
+  .count-label{font-size:13px; font-weight:700; color:#14532d; margin-top:4px}
+  .count-sub{font-size:12px; color:#166534; margin-top:2px}
+
+  .section-label{font-size:11px; letter-spacing:.07em; text-transform:uppercase; font-weight:800; color:#6b7280; margin:16px 0 6px}
+  .change-list{font-size:13.5px; line-height:1.65; color:#111827; font-weight:600; word-break:break-word}
+  .change-list .zip-line{padding:2px 0; border-bottom:1px solid #f3f4f6}
+  .change-list .zip-line:last-child{border-bottom:none}
+  .change-empty{font-size:13px; line-height:1.5; color:#4b5563}
+  .removed-box{background:#fef2f2; border:1px solid #fecaca; border-radius:12px; padding:10px 12px}
+  .added-box{background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px; padding:10px 12px}
+
+  .copy-actions{display:flex; gap:8px; margin-top:14px; flex-wrap:wrap; align-items:center}
+  .copy-msg{font-size:13px; font-weight:800; color:#14532d}
+
+  .session-note{
+    margin-top:12px; background:#fffbeb; border:1.5px solid #f59e0b; border-radius:12px; padding:11px 12px;
+    font-size:13px; line-height:1.5; color:#78350f;
+  }
+  .session-note strong{color:#92400e}
+
+  .fare-note{font-size:12.5px; line-height:1.55; color:#374151; margin-top:12px}
+  .footer-note{font-size:11.5px; line-height:1.5; color:#6b7280; margin-top:10px; border-top:1px solid #f3f4f6; padding-top:10px}
+
+  [hidden]{display:none !important}
+
+  .zip-label{
+    background:transparent; border:none; box-shadow:none;
+    font-size:12px; font-weight:800; color:#111827; letter-spacing:.02em;
+    text-shadow:0 0 3px #fff, 0 0 3px #fff, 0 0 6px #fff, 0 0 6px #fff, 0 0 10px #fff;
+  }
+  .zip-label::before{display:none}
+  .zip-toggle.is-on{background:#15803d; color:#ffffff; border-color:#14532d}
+  #editBtn{background:#111827; color:#fff; border-color:#111827}
+  #editBtn.editing{background:#b45309; color:#fff; border-color:#92400e}
+  .mode-note{font-size:13px; font-weight:700; color:#374151; margin:10px 0 0}
+  .zip-toggle:not(.is-on){background:#ffffff; color:#6b7280; border-color:#9ca3af}
+
+  /* Venue stars */
+  .venue-legend{
+    margin-top:8px; display:flex; align-items:center; gap:2px;
+    font-size:13px; font-weight:700; color:#111827; line-height:1.4;
+  }
+  .venue-toggle.is-on{background:#111827; color:#fde047; border-color:#111827}
+  .venue-toggle:not(.is-on){background:#ffffff; color:#6b7280; border-color:#9ca3af}
+  .venue-marker{background:transparent !important; border:none !important}
+  .venue-hit{width:36px; height:36px; display:flex; align-items:center; justify-content:center; background:transparent; cursor:pointer}
+  .venue-star{
+    width:18px; height:18px; display:flex; align-items:center; justify-content:center;
+    font-size:14px; line-height:1; color:#facc15;
+    -webkit-text-stroke:0.7px #111827;
+    text-shadow:0 0 1px #111827, 0 1px 2px rgba(0,0,0,.55), 0 0 3px rgba(0,0,0,.35);
+    cursor:pointer; user-select:none; -webkit-user-select:none;
+    filter:drop-shadow(0 1px 1px rgba(0,0,0,.4));
+  }
+  .pop-venue-name{font-size:20px; font-weight:900; line-height:1.2; color:#111827}
+  .pop-venue-price{font-size:17px; font-weight:800; color:#14532d; margin-top:8px; background:#f0fdf4; border:1.5px solid #16a34a; border-radius:10px; padding:8px 10px}
+  .pop-venue-rule{font-size:13.5px; line-height:1.5; color:#1f2937; margin-top:8px; text-align:left}
+
+  /* Mountain town price tags + purple areas */
+  .mountain-legend{
+    margin-top:6px; display:flex; align-items:center; gap:2px;
+    font-size:13px; font-weight:700; color:#111827; line-height:1.4;
+  }
+  .mountain-toggle.is-on{background:#7c3aed; color:#ffffff; border-color:#581c87}
+  .mountain-toggle:not(.is-on){background:#ffffff; color:#6b7280; border-color:#9ca3af}
+  .mountain-marker{background:transparent !important; border:none !important}
+  .mountain-tag{
+    display:flex; align-items:center; justify-content:center; gap:1px;
+    background:#7c3aed; color:#ffffff; border:0.6px solid #581c87; border-radius:999px;
+    font-size:4.2px; font-weight:800; line-height:1; white-space:nowrap; letter-spacing:.01em;
+    box-shadow:0 0.6px 2.4px rgba(0,0,0,.35); padding:2.4px 3px;
+    min-width:27.6px; min-height:10.8px; cursor:pointer; user-select:none; -webkit-user-select:none;
+  }
+  .pop-mountain-name{font-size:20px; font-weight:900; line-height:1.2; color:#111827}
+  .pop-mountain-price{font-size:17px; font-weight:800; color:#581c87; margin-top:8px; background:#faf5ff; border:1.5px solid #7c3aed; border-radius:10px; padding:8px 10px}
+  .pop-mountain-rule{font-size:13.5px; line-height:1.5; color:#1f2937; margin-top:8px; text-align:left}
+
+  /* Mobile collapse toggle */
+  .collapse-btn{display:none}
+  @media (max-width:640px){
+    /* Bottom sheet on phones: the top of the map stays visible and tappable */
+    .panel{left:8px; top:auto; bottom:8px; width:calc(100vw - 16px); padding:14px 14px 12px; max-height:52dvh}
+    .panel.collapsed{max-height:none}
+    .panel.collapsed .collapsible{display:none}
+    .collapse-btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      margin-left:auto; border:1px solid #e5e7eb; background:#f9fafb; width:36px; height:36px; border-radius:999px; cursor:pointer; font-size:18px; flex-shrink:0;
+    }
+    h1{font-size:20px}
+  }
+
+  /* Tap popup — big, readable ZIP + city */
+  .leaflet-popup-content-wrapper{border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  .leaflet-popup-content{margin:14px 16px; font-family:inherit; min-width:210px; text-align:center}
+  .pop-zip{font-size:32px; font-weight:900; line-height:1; color:#111827; letter-spacing:.01em}
+  .pop-city{font-size:17px; font-weight:700; color:#1f2937; margin-top:4px}
+  .pop-state{display:inline-block; margin-top:10px; font-size:14px; font-weight:800; padding:5px 12px; border-radius:999px}
+  .pop-state.in{background:#dcfce7; color:#14532d; border:1.5px solid #16a34a}
+  .pop-state.out{background:#f3f4f6; color:#374151; border:1.5px solid #6b7280}
+  .pop-hint{font-size:13px; color:#4b5563; margin-top:8px; line-height:1.4}
+  .leaflet-control-zoom a{width:36px !important; height:36px !important; line-height:36px !important}
+  .leaflet-control-attribution{font-size:10px; background:rgba(255,255,255,.85) !important}
+</style>
+</head>
+<body>
+
+<div id="map" aria-label="Coverage map" hidden></div>
+
+<div id="covLocked" style="position:absolute;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;background:#e5e7eb;padding:16px">
+  <div style="background:#fff;border:1px solid #d1d5db;border-radius:16px;padding:20px;max-width:420px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.18)">
+    <h1 style="font-size:20px;margin:0 0 8px">Coverage map</h1>
+    <p id="covLockedMsg" style="font-size:14px;line-height:1.5;color:#1f2937;margin:0 0 14px">Checking your sign-in…</p>
+    <a href="/owner.html" style="font-weight:700;color:#111827">← Back to dashboard</a>
+  </div>
+</div>
+
+<aside class="panel" id="panel" aria-label="ZIP coverage picker controls" hidden>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><a href="/owner.html" style="font-weight:700;color:#111827;font-size:14px">← Back to dashboard</a><span id="covRole" style="font-size:12.5px;font-weight:700;color:#374151"></span></div>
+  <div style="display:flex; align-items:flex-start; gap:8px">
+    <div style="flex:1; min-width:0">
+      <p class="eyebrow">Boulder Black Line • Dashboard</p>
+      <h1>Coverage map</h1>
+    </div>
+    <button class="collapse-btn" id="collapseBtn" aria-label="Collapse panel" title="Show / hide panel">−</button>
+  </div>
+
+  <div class="collapsible" id="collapsible">
+    <p class="subtitle"><strong>Live coverage — the shipped 124 ZIPs are green.</strong> Green = in coverage. White = not covered. In view mode, tap a ZIP to see its number and city in big text — nothing changes. Tap <strong>Edit</strong> to change coverage: in edit mode, tap a green ZIP to take it out, tap a white ZIP to add it in. Zoom in to read the ZIP numbers.</p>
+
+    <div class="legend" aria-label="Legend">
+      <div class="legend-item"><span class="legend-swatch swatch-green"></span> Green<br />In coverage</div>
+      <div class="legend-item"><span class="legend-swatch swatch-white"></span> White<br />Not covered</div>
+    </div>
+    <div class="venue-legend">★ = venue — tap a star to see its price.</div>
+    <div class="mountain-legend">Purple areas + price tags = flat-rate towns (mountain and city) — tap for the fare.</div>
+
+    <div class="actions">
+      <button class="btn" id="metroBtn">Denver metro view</button>
+      <button class="btn secondary" id="allBtn">See all ZIPs</button>
+      <button class="btn" id="editBtn" aria-pressed="false">Edit</button>
+      <button class="btn secondary zip-toggle is-on" id="zipBtn" aria-pressed="true" aria-label="Show or hide ZIP codes">ZIP codes</button>
+      <button class="btn secondary venue-toggle is-on" id="venueBtn" aria-pressed="true" aria-label="Show or hide venue stars">Venues ★</button>
+      <button class="btn secondary mountain-toggle is-on" id="mountainBtn" aria-pressed="true" aria-label="Show or hide flat towns">Flat towns ▲</button>
+    </div>
+
+    <p class="mode-note" id="modeNote">View mode — taps only look. Nothing can change.</p>
+
+    <div class="count-box">
+      <div class="count-big" id="covCount">…</div>
+      <div class="count-label">ZIP codes in coverage</div>
+      <div class="count-sub" id="covSub">Counting…</div>
+    </div>
+
+    <p class="section-label">Removed from shipped coverage</p>
+    <div class="removed-box">
+      <div class="change-empty" id="removedEmpty">None — you haven't removed any ZIP yet.</div>
+      <div class="change-list" id="removedList" hidden></div>
+    </div>
+
+    <p class="section-label">Added by you</p>
+    <div class="added-box">
+      <div class="change-empty" id="addedEmpty">None — you haven't added any ZIP yet.</div>
+      <div class="change-list" id="addedList" hidden></div>
+    </div>
+
+    <div class="copy-actions">
+      <button class="btn green" id="copyBtn">Copy coverage list</button>
+      <button class="btn secondary" id="resetBtn">Reset to shipped coverage</button>
+      <span class="copy-msg" id="copyMsg" aria-live="polite"></span>
+    </div>
+
+    <div class="session-note"><strong>Changes here make a list — send it to be applied.</strong> Your picks last only while this page stays open — they are not saved, and they do not change any fares by themselves. When your map looks right, tap <strong>Copy coverage list</strong> and send the list in.</div>
+
+    <p class="fare-note">Venues and mountain towns keep their own flat prices even inside a green ZIP. Green here means regular mileage coverage for the other addresses in that ZIP.</p>
+
+    <p class="footer-note">ZIP boundaries are real Census ZIP code areas (ZCTA). City names are each ZIP's primary city. 301 ZIP codes are on this map.</p>
+    <p class="footer-note">Build 20 · v2026.11.22-build20 · 2026-11-22</p>
+  </div>
+</aside>
+
+<script>
+  window.__startCoverage = function(){
+  // ——— Shipped live coverage — the owner's 124 ZIPs, live Nov 22, 2026 (v3.10.2111 + backend). This list IS the default; no circle or box test. ———
+  var SHIPPED_ZIP_LIST = ["80002","80003","80004","80005","80007","80010","80011","80012","80013","80014","80015","80016","80017","80018","80019","80020","80021","80022","80023","80024","80025","80026","80027","80030","80031","80033","80045","80108","80110","80111","80112","80113","80120","80121","80122","80123","80124","80125","80126","80127","80128","80129","80130","80131","80134","80137","80138","80202","80203","80204","80205","80206","80207","80209","80210","80211","80212","80214","80215","80216","80218","80219","80220","80221","80222","80223","80224","80226","80227","80228","80229","80230","80231","80232","80233","80234","80235","80236","80237","80238","80239","80241","80246","80247","80249","80260","80264","80290","80293","80294","80301","80302","80303","80304","80305","80310","80401","80403","80419","80427","80433","80439","80453","80454","80457","80465","80471","80501","80503","80504","80514","80516","80520","80530","80542","80544","80601","80602","80603","80621","80623","80640","80642","80651"];
+  var SHIPPED_ZIPS = {};
+  SHIPPED_ZIP_LIST.forEach(function(z){ SHIPPED_ZIPS[z] = true; });
+
+  // ZIP -> primary city, joined from a public US ZIP codes dataset (city + state) onto the Census ZCTA polygons by ZIP.
+  var ZIP_CITY = {"80002":"Arvada, CO","80003":"Arvada, CO","80004":"Arvada, CO","80005":"Arvada, CO","80007":"Arvada, CO","80010":"Aurora, CO","80011":"Aurora, CO","80012":"Aurora, CO","80013":"Aurora, CO","80014":"Aurora, CO","80015":"Aurora, CO","80016":"Aurora, CO","80017":"Aurora, CO","80018":"Aurora, CO","80019":"Aurora, CO","80020":"Broomfield, CO","80021":"Broomfield, CO","80022":"Commerce City, CO","80023":"Thornton, CO","80024":"Dupont, CO","80025":"Eldorado Springs, CO","80026":"Lafayette, CO","80027":"Louisville, CO","80030":"Westminster, CO","80031":"Westminster, CO","80033":"Wheat Ridge, CO","80045":"Aurora, CO","80102":"Bennett, CO","80104":"Castle Rock, CO","80105":"Deer Trail, CO","80106":"Elbert, CO","80107":"Elizabeth, CO","80108":"Castle Rock, CO","80109":"Castle Rock, CO","80110":"Englewood, CO","80111":"Englewood, CO","80112":"Englewood, CO","80113":"Englewood, CO","80116":"Franktown, CO","80117":"Kiowa, CO","80118":"Larkspur, CO","80120":"Littleton, CO","80121":"Littleton, CO","80122":"Littleton, CO","80123":"Littleton, CO","80124":"Littleton, CO","80125":"Littleton, CO","80126":"Littleton, CO","80127":"Littleton, CO","80128":"Littleton, CO","80129":"Littleton, CO","80130":"Littleton, CO","80131":"Louviers, CO","80132":"Monument, CO","80133":"Palmer Lake, CO","80134":"Parker, CO","80135":"Sedalia, CO","80136":"Strasburg, CO","80137":"Watkins, CO","80138":"Parker, CO","80202":"Denver, CO","80203":"Denver, CO","80204":"Denver, CO","80205":"Denver, CO","80206":"Denver, CO","80207":"Denver, CO","80209":"Denver, CO","80210":"Denver, CO","80211":"Denver, CO","80212":"Denver, CO","80214":"Denver, CO","80215":"Denver, CO","80216":"Denver, CO","80218":"Denver, CO","80219":"Denver, CO","80220":"Denver, CO","80221":"Denver, CO","80222":"Denver, CO","80223":"Denver, CO","80224":"Denver, CO","80226":"Denver, CO","80227":"Denver, CO","80228":"Denver, CO","80229":"Denver, CO","80230":"Denver, CO","80231":"Denver, CO","80232":"Denver, CO","80233":"Denver, CO","80234":"Denver, CO","80235":"Denver, CO","80236":"Denver, CO","80237":"Denver, CO","80238":"Denver, CO","80239":"Denver, CO","80241":"Denver, CO","80246":"Denver, CO","80247":"Denver, CO","80249":"Denver, CO","80260":"Denver, CO","80264":"Denver, CO","80290":"Denver, CO","80293":"Denver, CO","80294":"Denver, CO","80301":"Boulder, CO","80302":"Boulder, CO","80303":"Boulder, CO","80304":"Boulder, CO","80305":"Boulder, CO","80310":"Boulder, CO","80401":"Golden, CO","80403":"Golden, CO","80419":"Golden, CO","80420":"Alma, CO","80421":"Bailey, CO","80422":"Black Hawk, CO","80423":"Bond, CO","80424":"Breckenridge, CO","80425":"Buffalo Creek, CO","80426":"Burns, CO","80427":"Central City, CO","80428":"Clark, CO","80432":"Como, CO","80433":"Conifer, CO","80435":"Dillon, CO","80436":"Dumont, CO","80438":"Empire, CO","80439":"Evergreen, CO","80440":"Fairplay, CO","80442":"Fraser, CO","80443":"Frisco, CO","80444":"Georgetown, CO","80446":"Granby, CO","80447":"Grand Lake, CO","80448":"Grant, CO","80449":"Hartsel, CO","80451":"Hot Sulphur Springs, CO","80452":"Idaho Springs, CO","80453":"Idledale, CO","80454":"Indian Hills, CO","80455":"Jamestown, CO","80456":"Jefferson, CO","80457":"Kittredge, CO","80459":"Kremmling, CO","80461":"Leadville, CO","80463":"Mc Coy, CO","80465":"Morrison, CO","80466":"Nederland, CO","80467":"Oak Creek, CO","80468":"Parshall, CO","80469":"Phippsburg, CO","80470":"Pine, CO","80471":"Pinecliffe, CO","80473":"Rand, CO","80475":"Shawnee, CO","80476":"Silver Plume, CO","80477":"Steamboat Springs, CO","80478":"Tabernash, CO","80479":"Toponas, CO","80480":"Walden, CO","80481":"Ward, CO","80482":"Winter Park, CO","80483":"Yampa, CO","80487":"Steamboat Springs, CO","80488":"Steamboat Springs, CO","80497":"Silverthorne, CO","80498":"Silverthorne, CO","80501":"Longmont, CO","80503":"Longmont, CO","80504":"Longmont, CO","80510":"Allenspark, CO","80511":"Estes Park, CO","80512":"Bellvue, CO","80513":"Berthoud, CO","80514":"Dacono, CO","80515":"Drake, CO","80516":"Erie, CO","80517":"Estes Park, CO","80520":"Firestone, CO","80521":"Fort Collins, CO","80524":"Fort Collins, CO","80525":"Fort Collins, CO","80526":"Fort Collins, CO","80528":"Fort Collins, CO","80530":"Frederick, CO","80532":"Glen Haven, CO","80534":"Johnstown, CO","80535":"Laporte, CO","80536":"Livermore, CO","80537":"Loveland, CO","80538":"Loveland, CO","80540":"Lyons, CO","80542":"Mead, CO","80543":"Milliken, CO","80544":"Niwot, CO","80546":"Severance, CO","80547":"Timnath, CO","80549":"Wellington, CO","80550":"Windsor, CO","80601":"Brighton, CO","80602":"Brighton, CO","80603":"Brighton, CO","80610":"Ault, CO","80611":"Briggsdale, CO","80615":"Eaton, CO","80620":"Evans, CO","80621":"Fort Lupton, CO","80622":"Galeton, CO","80623":"Gilcrest, CO","80624":"Gill, CO","80631":"Greeley, CO","80634":"Greeley, CO","80640":"Henderson, CO","80642":"Hudson, CO","80643":"Keenesburg, CO","80644":"Kersey, CO","80645":"La Salle, CO","80648":"Nunn, CO","80649":"Orchard, CO","80650":"Pierce, CO","80651":"Platteville, CO","80652":"Roggen, CO","80729":"Grover, CO","80808":"Calhan, CO","80809":"Cascade, CO","80813":"Cripple Creek, CO","80814":"Divide, CO","80816":"Florissant, CO","80817":"Fountain, CO","80819":"Green Mountain Falls, CO","80820":"Guffey, CO","80827":"Lake George, CO","80829":"Manitou Springs, CO","80831":"Peyton, CO","80840":"U S A F Academy, CO","80860":"Victor, CO","80863":"Woodland Park, CO","80864":"Yoder, CO","80902":"Colorado Springs, CO","80903":"Colorado Springs, CO","80904":"Colorado Springs, CO","80905":"Colorado Springs, CO","80906":"Colorado Springs, CO","80907":"Colorado Springs, CO","80908":"Colorado Springs, CO","80909":"Colorado Springs, CO","80910":"Colorado Springs, CO","80911":"Colorado Springs, CO","80913":"Colorado Springs, CO","80914":"Colorado Springs, CO","80915":"Colorado Springs, CO","80916":"Colorado Springs, CO","80917":"Colorado Springs, CO","80918":"Colorado Springs, CO","80919":"Colorado Springs, CO","80920":"Colorado Springs, CO","80921":"Colorado Springs, CO","80922":"Colorado Springs, CO","80923":"Colorado Springs, CO","80924":"Colorado Springs, CO","80925":"Colorado Springs, CO","80926":"Colorado Springs, CO","80927":"Colorado Springs, CO","80928":"Colorado Springs, CO","80929":"Colorado Springs, CO","80930":"Colorado Springs, CO","80938":"Colorado Springs, CO","80939":"Colorado Springs, CO","80951":"Colorado Springs, CO","81008":"Pueblo, CO","81201":"Salida, CO","81210":"Almont, CO","81211":"Buena Vista, CO","81212":"Canon City, CO","81223":"Cotopaxi, CO","81224":"Crested Butte, CO","81225":"Crested Butte, CO","81230":"Gunnison, CO","81236":"Nathrop, CO","81237":"Ohio City, CO","81239":"Parlin, CO","81240":"Penrose, CO","81241":"Pitkin, CO","81248":"Sargents, CO","81251":"Twin Lakes, CO","81611":"Aspen, CO","81612":"Aspen, CO","81615":"Snowmass Village, CO","81620":"Avon, CO","81621":"Basalt, CO","81623":"Carbondale, CO","81631":"Eagle, CO","81632":"Edwards, CO","81637":"Gypsum, CO","81642":"Meredith, CO","81645":"Minturn, CO","81649":"Red Cliff, CO","81654":"Snowmass, CO","81655":"Wolcott, CO","81656":"Woody Creek, CO","81657":"Vail, CO","82063":"Jelm, WY"};
+
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  function cityLabel(zip){
+    var c = ZIP_CITY[zip];
+    return c ? (zip + " — " + c) : zip;
+  }
+
+  var isMobile = window.matchMedia && window.matchMedia("(max-width: 640px)").matches;
+  var map = L.map("map", { zoomControl:false, scrollWheelZoom:true, touchZoom:true, doubleClickZoom:true });
+  L.control.zoom({ position: isMobile ? "topright" : "bottomright" }).addTo(map);
+  if (isMobile && map.attributionControl) map.attributionControl.setPosition("topright");
+
+  var METRO_BOX = { minLat: 39.35, maxLat: 40.30, minLng: -105.55, maxLng: -104.35 };
+  var metroBounds = L.latLngBounds([[METRO_BOX.minLat, METRO_BOX.minLng],[METRO_BOX.maxLat, METRO_BOX.maxLng]]);
+  var allBounds = L.latLngBounds([[38.55,-107.6],[40.95,-103.85]]);
+  function mobileBottomPad(){ return Math.round((window.innerHeight || 700) * 0.55) + 8; }
+  function fitMetro(){
+    if (isMobile){ map.fitBounds(metroBounds, { paddingTopLeft:[10,10], paddingBottomRight:[10, mobileBottomPad()] }); }
+    else { map.fitBounds(metroBounds, { paddingTopLeft:[396,16], paddingBottomRight:[16,16] }); }
+  }
+  function fitAll(){
+    if (isMobile){ map.fitBounds(allBounds, { paddingTopLeft:[10,10], paddingBottomRight:[10, mobileBottomPad()] }); }
+    else { map.fitBounds(allBounds, { padding:[10,10] }); }
+  }
+  fitMetro();
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+  L.control.scale({ imperial:true, metric:true, position: isMobile ? "topright" : "bottomleft" }).addTo(map);
+
+  // ——— Default coverage is exactly the shipped 124-ZIP list above ———
+
+  // ——— Coverage state (session only — nothing is stored) ————————
+  var defaultCovered = {}; // zip -> true if green by default
+  var covered = {};        // zip -> true if currently green
+  var zipLayers = {};      // zip -> L.GeoJSON group
+  var totalZips = 0;
+
+  var STYLE_GREEN = { color:"#15803d", weight:1.4, fillColor:"#22c55e", fillOpacity:0.45 };
+  var STYLE_WHITE = { color:"#6b7280", weight:1.1, fillColor:"#ffffff", fillOpacity:0.6 };
+  function styleFor(zip){ return covered[zip] ? STYLE_GREEN : STYLE_WHITE; }
+  function applyStyle(zip){ if (zipLayers[zip]) zipLayers[zip].setStyle(styleFor(zip)); }
+
+  function sortedKeys(obj){ return Object.keys(obj).sort(); }
+  function greenZips(){ return sortedKeys(covered).filter(function(z){ return covered[z]; }); }
+  function removedZips(){ return sortedKeys(defaultCovered).filter(function(z){ return defaultCovered[z] && !covered[z]; }); }
+  function addedZips(){ return sortedKeys(covered).filter(function(z){ return covered[z] && !defaultCovered[z]; }); }
+
+  function renderChangeList(listEl, emptyEl, zips){
+    if (zips.length){
+      emptyEl.hidden = true; listEl.hidden = false;
+      listEl.innerHTML = zips.map(function(z){ return '<div class="zip-line">' + esc(cityLabel(z)) + '</div>'; }).join("");
+    } else {
+      listEl.hidden = true; emptyEl.hidden = false;
+      listEl.innerHTML = "";
+    }
+  }
+  function refreshPanel(){
+    var green = greenZips();
+    document.getElementById("covCount").textContent = green.length;
+    document.getElementById("covSub").textContent = "out of " + totalZips + " ZIP codes on the map · " + Object.keys(defaultCovered).filter(function(z){ return defaultCovered[z]; }).length + " in shipped live coverage";
+    renderChangeList(document.getElementById("removedList"), document.getElementById("removedEmpty"), removedZips());
+    renderChangeList(document.getElementById("addedList"), document.getElementById("addedEmpty"), addedZips());
+  }
+
+  function popupHtml(zip){
+    var city = ZIP_CITY[zip];
+    var isIn = !!covered[zip];
+    return '<div>'
+      + '<div class="pop-zip">' + esc(zip) + '</div>'
+      + (city ? '<div class="pop-city">' + esc(city) + '</div>' : '')
+      + '<div><span class="pop-state ' + (isIn ? 'in' : 'out') + '">' + (isIn ? '● In coverage' : '○ Not covered') + '</span></div>'
+      + '<div class="pop-hint">' + (editMode ? (isIn ? 'Tap this ZIP again to remove it from coverage.' : 'Tap this ZIP again to add it back to coverage.') : 'View only — tap Edit above to change coverage.') + '</div>'
+      + '</div>';
+  }
+
+  var zipLayerGroup = L.layerGroup();
+  var zipLabelGroup = L.layerGroup();
+
+  if (typeof ZIP_DATA !== "undefined" && ZIP_DATA.features){
+    ZIP_DATA.features.forEach(function(f){
+      var zip = f.properties.z;
+      totalZips++;
+      var isDefault = !!SHIPPED_ZIPS[zip];
+      defaultCovered[zip] = isDefault;
+      covered[zip] = isDefault;
+      var layer = L.geoJSON(f, { style: styleFor(zip) });
+      layer.eachLayer(function(poly){
+        poly.on("click", function(e){
+          if (editMode){
+            if (covered[zip]){ delete covered[zip]; } else { covered[zip] = true; }
+            applyStyle(zip);
+            refreshPanel();
+          }
+          L.popup({ maxWidth: 300, closeButton: true })
+            .setLatLng(e.latlng)
+            .setContent(popupHtml(zip))
+            .openOn(map);
+        });
+      });
+      zipLayers[zip] = layer;
+      layer.addTo(zipLayerGroup);
+      var tip = L.tooltip({ permanent:true, direction:"center", className:"zip-label", interactive:false })
+        .setLatLng([f.properties.c[0], f.properties.c[1]])
+        .setContent(zip);
+      tip.addTo(zipLabelGroup);
+    });
+  }
+  zipLayerGroup.addTo(map);
+  var zipsVisible = true;
+
+  // ——— Venue stars — venues only, NOT mountain towns ————————————
+  var VENUES = [
+    { name: "Empower Field", lat: 39.743987, lng: -105.020102 },
+    { name: "Ball Arena", lat: 39.74864, lng: -105.007786 },
+    { name: "Coors Field", lat: 39.755992, lng: -104.994174 },
+    { name: "Dick's Sporting Goods Park", lat: 39.805662, lng: -104.891804 },
+    { name: "Folsom Field", lat: 40.009497, lng: -105.266919 },
+    { name: "Red Rocks Amphitheatre", lat: 39.665554, lng: -105.205250 },
+    { name: "Fiddler's Green Amphitheatre", lat: 39.600493, lng: -104.893867 },
+    { name: "Centennial Center Park", lat: 39.596585, lng: -104.837442 }
+  ];
+  function venuePopupHtml(v){
+    return '<div>'
+      + '<div class="pop-venue-name">★ ' + esc(v.name) + '</div>'
+      + '<div class="pop-venue-price">Venue fare — flat $200</div>'
+      + '<div class="pop-venue-rule">Flat $200 when the other end is in coverage. From outside coverage: mileage fare with a $200 minimum.</div>'
+      + '</div>';
+  }
+  var venueLayerGroup = L.layerGroup();
+  var venueStarIcon = L.divIcon({
+    className: "venue-marker",
+    html: '<div class="venue-hit"><div class="venue-star" aria-hidden="true">★</div></div>',
+    iconSize: [36, 36],
+    iconAnchor: [18, 18],
+    popupAnchor: [0, -14]
+  });
+  VENUES.forEach(function(v){
+    var marker = L.marker([v.lat, v.lng], { icon: venueStarIcon, title: v.name, alt: v.name, keyboard: true, zIndexOffset: 1000 });
+    marker.bindPopup(venuePopupHtml(v), { maxWidth: 300, closeButton: true });
+    marker.addTo(venueLayerGroup);
+  });
+  venueLayerGroup.addTo(map);
+  var venuesVisible = true;
+
+  // ——— Mountain towns — purple price tags + purple coverage circles ———
+  var MOUNTAIN_TOWNS = [
+    { name: "Aspen", lat: 39.1907, lng: -106.8192, priceLabel: "$1,200", circles: [[39.1907,-106.8192,2500],[39.1826,-106.8553,1000],[39.2053,-106.8608,1000],[39.2143,-106.9458,2000],[39.2232,-106.8688,1000]] },
+    { name: "Glenwood Springs", lat: 39.5500, lng: -107.3248, priceLabel: "$950", circles: [[39.5500,-107.3248,2000]] },
+    { name: "Vail", lat: 39.6403, lng: -106.3709, priceLabel: "$800", circles: [[39.6403,-106.3709,2500]] },
+    { name: "Eagle", lat: 39.6553, lng: -106.8287, priceLabel: "$800", circles: [[39.6553,-106.8287,2500],[39.6426,-106.9177,1500]] },
+    { name: "Copper Mountain", lat: 39.5008, lng: -106.1465, priceLabel: "$700", circles: [[39.5008,-106.1465,2000]] },
+    { name: "Breckenridge", lat: 39.4821, lng: -106.0487, priceLabel: "$700", circles: [[39.4821,-106.0487,2000]] },
+    { name: "Keystone", lat: 39.6003, lng: -105.9831, priceLabel: "$600", circles: [[39.6003,-105.9831,2500]] },
+    { name: "Winter Park", lat: 39.8869, lng: -105.7625, priceLabel: "$500", circles: [[39.8869,-105.7625,4000]] },
+    { name: "Frisco", lat: 39.5755, lng: -106.0952, priceLabel: "$500", circles: [[39.5755,-106.0952,2500]] },
+    { name: "Silverthorne", lat: 39.6383, lng: -106.0747, priceLabel: "$500", circles: [[39.6383,-106.0747,2500]] },
+    { name: "Loveland Ski Area", lat: 39.6814, lng: -105.9145, priceLabel: "$450", circles: [[39.6814,-105.9145,2000]] },
+    { name: "Estes Park", lat: 40.3772, lng: -105.5232, priceLabel: "$350", circles: [[40.3772,-105.5232,3000]] },
+    { name: "Idaho Springs", lat: 39.7426, lng: -105.5136, priceLabel: "$350", circles: [[39.7426,-105.5136,2500]] },
+    { name: "Empire", lat: 39.7611, lng: -105.6830, priceLabel: "$350", circles: [[39.7611,-105.6830,1500]] },
+    { name: "Georgetown", lat: 39.7062, lng: -105.6971, priceLabel: "$350", circles: [[39.7062,-105.6971,2000]] },
+    { name: "Silver Plume", lat: 39.6961, lng: -105.7258, priceLabel: "$350", circles: [[39.6961,-105.7258,1200]] },
+    { name: "Downieville", lat: 39.7662, lng: -105.6138, priceLabel: "$350", circles: [[39.7662,-105.6138,1200]] },
+    { name: "Lyons", lat: 40.2244, lng: -105.2705, priceLabel: "$300", circles: [[40.2244,-105.2705,2500]] },
+    { name: "Dillon", lat: 39.6303, lng: -106.0433, priceLabel: "$500", circles: [[39.6303,-106.0433,2500]] },
+    { name: "Nederland", lat: 39.9614, lng: -105.5108, priceLabel: "$250", circles: [[39.9614,-105.5108,2000]] }
+  ];
+  function mountainPopupHtml(t){
+    return '<div>'
+      + '<div class="pop-mountain-name">▲ ' + esc(t.name) + '</div>'
+      + '<div class="pop-mountain-price">Mountain fare — flat ' + esc(t.priceLabel) + '</div>'
+      + '<div class="pop-mountain-rule">Flat both ways between this town and DIA or the covered area. Town to town: the higher flat wins.</div>'
+      + '</div>';
+  }
+  // ——— City flat-fare towns — SAME purple layer, tags, areas and toggle as mountain towns ———
+  var CITY_TOWNS = [
+    { name: "Colorado Springs", lat: 38.8339, lng: -104.8214, priceLabel: "$350", circles: [[38.8339,-104.8214,12000]] },
+    { name: "Fort Collins", lat: 40.5853, lng: -105.0844, priceLabel: "$250", circles: [[40.5853,-105.0844,11000]] },
+    { name: "Castle Rock", lat: 39.3722, lng: -104.8561, priceLabel: "$250", circles: [[39.3722,-104.8561,12000]] },
+    { name: "Evergreen", lat: 39.6317, lng: -105.3221, priceLabel: "$250", circles: [[39.6317,-105.3221,8000]] },
+    { name: "Loveland", lat: 40.3978, lng: -105.0750, priceLabel: "$300", circles: [[40.3978,-105.0750,9500]] },
+    { name: "Pueblo", lat: 38.272, lng: -104.600, priceLabel: "$450", circles: [[38.272,-104.600,11500],[38.330,-104.720,9500]] }
+  ];
+  function cityPopupHtml(t){
+    return '<div>'
+      + '<div class="pop-mountain-name">▲ ' + esc(t.name) + '</div>'
+      + '<div class="pop-mountain-price">City fare — flat ' + esc(t.priceLabel) + '</div>'
+      + '<div class="pop-mountain-rule">Flat both ways between this town and DIA or the covered area. Town to town: the higher flat wins.</div>'
+      + '</div>';
+  }
+  var MOUNTAIN_CIRCLE_STYLE = { color: "#7c3aed", weight: 2, fillColor: "#a855f7", fillOpacity: 0.18 };
+  var mountainLayerGroup = L.layerGroup();
+  MOUNTAIN_TOWNS.forEach(function(t){
+    t.circles.forEach(function(c){
+      var circle = L.circle([c[0], c[1]], { radius: c[2], color: MOUNTAIN_CIRCLE_STYLE.color, weight: MOUNTAIN_CIRCLE_STYLE.weight, fillColor: MOUNTAIN_CIRCLE_STYLE.fillColor, fillOpacity: MOUNTAIN_CIRCLE_STYLE.fillOpacity });
+      circle.bindPopup(mountainPopupHtml(t), { maxWidth: 300, closeButton: true });
+      circle.addTo(mountainLayerGroup);
+    });
+  });
+  MOUNTAIN_TOWNS.forEach(function(t){
+    var tagIcon = L.divIcon({
+      className: "mountain-marker",
+      html: '<div class="mountain-tag"><span aria-hidden="true">▲</span> <span>' + esc(t.priceLabel) + '</span></div>',
+      iconSize: [31, 12],
+      iconAnchor: [16, 6],
+      popupAnchor: [0, -6]
+    });
+    var marker = L.marker([t.lat, t.lng], { icon: tagIcon, title: t.name + " " + t.priceLabel, alt: t.name, keyboard: true, zIndexOffset: 900 });
+    marker.bindPopup(mountainPopupHtml(t), { maxWidth: 300, closeButton: true });
+    marker.addTo(mountainLayerGroup);
+  });
+  CITY_TOWNS.forEach(function(t){
+    t.circles.forEach(function(c){
+      var circle = L.circle([c[0], c[1]], { radius: c[2], color: MOUNTAIN_CIRCLE_STYLE.color, weight: MOUNTAIN_CIRCLE_STYLE.weight, fillColor: MOUNTAIN_CIRCLE_STYLE.fillColor, fillOpacity: MOUNTAIN_CIRCLE_STYLE.fillOpacity });
+      circle.bindPopup(cityPopupHtml(t), { maxWidth: 300, closeButton: true });
+      circle.addTo(mountainLayerGroup);
+    });
+  });
+  CITY_TOWNS.forEach(function(t){
+    var tagIcon = L.divIcon({
+      className: "mountain-marker",
+      html: '<div class="mountain-tag"><span aria-hidden="true">▲</span> <span>' + esc(t.priceLabel) + '</span></div>',
+      iconSize: [31, 12],
+      iconAnchor: [16, 6],
+      popupAnchor: [0, -6]
+    });
+    var marker = L.marker([t.lat, t.lng], { icon: tagIcon, title: t.name + " " + t.priceLabel, alt: t.name, keyboard: true, zIndexOffset: 900 });
+    marker.bindPopup(cityPopupHtml(t), { maxWidth: 300, closeButton: true });
+    marker.addTo(mountainLayerGroup);
+  });
+  mountainLayerGroup.addTo(map);
+  var mountainsVisible = true;
+
+  function syncZipLabels(){
+    var show = zipsVisible && map.getZoom() >= 10;
+    if (show){ if (!map.hasLayer(zipLabelGroup)) zipLabelGroup.addTo(map); }
+    else { if (map.hasLayer(zipLabelGroup)) map.removeLayer(zipLabelGroup); }
+  }
+  map.on("zoomend", syncZipLabels);
+  syncZipLabels();
+  refreshPanel();
+
+  // ——— Edit-mode gate (owner, 2026-11-22): the page opens in VIEW
+  // mode — taps only open the ZIP popup and can never change
+  // coverage. Edit mode (the Edit button, which becomes Done) is
+  // the only state in which taps toggle ZIPs. Leaving edit mode
+  // keeps the change lists and the copy-out exactly as they are.
+  var editMode = false;
+  var editBtn = document.getElementById("editBtn");
+  var modeNote = document.getElementById("modeNote");
+  function syncMode(){
+    editBtn.textContent = editMode ? "Done" : "Edit";
+    editBtn.setAttribute("aria-pressed", editMode ? "true" : "false");
+    editBtn.classList.toggle("editing", editMode);
+    modeNote.textContent = editMode ? "Edit mode — tap a ZIP to add or remove it. Tap Done when you finish." : "View mode — taps only look. Nothing can change.";
+  }
+  editBtn.addEventListener("click", function(){ editMode = !editMode; map.closePopup(); syncMode(); });
+  syncMode();
+  // Auto-lock on close (owner, 2026-11-22): edit mode is never
+  // stored anywhere — it lives only in this page's memory, so
+  // closing or leaving the page discards it and every fresh open
+  // starts locked in view mode, Done or no Done. If a browser
+  // restores the page from its back/forward cache (which can
+  // resurrect in-memory state), the lock snaps back on there too.
+  window.addEventListener("pageshow", function(e){ if (e && e.persisted && editMode){ editMode = false; map.closePopup(); syncMode(); } });
+  window.addEventListener("pagehide", function(){ if (editMode){ editMode = false; syncMode(); } });
+
+  // ——— Panel buttons ————————————————————————————————————————————
+  document.getElementById("metroBtn").addEventListener("click", function(){ fitMetro(); });
+  document.getElementById("allBtn").addEventListener("click", function(){ fitAll(); });
+
+  document.getElementById("zipBtn").addEventListener("click", function(){
+    zipsVisible = !zipsVisible;
+    var btn = document.getElementById("zipBtn");
+    btn.setAttribute("aria-pressed", zipsVisible ? "true" : "false");
+    btn.classList.toggle("is-on", zipsVisible);
+    if (zipsVisible){
+      if (!map.hasLayer(zipLayerGroup)) zipLayerGroup.addTo(map);
+      zipLayerGroup.eachLayer(function(l){ if (l.bringToBack) l.bringToBack(); });
+      syncZipLabels();
+    } else {
+      if (map.hasLayer(zipLayerGroup)) map.removeLayer(zipLayerGroup);
+      if (map.hasLayer(zipLabelGroup)) map.removeLayer(zipLabelGroup);
+      map.closePopup();
+    }
+  });
+
+  document.getElementById("venueBtn").addEventListener("click", function(){
+    venuesVisible = !venuesVisible;
+    var btn = document.getElementById("venueBtn");
+    btn.setAttribute("aria-pressed", venuesVisible ? "true" : "false");
+    btn.classList.toggle("is-on", venuesVisible);
+    if (venuesVisible){ if (!map.hasLayer(venueLayerGroup)) venueLayerGroup.addTo(map); }
+    else { if (map.hasLayer(venueLayerGroup)) map.removeLayer(venueLayerGroup); map.closePopup(); }
+  });
+
+  document.getElementById("mountainBtn").addEventListener("click", function(){
+    mountainsVisible = !mountainsVisible;
+    var btn = document.getElementById("mountainBtn");
+    btn.setAttribute("aria-pressed", mountainsVisible ? "true" : "false");
+    btn.classList.toggle("is-on", mountainsVisible);
+    if (mountainsVisible){ if (!map.hasLayer(mountainLayerGroup)) mountainLayerGroup.addTo(map); }
+    else { if (map.hasLayer(mountainLayerGroup)) map.removeLayer(mountainLayerGroup); map.closePopup(); }
+  });
+
+  document.getElementById("resetBtn").addEventListener("click", function(){
+    if (!editMode){
+      var rmsg = document.getElementById("copyMsg");
+      rmsg.textContent = "Tap Edit to make changes.";
+      setTimeout(function(){ rmsg.textContent = ""; }, 3000);
+      return;
+    }
+    covered = {};
+    Object.keys(defaultCovered).forEach(function(z){ if (defaultCovered[z]) covered[z] = true; });
+    Object.keys(zipLayers).forEach(function(z){ applyStyle(z); });
+    map.closePopup();
+    refreshPanel();
+    var msg = document.getElementById("copyMsg");
+    msg.textContent = "Back to shipped coverage ✓";
+    setTimeout(function(){ msg.textContent = ""; }, 3000);
+  });
+
+  document.getElementById("copyBtn").addEventListener("click", function(){
+    var removed = removedZips();
+    var added = addedZips();
+    var text = "RideWave coverage — my final ZIP list:\n"
+      + greenZips().join(", ") + "\n"
+      + "Removed from shipped coverage: " + (removed.length ? removed.map(cityLabel).join(", ") : "none") + "\n"
+      + "Added: " + (added.length ? added.map(cityLabel).join(", ") : "none");
+    var msg = document.getElementById("copyMsg");
+    function copied(){
+      msg.textContent = "Copied ✓ — paste it into your chat with Muse.";
+      setTimeout(function(){ msg.textContent = ""; }, 4000);
+    }
+    function fallback(){
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      document.body.removeChild(ta);
+      if (ok){ copied(); } else { msg.textContent = "Copy failed — your lists are shown above."; }
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(copied, fallback);
+    } else { fallback(); }
+  });
+
+  // Collapse toggle (phones): hides the panel body, leaving the header bar of the bottom sheet
+  var panel = document.getElementById("panel");
+  var collapseBtn = document.getElementById("collapseBtn");
+  collapseBtn.addEventListener("click", function(){
+    var collapsed = panel.classList.toggle("collapsed");
+    collapseBtn.textContent = collapsed ? "+" : "−";
+  });
+  };
+</script>
+<script>
+/* Sign-in gate (Build 20): this page sits behind the same dashboard
+   sign-in as the owner page. The stored access code (owner or
+   support — both roles may open it) is checked server-side through
+   bblCheckCode; only a passing check loads the map files and starts
+   the map. No code, or a code that does not check out, leaves the
+   locked card above and the map never initializes. */
+(function(){
+  var locked = document.getElementById("covLocked"), msg = document.getElementById("covLockedMsg");
+  function fail(t){ if (msg) msg.textContent = t; if (locked) locked.hidden = false; }
+  var code = "";
+  try { code = localStorage.getItem("bbl_owner_gate_v1") || sessionStorage.getItem("bbl_owner_gate_v1") || ""; } catch (e) {}
+  if (!code){ fail("This page opens from the dashboard after you sign in. Use the button below to go there first."); return; }
+  fetch("https://us-central1-blackcarservice4u-57d2a.cloudfunctions.net/bblCheckCode", {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: code })
+  }).then(function(r){
+    return r.json().then(function(j){ if (!r.ok || !j || !j.ok) throw new Error("check failed"); return j; });
+  }).then(function(j){
+    var role = document.getElementById("covRole");
+    if (role) role.textContent = j.role === "owner" ? "Owner / Admin" : (j.role === "support" ? "Support" : "");
+    function load(src, next){
+      var sc = document.createElement("script");
+      sc.src = src; sc.onload = next;
+      sc.onerror = function(){ fail("The map files could not load. Please reload the page."); };
+      document.body.appendChild(sc);
+    }
+    load("assets/bbl-coverage/leaflet.js", function(){
+      load("assets/bbl-coverage/zips.js", function(){
+        if (locked) locked.hidden = true;
+        var m = document.getElementById("map"); if (m) m.hidden = false;
+        var p = document.getElementById("panel"); if (p) p.hidden = false;
+        window.__startCoverage();
+      });
+    });
+  }).catch(function(){ fail("Your sign-in could not be checked. Open the dashboard and sign in again."); });
+})();
+</script>
+</body>
+</html>

@@ -193,7 +193,7 @@
        Lochbuie, Longmont (named by the owner — it prices now; it
        is no longer on the gate list), Gunbarrel/Niwot and Carbon
        Valley. Pueblo is NOT here — it is a flat zone below.
-       Pueblo, Grand Junction and Loveland (city) still gate. */
+       Pueblo is a flat zone below; Grand Junction still gates. (Loveland city gated here until Build 20 — it is a $300 flat zone below now.) */
     { name: "Arvada West",        lat: 39.862, lng: -105.170, radiusM: 6800 },
     { name: "Arvada Southwest",   lat: 39.806, lng: -105.148, radiusM: 2800 },
     { name: "Morrison",           lat: 39.645, lng: -105.180, radiusM: 2900 },
@@ -271,7 +271,7 @@
     { name: "Aspen",             lat: 39.2143, lng: -106.9458, radiusM: 2000, flat: 1200, names: ["snowmass"] },
     { name: "Aspen",             lat: 39.2232, lng: -106.8688, radiusM: 1000, flat: 1200, names: ["aspen airport", "pitkin county airport", "aspen/pitkin"] },
     { name: "Glenwood Springs",  lat: 39.5500, lng: -107.3248, radiusM: 2000, flat: 950,  names: ["glenwood springs"] },
-    { name: "Loveland Ski Area", lat: 39.6814, lng: -105.9145, radiusM: 2000, flat: 400,  names: ["loveland ski", "loveland basin", "loveland valley", "loveland pass"] },
+    { name: "Loveland Ski Area", lat: 39.6814, lng: -105.9145, radiusM: 2000, flat: 450,  names: ["loveland ski", "loveland basin", "loveland valley", "loveland pass"] },
     { name: "Winter Park",       lat: 39.8869, lng: -105.7625, radiusM: 4000, flat: 500,  names: ["winter park"] },
     { name: "Keystone",          lat: 39.6003, lng: -105.9831, radiusM: 2500, flat: 600,  names: ["keystone, co", "keystone resort", "river run"] },
     { name: "Copper Mountain",   lat: 39.5008, lng: -106.1465, radiusM: 2000, flat: 700,  names: ["copper mountain"] },
@@ -284,7 +284,28 @@
     { name: "Castle Rock",      lat: 39.3722, lng: -104.8561, radiusM: 12000, flat: 250, names: ["castle rock"] },
     { name: "Evergreen",        lat: 39.6317, lng: -105.3221, radiusM: 8000,  flat: 250, names: ["evergreen, co", "evergreen, colorado", "evergreen lake"] },
     { name: "Pueblo",           lat: 38.272, lng: -104.600, radiusM: 11500, flat: 450, names: ["pueblo"] },
-    { name: "Pueblo",           lat: 38.330, lng: -104.720, radiusM: 9500,  flat: 450, names: ["pueblo west"] }
+    { name: "Pueblo",           lat: 38.330, lng: -104.720, radiusM: 9500,  flat: 450, names: ["pueblo west"] },
+    /* Build 20 mirror (owner orders 2026-11-22): the new RideWave
+       flats, same centres/radii as the RideWave ship — Estes Park,
+       Georgetown, Downieville, Idaho Springs, Empire and Silver
+       Plume at $350; Frisco, Silverthorne and Dillon at $500;
+       Lyons at $300; Nederland at $250; and Loveland CITY at $300
+       as a city flat in this same table (the ski area above is a
+       separate zone at $450 — the name fallbacks keep the two
+       apart: the city matches "loveland, co", never bare
+       "loveland", and the ski area matches "loveland ski" etc.). */
+    { name: "Estes Park",       lat: 40.3772, lng: -105.5232, radiusM: 3000, flat: 350, names: ["estes park"] },
+    { name: "Georgetown",       lat: 39.7062, lng: -105.6971, radiusM: 2000, flat: 350, names: ["georgetown, co", "georgetown, colorado"] },
+    { name: "Downieville",      lat: 39.7662, lng: -105.6138, radiusM: 1200, flat: 350, names: ["downieville"] },
+    { name: "Idaho Springs",    lat: 39.7426, lng: -105.5136, radiusM: 2500, flat: 350, names: ["idaho springs"] },
+    { name: "Empire",           lat: 39.7611, lng: -105.6830, radiusM: 1500, flat: 350, names: ["empire, co", "empire, colorado"] },
+    { name: "Silver Plume",     lat: 39.6961, lng: -105.7258, radiusM: 1200, flat: 350, names: ["silver plume"] },
+    { name: "Frisco",           lat: 39.5755, lng: -106.0952, radiusM: 2500, flat: 500, names: ["frisco, co", "frisco, colorado"] },
+    { name: "Silverthorne",     lat: 39.6383, lng: -106.0747, radiusM: 2500, flat: 500, names: ["silverthorne"] },
+    { name: "Dillon",           lat: 39.6303, lng: -106.0433, radiusM: 2500, flat: 500, names: ["dillon, co", "dillon, colorado"] },
+    { name: "Lyons",            lat: 40.2244, lng: -105.2705, radiusM: 2500, flat: 300, names: ["lyons, co", "lyons, colorado"] },
+    { name: "Nederland",        lat: 39.9614, lng: -105.5108, radiusM: 2000, flat: 250, names: ["nederland, co", "nederland, colorado"] },
+    { name: "Loveland",         lat: 40.3978, lng: -105.0750, radiusM: 9500, flat: 300, names: ["loveland, co", "loveland, colorado"] }
   ];
 
   /* The meter formula, copied from the shipped computedFare():
@@ -542,7 +563,7 @@
     snapshotDate: "2026-11-18",
     sourceFiles: ["functions/index.js (ridewave-functions)", "app.html (ridewave-web)"],
     sourceBlobs: ["17e751439ffe81247b63635c84cc2c7b48e2763c", "48f41448e533c1a719bdd4a62b1297ba844ecb22"],
-    note: "Snapshot only — no live link to RideWave pricing in either direction. Rates made identical to RideWave's live fare stack at the owner's order, 2026-11-18. BBL-only change 2026-11-19 (staged, not deployed): the airport surcharge now covers every Denver-metro airport, not DIA only. BBL addition 2026-11-20 (staged on preview, not deployed): Castle Rock and Evergreen (incl. Evergreen Lake) join the flat table at $250 each. BBL rule 2026-11-20 (staged on preview, not deployed): hourly prices only for a covered metro pair with no flat-fare zone governing — flat-fare towns are flat-only and uncovered pairs stay gated in every mode (hourlyEligibility). BBL rule extension 2026-11-20 (owner order, staged on preview, not deployed): stadium / venue endpoints are hourly-blocked too — the venue fare governs those rides in every mode (hourlyEligibility reason venue). BBL coverage fix 2026-11-21 (owner order, staged on preview, not deployed): sixteen BBL-only metro circles close the populated gate holes (Arvada West + Southwest, Morrison x3, Ken Caryl, Parker, Southlands, E-470 East, Green Valley Ranch, Reunion, Brighton, Lochbuie, Longmont, Gunbarrel/Niwot, Carbon Valley) and Pueblo joins the flat table at $450 (two circles: city + Pueblo West). Longmont prices now — the owner named it covered; Grand Junction and Loveland (city) still gate."
+    note: "Snapshot only — no live link to RideWave pricing in either direction. Rates made identical to RideWave's live fare stack at the owner's order, 2026-11-18. BBL-only change 2026-11-19 (staged, not deployed): the airport surcharge now covers every Denver-metro airport, not DIA only. BBL addition 2026-11-20 (staged on preview, not deployed): Castle Rock and Evergreen (incl. Evergreen Lake) join the flat table at $250 each. BBL rule 2026-11-20 (staged on preview, not deployed): hourly prices only for a covered metro pair with no flat-fare zone governing — flat-fare towns are flat-only and uncovered pairs stay gated in every mode (hourlyEligibility). BBL rule extension 2026-11-20 (owner order, staged on preview, not deployed): stadium / venue endpoints are hourly-blocked too — the venue fare governs those rides in every mode (hourlyEligibility reason venue). BBL coverage fix 2026-11-21 (owner order, staged on preview, not deployed): sixteen BBL-only metro circles close the populated gate holes (Arvada West + Southwest, Morrison x3, Ken Caryl, Parker, Southlands, E-470 East, Green Valley Ranch, Reunion, Brighton, Lochbuie, Longmont, Gunbarrel/Niwot, Carbon Valley) and Pueblo joins the flat table at $450 (two circles: city + Pueblo West). Longmont prices now — the owner named it covered; Grand Junction still gates. Build 20 mirror 2026-11-22 (owner orders): Estes Park, Georgetown, Downieville, Idaho Springs, Empire, Silver Plume flat $350; Frisco, Silverthorne, Dillon flat $500; Lyons flat $300; Nederland flat $250; Loveland city flat $300 (city zone, distinct from the ski area); Loveland Ski Area $400 -> $450 — same centres/radii as the RideWave ships of 2026-11-22."
   };
 
   /* Version stamp — the quote page pins its script URL to this
@@ -554,6 +575,6 @@
      served against the current page forever). ANY edit to this
      file MUST bump the stamp here AND the page's
      PRICING_STAMP_EXPECTED + script-tag query together. */
-  BBL_PRICING.stamp = "2026-11-21-metrocover";
+  BBL_PRICING.stamp = "2026-11-22-build20";
   window.BBL_PRICING = BBL_PRICING;
 })();
