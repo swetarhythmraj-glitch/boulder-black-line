@@ -444,7 +444,7 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
     <h3>Boulder Black Line</h3>
     <p style="margin:0">Private SUV rides in the Denver metro. Call <a href="tel:+17203264652">(720) 326-4652</a> or email <a href="mailto:boulderblack1@gmail.com">boulderblack1@gmail.com</a>.</p>
     <p class="fine">Owner page for the preview. This page has its own address and its own sign in, and it is not linked from the rider site.<br><a href="/privacy.html">Privacy Policy</a> · <a href="/terms.html">Terms of Service</a></p>
-    <p class="fine build-line">Build 21 · v2026.11.22-build21 · 2026-11-22</p>
+    <p class="fine build-line">Build 22 · v2026.11.22-build22 · 2026-11-22</p>
   </div>
 </footer>
 
@@ -2145,7 +2145,6 @@ function scOpenEdit(bk) {
         else msg += " Deepak's email alert could not be sent. Please let him know about this booking.";
         if (n.jotform && n.jotform.submitted) msg += " (The booking is recorded in Jotform (submission " + n.jotform.submissionId + "), but Jotform does not send its alerts for API submissions, so Deepak's text alert was not sent; rider texts are not set up for Boulder Black Line.)";
         else if (n.jotform) msg += " (The Jotform submission failed, so Deepak's text alert was not sent; rider texts are not set up for Boulder Black Line.)";
-        else msg += " (Deepak's text alert is not set up for dashboard bookings yet; rider texts are not set up for Boulder Black Line.)";
       } else {
         msg += " The booking saved; whether its email alerts went out could not be confirmed. Please check with Deepak that he has it.";
       }
