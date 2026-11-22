@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="color-scheme" content="light" />
 <link rel="icon" href="data:," />
-<title>Coverage map — Boulder Black Line</title>
+<title>Coverage map: Boulder Black Line</title>
 <link rel="stylesheet" href="assets/bbl-coverage/leaflet.css" />
 <style>
   *{box-sizing:border-box}
@@ -113,9 +113,9 @@
     cursor:pointer; user-select:none; -webkit-user-select:none;
     filter:drop-shadow(0 1px 1px rgba(0,0,0,.4));
   }
-  .pop-venue-name{font-size:20px; font-weight:900; line-height:1.2; color:#111827}
-  .pop-venue-price{font-size:17px; font-weight:800; color:#14532d; margin-top:8px; background:#f0fdf4; border:1.5px solid #16a34a; border-radius:10px; padding:8px 10px}
-  .pop-venue-rule{font-size:13.5px; line-height:1.5; color:#1f2937; margin-top:8px; text-align:left}
+  .pop-venue-name{font-size:15px; font-weight:900; line-height:1.15; color:#111827}
+  .pop-venue-price{font-size:13px; font-weight:800; color:#14532d; margin-top:5px; background:#f0fdf4; border:1.5px solid #16a34a; border-radius:8px; padding:5px 7px}
+  .pop-venue-rule{font-size:11px; line-height:1.4; color:#1f2937; margin-top:5px; text-align:left}
 
   /* Mountain town price tags + purple areas */
   .mountain-legend{
@@ -132,9 +132,9 @@
     box-shadow:0 0.6px 2.4px rgba(0,0,0,.35); padding:2.4px 3px;
     min-width:27.6px; min-height:10.8px; cursor:pointer; user-select:none; -webkit-user-select:none;
   }
-  .pop-mountain-name{font-size:20px; font-weight:900; line-height:1.2; color:#111827}
-  .pop-mountain-price{font-size:17px; font-weight:800; color:#581c87; margin-top:8px; background:#faf5ff; border:1.5px solid #7c3aed; border-radius:10px; padding:8px 10px}
-  .pop-mountain-rule{font-size:13.5px; line-height:1.5; color:#1f2937; margin-top:8px; text-align:left}
+  .pop-mountain-name{font-size:15px; font-weight:900; line-height:1.15; color:#111827}
+  .pop-mountain-price{font-size:13px; font-weight:800; color:#581c87; margin-top:5px; background:#faf5ff; border:1.5px solid #7c3aed; border-radius:8px; padding:5px 7px}
+  .pop-mountain-rule{font-size:11px; line-height:1.4; color:#1f2937; margin-top:5px; text-align:left}
 
   /* Mobile collapse toggle */
   .collapse-btn{display:none}
@@ -150,15 +150,15 @@
     h1{font-size:20px}
   }
 
-  /* Tap popup — big, readable ZIP + city */
-  .leaflet-popup-content-wrapper{border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,.25)}
-  .leaflet-popup-content{margin:14px 16px; font-family:inherit; min-width:210px; text-align:center}
-  .pop-zip{font-size:32px; font-weight:900; line-height:1; color:#111827; letter-spacing:.01em}
-  .pop-city{font-size:17px; font-weight:700; color:#1f2937; margin-top:4px}
-  .pop-state{display:inline-block; margin-top:10px; font-size:14px; font-weight:800; padding:5px 12px; border-radius:999px}
+  /* Tap popup — compact ZIP + city (staged Nov 22, 2026: ~70% of the original size) */
+  .leaflet-popup-content-wrapper{border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  .leaflet-popup-content{margin:7px 8px; font-family:inherit; min-width:150px; text-align:center}
+  .pop-zip{font-size:22px; font-weight:900; line-height:1; color:#111827; letter-spacing:.01em}
+  .pop-city{font-size:12px; font-weight:700; color:#1f2937; margin-top:3px}
+  .pop-state{display:inline-block; margin-top:6px; font-size:11px; font-weight:800; padding:3px 8px; border-radius:999px}
   .pop-state.in{background:#dcfce7; color:#14532d; border:1.5px solid #16a34a}
   .pop-state.out{background:#f3f4f6; color:#374151; border:1.5px solid #6b7280}
-  .pop-hint{font-size:13px; color:#4b5563; margin-top:8px; line-height:1.4}
+  .pop-hint{font-size:10.5px; color:#4b5563; margin-top:5px; line-height:1.35}
   .leaflet-control-zoom a{width:36px !important; height:36px !important; line-height:36px !important}
   .leaflet-control-attribution{font-size:10px; background:rgba(255,255,255,.85) !important}
 </style>
@@ -186,14 +186,14 @@
   </div>
 
   <div class="collapsible" id="collapsible">
-    <p class="subtitle"><strong>Live coverage — the shipped 124 ZIPs are green.</strong> Green = in coverage. White = not covered. In view mode, tap a ZIP to see its number and city in big text — nothing changes. Tap <strong>Edit</strong> to change coverage: in edit mode, tap a green ZIP to take it out, tap a white ZIP to add it in. Zoom in to read the ZIP numbers.</p>
+    <p class="subtitle"><strong>Live coverage: the shipped 124 ZIPs are green.</strong> Green = in coverage. White = not covered. In view mode, tap a ZIP to see its number and city in big text. Nothing changes. Tap <strong>Edit</strong> to change coverage: in edit mode, tap a green ZIP to take it out, tap a white ZIP to add it in. Zoom in to read the ZIP numbers.</p>
 
     <div class="legend" aria-label="Legend">
       <div class="legend-item"><span class="legend-swatch swatch-green"></span> Green<br />In coverage</div>
       <div class="legend-item"><span class="legend-swatch swatch-white"></span> White<br />Not covered</div>
     </div>
-    <div class="venue-legend">★ = venue — tap a star to see its price.</div>
-    <div class="mountain-legend">Purple areas + price tags = flat-rate towns (mountain and city) — tap for the fare.</div>
+    <div class="venue-legend">★ = venue. Tap a star to see its price.</div>
+    <div class="mountain-legend">Purple areas + price tags = flat-rate towns (mountain and city). Tap for the fare.</div>
 
     <div class="actions">
       <button class="btn" id="metroBtn">Denver metro view</button>
@@ -204,7 +204,7 @@
       <button class="btn secondary mountain-toggle is-on" id="mountainBtn" aria-pressed="true" aria-label="Show or hide flat towns">Flat towns ▲</button>
     </div>
 
-    <p class="mode-note" id="modeNote">View mode — taps only look. Nothing can change.</p>
+    <p class="mode-note" id="modeNote">View mode: taps only look. Nothing can change.</p>
 
     <div class="count-box">
       <div class="count-big" id="covCount">…</div>
@@ -214,13 +214,13 @@
 
     <p class="section-label">Removed from shipped coverage</p>
     <div class="removed-box">
-      <div class="change-empty" id="removedEmpty">None — you haven't removed any ZIP yet.</div>
+      <div class="change-empty" id="removedEmpty">None. You haven't removed any ZIP yet.</div>
       <div class="change-list" id="removedList" hidden></div>
     </div>
 
     <p class="section-label">Added by you</p>
     <div class="added-box">
-      <div class="change-empty" id="addedEmpty">None — you haven't added any ZIP yet.</div>
+      <div class="change-empty" id="addedEmpty">None. You haven't added any ZIP yet.</div>
       <div class="change-list" id="addedList" hidden></div>
     </div>
 
@@ -230,12 +230,12 @@
       <span class="copy-msg" id="copyMsg" aria-live="polite"></span>
     </div>
 
-    <div class="session-note"><strong>Changes here make a list — send it to be applied.</strong> Your picks last only while this page stays open — they are not saved, and they do not change any fares by themselves. When your map looks right, tap <strong>Copy coverage list</strong> and send the list in.</div>
+    <div class="session-note"><strong>Changes here make a list. Send it to be applied.</strong> Your picks last only while this page stays open. They are not saved, and they do not change any fares by themselves. When your map looks right, tap <strong>Copy coverage list</strong> and send the list in.</div>
 
     <p class="fare-note">Venues and mountain towns keep their own flat prices even inside a green ZIP. Green here means regular mileage coverage for the other addresses in that ZIP.</p>
 
     <p class="footer-note">ZIP boundaries are real Census ZIP code areas (ZCTA). City names are each ZIP's primary city. 301 ZIP codes are on this map.</p>
-    <p class="footer-note">Build 20 · v2026.11.22-build20 · 2026-11-22</p>
+    <p class="footer-note">Build 21 · v2026.11.22-build21 · 2026-11-22</p>
   </div>
 </aside>
 
@@ -252,7 +252,7 @@
   function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
   function cityLabel(zip){
     var c = ZIP_CITY[zip];
-    return c ? (zip + " — " + c) : zip;
+    return c ? (zip + ", " + c) : zip;
   }
 
   var isMobile = window.matchMedia && window.matchMedia("(max-width: 640px)").matches;
@@ -322,7 +322,7 @@
       + '<div class="pop-zip">' + esc(zip) + '</div>'
       + (city ? '<div class="pop-city">' + esc(city) + '</div>' : '')
       + '<div><span class="pop-state ' + (isIn ? 'in' : 'out') + '">' + (isIn ? '● In coverage' : '○ Not covered') + '</span></div>'
-      + '<div class="pop-hint">' + (editMode ? (isIn ? 'Tap this ZIP again to remove it from coverage.' : 'Tap this ZIP again to add it back to coverage.') : 'View only — tap Edit above to change coverage.') + '</div>'
+      + '<div class="pop-hint">' + (editMode ? (isIn ? 'Tap this ZIP again to remove it from coverage.' : 'Tap this ZIP again to add it back to coverage.') : 'View only. Tap Edit above to change coverage.') + '</div>'
       + '</div>';
   }
 
@@ -344,7 +344,7 @@
             applyStyle(zip);
             refreshPanel();
           }
-          L.popup({ maxWidth: 300, closeButton: true })
+          L.popup({ maxWidth: 210, closeButton: true })
             .setLatLng(e.latlng)
             .setContent(popupHtml(zip))
             .openOn(map);
@@ -375,7 +375,7 @@
   function venuePopupHtml(v){
     return '<div>'
       + '<div class="pop-venue-name">★ ' + esc(v.name) + '</div>'
-      + '<div class="pop-venue-price">Venue fare — flat $200</div>'
+      + '<div class="pop-venue-price">Venue fare: flat $200</div>'
       + '<div class="pop-venue-rule">Flat $200 when the other end is in coverage. From outside coverage: mileage fare with a $200 minimum.</div>'
       + '</div>';
   }
@@ -389,7 +389,7 @@
   });
   VENUES.forEach(function(v){
     var marker = L.marker([v.lat, v.lng], { icon: venueStarIcon, title: v.name, alt: v.name, keyboard: true, zIndexOffset: 1000 });
-    marker.bindPopup(venuePopupHtml(v), { maxWidth: 300, closeButton: true });
+    marker.bindPopup(venuePopupHtml(v), { maxWidth: 210, closeButton: true });
     marker.addTo(venueLayerGroup);
   });
   venueLayerGroup.addTo(map);
@@ -421,7 +421,7 @@
   function mountainPopupHtml(t){
     return '<div>'
       + '<div class="pop-mountain-name">▲ ' + esc(t.name) + '</div>'
-      + '<div class="pop-mountain-price">Mountain fare — flat ' + esc(t.priceLabel) + '</div>'
+      + '<div class="pop-mountain-price">Mountain fare: flat ' + esc(t.priceLabel) + '</div>'
       + '<div class="pop-mountain-rule">Flat both ways between this town and DIA or the covered area. Town to town: the higher flat wins.</div>'
       + '</div>';
   }
@@ -437,7 +437,7 @@
   function cityPopupHtml(t){
     return '<div>'
       + '<div class="pop-mountain-name">▲ ' + esc(t.name) + '</div>'
-      + '<div class="pop-mountain-price">City fare — flat ' + esc(t.priceLabel) + '</div>'
+      + '<div class="pop-mountain-price">City fare: flat ' + esc(t.priceLabel) + '</div>'
       + '<div class="pop-mountain-rule">Flat both ways between this town and DIA or the covered area. Town to town: the higher flat wins.</div>'
       + '</div>';
   }
@@ -446,7 +446,7 @@
   MOUNTAIN_TOWNS.forEach(function(t){
     t.circles.forEach(function(c){
       var circle = L.circle([c[0], c[1]], { radius: c[2], color: MOUNTAIN_CIRCLE_STYLE.color, weight: MOUNTAIN_CIRCLE_STYLE.weight, fillColor: MOUNTAIN_CIRCLE_STYLE.fillColor, fillOpacity: MOUNTAIN_CIRCLE_STYLE.fillOpacity });
-      circle.bindPopup(mountainPopupHtml(t), { maxWidth: 300, closeButton: true });
+      circle.bindPopup(mountainPopupHtml(t), { maxWidth: 210, closeButton: true });
       circle.addTo(mountainLayerGroup);
     });
   });
@@ -459,13 +459,13 @@
       popupAnchor: [0, -6]
     });
     var marker = L.marker([t.lat, t.lng], { icon: tagIcon, title: t.name + " " + t.priceLabel, alt: t.name, keyboard: true, zIndexOffset: 900 });
-    marker.bindPopup(mountainPopupHtml(t), { maxWidth: 300, closeButton: true });
+    marker.bindPopup(mountainPopupHtml(t), { maxWidth: 210, closeButton: true });
     marker.addTo(mountainLayerGroup);
   });
   CITY_TOWNS.forEach(function(t){
     t.circles.forEach(function(c){
       var circle = L.circle([c[0], c[1]], { radius: c[2], color: MOUNTAIN_CIRCLE_STYLE.color, weight: MOUNTAIN_CIRCLE_STYLE.weight, fillColor: MOUNTAIN_CIRCLE_STYLE.fillColor, fillOpacity: MOUNTAIN_CIRCLE_STYLE.fillOpacity });
-      circle.bindPopup(cityPopupHtml(t), { maxWidth: 300, closeButton: true });
+      circle.bindPopup(cityPopupHtml(t), { maxWidth: 210, closeButton: true });
       circle.addTo(mountainLayerGroup);
     });
   });
@@ -478,7 +478,7 @@
       popupAnchor: [0, -6]
     });
     var marker = L.marker([t.lat, t.lng], { icon: tagIcon, title: t.name + " " + t.priceLabel, alt: t.name, keyboard: true, zIndexOffset: 900 });
-    marker.bindPopup(cityPopupHtml(t), { maxWidth: 300, closeButton: true });
+    marker.bindPopup(cityPopupHtml(t), { maxWidth: 210, closeButton: true });
     marker.addTo(mountainLayerGroup);
   });
   mountainLayerGroup.addTo(map);
@@ -505,7 +505,7 @@
     editBtn.textContent = editMode ? "Done" : "Edit";
     editBtn.setAttribute("aria-pressed", editMode ? "true" : "false");
     editBtn.classList.toggle("editing", editMode);
-    modeNote.textContent = editMode ? "Edit mode — tap a ZIP to add or remove it. Tap Done when you finish." : "View mode — taps only look. Nothing can change.";
+    modeNote.textContent = editMode ? "Edit mode: tap a ZIP to add or remove it. Tap Done when you finish." : "View mode: taps only look. Nothing can change.";
   }
   editBtn.addEventListener("click", function(){ editMode = !editMode; map.closePopup(); syncMode(); });
   syncMode();
@@ -576,13 +576,13 @@
   document.getElementById("copyBtn").addEventListener("click", function(){
     var removed = removedZips();
     var added = addedZips();
-    var text = "RideWave coverage — my final ZIP list:\n"
+    var text = "RideWave coverage: my final ZIP list:\n"
       + greenZips().join(", ") + "\n"
       + "Removed from shipped coverage: " + (removed.length ? removed.map(cityLabel).join(", ") : "none") + "\n"
       + "Added: " + (added.length ? added.map(cityLabel).join(", ") : "none");
     var msg = document.getElementById("copyMsg");
     function copied(){
-      msg.textContent = "Copied ✓ — paste it into your chat with Muse.";
+      msg.textContent = "Copied ✓. Paste it into your chat with Muse.";
       setTimeout(function(){ msg.textContent = ""; }, 4000);
     }
     function fallback(){
@@ -594,7 +594,7 @@
       var ok = false;
       try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
       document.body.removeChild(ta);
-      if (ok){ copied(); } else { msg.textContent = "Copy failed — your lists are shown above."; }
+      if (ok){ copied(); } else { msg.textContent = "Copy failed. Your lists are shown above."; }
     }
     if (navigator.clipboard && navigator.clipboard.writeText){
       navigator.clipboard.writeText(text).then(copied, fallback);

@@ -342,22 +342,12 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
     <div class="tabpage" id="tabpage-settings" role="tabpanel" aria-labelledby="tabbtn-settings" hidden>
     <div class="panel" id="coveragePanel" hidden style="margin-bottom:24px">
       <h3>Coverage map</h3>
-      <p style="margin:0 0 14px;color:var(--ink2);font-size:14.5px">See the coverage map — ZIP codes, venue stars and flat-rate towns — and tap ZIP codes to build a change list.</p>
+      <p style="margin:0 0 14px;color:var(--ink2);font-size:14.5px">See the coverage map, ZIP codes, venue stars and flat-rate towns, and tap ZIP codes to build a change list.</p>
       <a class="btn btn-amber" href="/coverage.html">Open the coverage map</a>
-    </div>
-    <div class="panel" id="codeChangePanel" hidden style="margin-bottom:24px">
-      <h3>Change your sign-in code</h3>
-      <p style="margin:0 0 14px;color:var(--ink2);font-size:14.5px">Change the sign-in code you used to open this page — your own code, whichever one that is. The old code stops working as soon as the new one is saved.</p>
-      <form id="codeChangeForm" novalidate>
-        <div class="field"><label class="flabel" for="curCode">Current code</label><input id="curCode" type="password" autocomplete="off" placeholder="Current code"><div class="err">Please enter the current code.</div></div>
-        <div class="field" style="margin-top:12px"><label class="flabel" for="newCode">New code</label><input id="newCode" type="password" autocomplete="off" placeholder="New code"><div class="err">Please choose a new code of at least 10 characters.</div><p style="margin:6px 0 0;color:var(--ink2);font-size:13.5px">At least 10 characters.</p></div>
-        <div style="margin-top:14px"><button class="btn btn-amber" type="submit">Change code</button></div>
-      </form>
-      <p id="codeChangeNote" style="margin:12px 0 0;color:var(--ink2);font-size:14.5px"></p>
     </div>
     <div class="panel" id="supportCodePanel" hidden style="margin-bottom:24px">
       <h3>Support access code</h3>
-      <p style="margin:0 0 14px;color:var(--ink2);font-size:14.5px">One dashboard, two codes. The support code opens this same dashboard for support help. It can run the day view, but it cannot change the owner code or this setting — only the owner code can do that.</p>
+      <p style="margin:0 0 14px;color:var(--ink2);font-size:14.5px">One dashboard, two codes. The support code opens this same dashboard for support help. It can run the day view, but it cannot change the owner code or this setting. Only the owner code can do that.</p>
       <p id="supportState" style="margin:0 0 14px;font-weight:700">No support code is set.</p>
       <form id="supportCodeForm" novalidate>
         <div class="field"><label class="flabel" for="supCode">New support code</label><input id="supCode" type="password" autocomplete="off" placeholder="New support code"><div class="err">Please choose a support code of at least 10 characters.</div><p style="margin:6px 0 0;color:var(--ink2);font-size:13.5px">At least 10 characters.</p></div>
@@ -367,7 +357,7 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
     </div>
     <div class="panel" id="gateCodePanel" hidden style="margin-bottom:24px">
       <h3>Gate codes</h3>
-      <p style="margin:0 0 14px;color:var(--ink2);font-size:14.5px">The gate is the plain first step in front of the sign-in — it hides the sign-in from casual eyes; the access codes behind it are the real lock. Two gate codes open it, one for each of you, and only the owner sign-in can change them. The current codes are never shown here — setting a new one replaces it.</p>
+      <p style="margin:0 0 14px;color:var(--ink2);font-size:14.5px">The gate is the plain first step in front of the sign-in. It hides the sign-in from casual eyes; the access codes behind it are the real lock. Two gate codes open it, one for each of you, and only the owner sign-in can change them. The current codes are never shown here. Setting a new one replaces it.</p>
       <form id="gateOwnerForm" novalidate>
         <div class="field"><label class="flabel" for="gateOwnerCode">Deepak's gate code</label><input id="gateOwnerCode" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="4 digits"><div class="err">Gate codes are exactly 4 digits.</div></div>
         <div style="margin-top:14px"><button class="btn btn-amber" type="submit">Set Deepak's gate code</button></div>
@@ -380,7 +370,7 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
     </div>
     <div class="panel" id="settingsPanel" hidden style="margin-bottom:24px">
       <h3>Business settings</h3>
-      <p style="margin:0 0 14px;color:var(--ink2);font-size:14.5px">The current setup, read live from the same sources the site itself uses: the pricing file the booking page runs on, the live driver list, and the days blocked on this device. This panel is for checking only — nothing on it can be changed from here.</p>
+      <p style="margin:0 0 14px;color:var(--ink2);font-size:14.5px">The current setup, read live from the same sources the site itself uses: the pricing file the booking page runs on, the live driver list, and the days blocked on this device. This panel is for checking only. Nothing on it can be changed from here.</p>
       <div style="margin-bottom:12px"><button class="btn btn-ghost" type="button" id="settingsRefresh">Refresh</button></div>
       <div id="settingsBody"></div>
     </div>
@@ -397,6 +387,27 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
       <div class="msg"><b>Sample text:</b> “NEW BOOKING: Fri Nov 6, 4:30 PM · Airport Pickup · 2 riders · $145 · Pay Later. Rider: Alex M., tap to call [number].”</div>
       <h3 style="margin-top:22px">Driver / owner receives instantly</h3>
       <div class="msg" style="margin-top:0"><b>Text + email:</b> “NEW BOOKING BK-1234: Fri Nov 6, 4:30 PM · Airport Pickup · 2 rider(s) · $145 · Pay later. Rider: Alex M., tap to call [number].”</div>
+    </div>
+    <div class="panel" id="codeChangePanel" hidden style="margin-bottom:24px">
+      <h3>Change your sign-in code</h3>
+      <div><button class="btn btn-amber" type="button" id="codeChangeToggle" aria-expanded="false" aria-controls="codeChangeBody">Change sign-in code</button></div>
+      <div id="codeChangeBody" hidden>
+      <p style="margin:0 0 14px;color:var(--ink2);font-size:14.5px">Change the sign-in code you used to open this page, your own code, whichever one that is. The old code stops working as soon as the new one is saved.</p>
+      <form id="codeChangeForm" novalidate>
+        <div class="field"><label class="flabel" for="curCode">Current code</label><input id="curCode" type="password" autocomplete="off" placeholder="Current code"><div class="err">Please enter the current code.</div></div>
+        <div class="field" style="margin-top:12px"><label class="flabel" for="newCode">New code</label><input id="newCode" type="password" autocomplete="off" placeholder="New code"><div class="err">Please choose a new code of at least 10 characters.</div><p style="margin:6px 0 0;color:var(--ink2);font-size:13.5px">At least 10 characters.</p></div>
+        <div style="margin-top:14px"><button class="btn btn-amber" type="submit">Change code</button></div>
+      </form>
+      <p id="codeChangeNote" style="margin:12px 0 0;color:var(--ink2);font-size:14.5px"></p>
+      </div>
+    </div>
+    <div class="panel" id="accessHistoryPanel" hidden style="margin-bottom:24px">
+      <h3>Sign-in history</h3>
+      <div><button class="btn btn-amber" type="button" id="accessHistoryToggle" aria-expanded="false" aria-controls="accessHistoryBody">View sign-in history</button></div>
+      <div id="accessHistoryBody" hidden>
+      <p style="margin:0 0 14px;color:var(--ink2);font-size:14.5px">Each time this dashboard was opened, who opened it, and how long it stayed open. A dash for the sign-out means none was recorded. The browser was closed without Lock.</p>
+      <div id="accessHistoryList"></div>
+      </div>
     </div>
     </div>
     <div class="tabpage" id="tabpage-day" role="tabpanel" aria-labelledby="tabbtn-day" hidden>
@@ -433,7 +444,7 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
     <h3>Boulder Black Line</h3>
     <p style="margin:0">Private SUV rides in the Denver metro. Call <a href="tel:+17203264652">(720) 326-4652</a> or email <a href="mailto:boulderblack1@gmail.com">boulderblack1@gmail.com</a>.</p>
     <p class="fine">Owner page for the preview. This page has its own address and its own sign in, and it is not linked from the rider site.<br><a href="/privacy.html">Privacy Policy</a> · <a href="/terms.html">Terms of Service</a></p>
-    <p class="fine build-line">Build 20 · v2026.11.22-build20 · 2026-11-22</p>
+    <p class="fine build-line">Build 21 · v2026.11.22-build21 · 2026-11-22</p>
   </div>
 </footer>
 
@@ -772,13 +783,29 @@ function applyRoleUI(){
   var st=$("supportState");
   if(st)st.textContent=SUPPORT_SET?"A support code is set.":"No support code is set.";
 }
+var ACCESS_SESSION_ID="";
+try{ACCESS_SESSION_ID=sessionStorage.getItem("bbl_access_session_v1")||""}catch(e){}
 function refreshCodeRole(code){
   if(typeof window.__bblCall!=="function")return;
-  window.__bblCall("bblCheckCode",{code:code}).then(function(res){
+  window.__bblCall("bblCheckCode",{code:code,sessionStart:true}).then(function(res){
     CODE_ROLE=(res&&res.role)||"";
+    if(res&&res.sessionId){ACCESS_SESSION_ID=String(res.sessionId);try{sessionStorage.setItem("bbl_access_session_v1",ACCESS_SESSION_ID)}catch(e){}}
     if(res&&typeof res.supportSet==="boolean")SUPPORT_SET=res.supportSet;
     applyRoleUI();
   }).catch(function(){});
+}
+/* Lock ends the session the unlock opened (access history,
+   2026-11-22): fire bblEndSession for the stored session id
+   BEFORE lockLiveView clears the stored code. Fire-and-forget --
+   locking never waits on it, and a browser closed without Lock
+   simply leaves the session with no sign-out recorded. */
+function endAccessSession(){
+  var sid=ACCESS_SESSION_ID;ACCESS_SESSION_ID="";
+  try{sessionStorage.removeItem("bbl_access_session_v1")}catch(e){}
+  if(!sid||typeof window.__bblCall!=="function")return;
+  var c="";try{c=gateCode()}catch(e){}
+  if(!c)return;
+  try{var p=window.__bblCall("bblEndSession",{code:c,sessionId:sid});if(p&&p.catch)p.catch(function(){})}catch(e){}
 }
 function enterCodeChrome(){
   CODE_SESSION=true;
@@ -786,7 +813,9 @@ function enterCodeChrome(){
   $("authSection").hidden=true;
   $("daySection").hidden=false;
   var scp=$("schedPanel");if(scp)scp.hidden=false;var sp=$("settingsPanel");if(sp)sp.hidden=false;
-  var ccp=$("codeChangePanel");if(ccp)ccp.hidden=false;var cvp=$("coveragePanel");if(cvp)cvp.hidden=false;
+  var ccp=$("codeChangePanel");if(ccp)ccp.hidden=false;var cvp=$("coveragePanel");if(cvp)cvp.hidden=false;var ahp=$("accessHistoryPanel");if(ahp)ahp.hidden=false;
+  if(window.__bblCollapseCodeChange)window.__bblCollapseCodeChange();
+  if(window.__bblCollapseAccessHistory)window.__bblCollapseAccessHistory();
   var lk=$("liveLock");if(lk)lk.hidden=false;
 }
 function unlockWithCode(code,fieldEl){
@@ -817,13 +846,14 @@ function maybeAutoUnlock(){
   if(c)unlockWithCode(c,null);
 }
 function lockLiveView(){
+  endAccessSession();
   setGateCode("");
   CODE_SESSION=false;CODE_ROLE="";SUPPORT_SET=false;LIVE_BOOKINGS=null;LIVE_DRIVERS=null;
   $("liveWrap").hidden=true;
   $("gateForm").hidden=false;
   var lk=$("liveLock");if(lk)lk.hidden=true;
   var scp=$("schedPanel");if(scp)scp.hidden=true;if(window.__bblSchedLock)window.__bblSchedLock();var sp=$("settingsPanel");if(sp)sp.hidden=true;
-  var ccp=$("codeChangePanel");if(ccp)ccp.hidden=true;var cvp2=$("coveragePanel");if(cvp2)cvp2.hidden=true;
+  var ccp=$("codeChangePanel");if(ccp)ccp.hidden=true;var cvp2=$("coveragePanel");if(cvp2)cvp2.hidden=true;var ahp2=$("accessHistoryPanel");if(ahp2)ahp2.hidden=true;
   var scp=$("supportCodePanel");if(scp)scp.hidden=true;
   var gcp=$("gateCodePanel");if(gcp)gcp.hidden=true;
   var rl=$("roleLabel");if(rl)rl.hidden=true;
@@ -887,13 +917,102 @@ $("codeChangeForm").addEventListener("submit",function(e){e.preventDefault();
     if(gateCode())setGateCode(newV);
     cur.value="";nw.value="";
     var note=$("codeChangeNote");
-    if(note)note.textContent="Your sign-in code has been changed. Use the new code from now on \u2014 the old code no longer works.";
+    if(note)note.textContent="Your sign-in code has been changed. Use the new code from now on. The old code no longer works.";
   }).catch(function(err){
     var msg=(err&&err.message)||"";
     if(/did not match/i.test(msg))flagMsg(cur,"That code did not match. Try again.",true);
     else if(/at least 10/i.test(msg))flagMsg(nw,"Please choose a new code of at least 10 characters.",true);
     else flagMsg(cur,msg||"Something went wrong. Please try again.",true);
   });
+});
+
+/* Disclosure for the change-code panel (owner, 2026-11-22): the
+   panel sits at the bottom of Settings and opens collapsed -- just
+   its title and the button under it, like the coverage card.
+   Tapping the button expands the panel's original content in place
+   (the explanation, both code fields, the hint and the Change code
+   button, all untouched) and the button becomes Close; tapping
+   Close collapses it again. The reset is also called on unlock and
+   whenever the Settings tab is shown, so the panel starts collapsed
+   every time Settings opens. Show/hide only -- no ids, handlers or
+   backend calls change. */
+window.__bblCollapseCodeChange=function(){
+  var body=$("codeChangeBody"),btn=$("codeChangeToggle");if(!body||!btn)return;
+  body.hidden=true;btn.textContent="Change sign-in code";btn.setAttribute("aria-expanded","false");
+};
+var ccToggle=$("codeChangeToggle");
+if(ccToggle)ccToggle.addEventListener("click",function(){
+  var body=$("codeChangeBody"),btn=$("codeChangeToggle");if(!body||!btn)return;
+  var open=body.hidden;body.hidden=!open;
+  btn.textContent=open?"Close":"Change sign-in code";
+  btn.setAttribute("aria-expanded",open?"true":"false");
+});
+
+/* Sign-in history (owner, 2026-11-22): a Settings-only panel,
+   collapsed like the change-code panel above it. Expanding loads
+   the recent sessions from the backend (bblAccessHistory, gated
+   by the same sign-in code) and lists them newest first: who
+   opened the dashboard, when they signed in, when they signed
+   out, and how long the session lasted. A session with no
+   recorded sign-out (the browser was closed without Lock) shows
+   a dash and no duration -- no end time is ever invented. All
+   times are Denver time. */
+window.__bblCollapseAccessHistory=function(){
+  var body=$("accessHistoryBody"),btn=$("accessHistoryToggle");if(!body||!btn)return;
+  body.hidden=true;btn.textContent="View sign-in history";btn.setAttribute("aria-expanded","false");
+};
+function ahFmt(ms){
+  if(!ms)return"";
+  try{return new Date(ms).toLocaleString("en-US",{timeZone:"America/Denver",weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}catch(e){return""}
+}
+function ahDur(inMs,outMs){
+  if(!inMs||!outMs||outMs<inMs)return"";
+  var mins=Math.round((outMs-inMs)/60000);
+  if(mins<1)return"under a minute";
+  if(mins<60)return mins+" min";
+  var h=Math.floor(mins/60),m=mins%60;
+  return m?h+" h "+m+" min":h+" h";
+}
+function ahRole(role){return role==="support"?"Support":"Owner / Admin"}
+function renderAccessHistory(entries){
+  var list=$("accessHistoryList");if(!list)return;
+  if(!entries||!entries.length){
+    list.innerHTML='<p style="margin:0;color:var(--ink2);font-size:14.5px">No sign-ins recorded yet, history starts when this update goes live.</p>';
+    return;
+  }
+  var html="";
+  entries.forEach(function(en){
+    if(!en)return;
+    if(en.type==="code_change"){
+      html+='<p style="margin:0 0 10px;font-size:14.5px"><b>'+ahRole(en.role)+'</b> \u00b7 '+ahFmt(en.inAt)+' \u00b7 Sign-in code changed</p>';
+      return;
+    }
+    var out=ahFmt(en.outAt),dur=ahDur(en.inAt,en.outAt);
+    html+='<p style="margin:0 0 10px;font-size:14.5px"><b>'+ahRole(en.role)+'</b> \u00b7 Signed in '+ahFmt(en.inAt)+' \u00b7 Signed out '+(out||"\u2014")+(dur?' \u00b7 '+dur:'')+'</p>';
+  });
+  list.innerHTML=html;
+}
+function loadAccessHistory(){
+  var list=$("accessHistoryList");if(!list)return;
+  list.innerHTML='<p style="margin:0;color:var(--ink2);font-size:14.5px">Loading\u2026</p>';
+  if(typeof window.__bblCall!=="function"){
+    list.innerHTML='<p style="margin:0;color:var(--ink2);font-size:14.5px">Couldn\u2019t load the history.</p>';
+    return;
+  }
+  var c="";try{c=gateCode()}catch(e){}
+  window.__bblCall("bblAccessHistory",{code:c}).then(function(res){
+    renderAccessHistory((res&&res.entries)||[]);
+  }).catch(function(){
+    var l2=$("accessHistoryList");if(l2)l2.innerHTML='<p style="margin:0;color:var(--ink2);font-size:14.5px">Couldn\u2019t load the history.</p>';
+  });
+}
+var ahToggle=$("accessHistoryToggle");
+if(ahToggle)ahToggle.addEventListener("click",function(){
+  var body=$("accessHistoryBody"),btn=$("accessHistoryToggle");if(!body||!btn)return;
+  var open=body.hidden;body.hidden=!open;
+  btn.textContent=open?"Close":"View sign-in history";
+  btn.setAttribute("aria-expanded",open?"true":"false");
+  if(open)loadAccessHistory();
 });
 
 /* Support access code (owner code sessions only): set / replace /
@@ -969,7 +1088,7 @@ function renderSettings(){
   var id=window.__bblId||null;
   var html="";
   html+=settingsHead("Coverage");
-  html+='<div class="owner-row"><div class="info"><b>Coverage map</b><span><a href="/coverage.html">Open the coverage map</a> — ZIP codes, venues and flat-rate towns.</span></div></div>';
+  html+='<div class="owner-row"><div class="info"><b>Coverage map</b><span><a href="/coverage.html">Open the coverage map</a>: ZIP codes, venues and flat-rate towns.</span></div></div>';
   html+=settingsHead("Business");
   if(id&&id.co){
     html+=settingsRow("Business name",id.co);
@@ -982,7 +1101,7 @@ function renderSettings(){
   if(id&&(id.ph||id.em)){
     html+=settingsRow("Alerts go to the owner at",[id.ph,id.em].filter(Boolean).join(" \u00B7 "));
   }
-  html+=settingsRow("How alerts fire","A new booking texts and emails the owner right away through the owner\u2019s Jotform form. When a driver is assigned, the rider gets a welcome email, and a reminder email goes out 12 hours before pickup — both sent by the site backend.");
+  html+=settingsRow("How alerts fire","A new booking texts and emails the owner right away through the owner\u2019s Jotform form. When a driver is assigned, the rider gets a welcome email, and a reminder email goes out 12 hours before pickup, both sent by the site backend.");
   html+=settingsHead("Drivers (live list)");
   if(LIVE_DRIVERS){
     if(!LIVE_DRIVERS.length)html+='<p class="empty-note">No drivers on the live list yet.</p>';
@@ -1572,7 +1691,7 @@ function scPaintFare() {
   var manualAmtP = scManualAmt();
   if (manualAmtP != null) {
     el.hidden = false;
-    el.innerHTML = '<span class="q-lbl">Fare:</span> <b>$' + fmtMoney(manualAmtP) + '</b> <span>— the price you set.</span>';
+    el.innerHTML = '<span class="q-lbl">Fare:</span> <b>$' + fmtMoney(manualAmtP) + '</b><span>, the price you set.</span>';
     return;
   }
   if ($("scManualPrice") && $("scManualPrice").checked) {
@@ -1582,7 +1701,7 @@ function scPaintFare() {
   }
   if (scMode === "edit" && !scFareDirty && scOrig) {
     el.hidden = false;
-    el.innerHTML = '<span class="q-lbl">Fare:</span> <b>$' + fmtMoney(scOrig.price) + '</b> <span>as booked — change the pickup, drop-off, service or hours to reprice.</span>';
+    el.innerHTML = '<span class="q-lbl">Fare:</span> <b>$' + fmtMoney(scOrig.price) + '</b> <span>as booked. Change the pickup, drop-off, service or hours to reprice.</span>';
     return;
   }
   var c = scCalcFare();
@@ -1979,7 +2098,7 @@ function scOpenEdit(bk) {
         var doneMsg = "Booking " + scEditCode + " updated.";
         var ue = res && res.updateEmail;
         if (ue && ue.sent) doneMsg += " An update email with the corrected details was sent to " + (ue.to || rec.email) + ".";
-        else if (ue && ue.error) doneMsg += " The update email to the rider could not be sent — please let the rider know the new details directly.";
+        else if (ue && ue.error) doneMsg += " The update email to the rider could not be sent. Please let the rider know the new details directly.";
         else if (ue && ue.alreadySent) doneMsg += " The rider already has an email with these exact details, so no new email was sent.";
         else if (ue && !ue.changed) doneMsg += " Nothing the rider sees changed, so no email was sent."
         rec.code = scEditCode; rec.id = scEditId;
@@ -2010,25 +2129,25 @@ function scOpenEdit(bk) {
     window.__bblCall("bblAdminCreateBooking", cpayload).then(function (res) {
       scSubmitting = false;
       $("schedSubmitBtn").disabled = false;
-      var msg = "Booked — " + rec.code + ".";
+      var msg = "Booked: " + rec.code + ".";
       var n = res && res.notify;
       if (res && res.duplicate) {
         msg += " That booking was already saved, so no new alerts were sent.";
       } else if (n && n.ownerText && n.ownerText.sent) {
         msg += " Confirmation email sent to " + rec.email + ".";
         msg += " Deepak's email and text alerts were submitted through Jotform and confirmed (submission " + ((n.jotform && n.jotform.submissionId) || n.ownerText.submissionId || "") + ").";
-        msg += " (Rider texts are not set up for Boulder Black Line — the rider's confirmation is by email.)";
+        msg += " (Rider texts are not set up for Boulder Black Line. The rider's confirmation is by email.)";
       } else if (n) {
         if (n.riderEmail && n.riderEmail.sent) msg += " Confirmation email sent to " + rec.email + ".";
         else if (n.riderEmail && n.riderEmail.skipped) msg += " No rider email was given, so no confirmation email was sent.";
-        else msg += " The booking saved, but the confirmation email to the rider could not be sent — please give the rider the details directly.";
+        else msg += " The booking saved, but the confirmation email to the rider could not be sent. Please give the rider the details directly.";
         if (n.ownerEmail && n.ownerEmail.sent) msg += " Deepak's email alert was sent.";
-        else msg += " Deepak's email alert could not be sent — please let him know about this booking.";
+        else msg += " Deepak's email alert could not be sent. Please let him know about this booking.";
         if (n.jotform && n.jotform.submitted) msg += " (The booking is recorded in Jotform (submission " + n.jotform.submissionId + "), but Jotform does not send its alerts for API submissions, so Deepak's text alert was not sent; rider texts are not set up for Boulder Black Line.)";
         else if (n.jotform) msg += " (The Jotform submission failed, so Deepak's text alert was not sent; rider texts are not set up for Boulder Black Line.)";
         else msg += " (Deepak's text alert is not set up for dashboard bookings yet; rider texts are not set up for Boulder Black Line.)";
       } else {
-        msg += " The booking saved; whether its email alerts went out could not be confirmed — please check with Deepak that he has it.";
+        msg += " The booking saved; whether its email alerts went out could not be confirmed. Please check with Deepak that he has it.";
       }
       scShowDone(msg, rec);
       scResetForm("create", null);
@@ -2071,6 +2190,8 @@ function scOpenEdit(bk) {
       if(pages[n])pages[n].hidden=!on;
       if(btns[n]){btns[n].classList.toggle("on",on);btns[n].setAttribute("aria-selected",on?"true":"false")}
     }
+    if(name==="settings"&&typeof window.__bblCollapseCodeChange==="function")window.__bblCollapseCodeChange();
+    if(name==="settings"&&typeof window.__bblCollapseAccessHistory==="function")window.__bblCollapseAccessHistory();
     syncHead();
   }
   window.__bblShowTab=show;
@@ -2204,7 +2325,7 @@ function scOpenEdit(bk) {
      and the rider-side booking mirror below stay on the local
      demo store. */
   var BBL_FN_BASE = "https://us-central1-blackcarservice4u-57d2a.cloudfunctions.net/";
-  var BBL_LIVE_FNS = { bblListBookings: 1, bblListDrivers: 1, bblSaveDriver: 1, bblDeleteDriver: 1, bblAssignDriver: 1, bblSetBookingStatus: 1, bblChangeOwnerCode: 1, bblCheckCode: 1, bblSetSupportCode: 1, bblCheckGateCode: 1, bblSetGateCode: 1, bblAdminCreateBooking: 1, bblUpdateBooking: 1 };
+  var BBL_LIVE_FNS = { bblListBookings: 1, bblListDrivers: 1, bblSaveDriver: 1, bblDeleteDriver: 1, bblAssignDriver: 1, bblSetBookingStatus: 1, bblChangeOwnerCode: 1, bblCheckCode: 1, bblSetSupportCode: 1, bblCheckGateCode: 1, bblSetGateCode: 1, bblAdminCreateBooking: 1, bblUpdateBooking: 1, bblEndSession: 1, bblAccessHistory: 1 };
   function bblFnCall(name, data) {
     var code = "";
     try { code = localStorage.getItem("bbl_owner_gate_v1") || sessionStorage.getItem("bbl_owner_gate_v1") || ""; } catch (e) {}
