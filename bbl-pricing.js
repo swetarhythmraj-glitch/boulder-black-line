@@ -180,7 +180,36 @@
     { name: "Englewood",            lat: 39.6479, lng: -104.9876, radiusM: 6500 },
     { name: "Littleton",            lat: 39.6133, lng: -105.0166, radiusM: 7000 },
     { name: "Highlands Ranch",      lat: 39.5536, lng: -104.9692, radiusM: 6500 },
-    { name: "Centennial",           lat: 39.5804, lng: -104.8768, radiusM: 8000 }
+    { name: "Centennial",           lat: 39.5804, lng: -104.8768, radiusM: 8000 },
+    /* BBL-ONLY ADDITIONS (owner order 2026-11-21, NOT in RideWave):
+       the coverage fix for the by-request gate firing inside the
+       metro. Sixteen named circles close the populated holes the
+       2026-11-21 audit found (gatebug-work/REPORT.md +
+       gatefix-work): all of 80007/80004, Morrison (the Red Rocks
+       venue point deliberately stays OUTSIDE every circle — its
+       margin is ~230 m — so venue pricing is untouched), Ken
+       Caryl, Parker, the E-470 corridor both sides (Southlands,
+       E-470 East, Green Valley Ranch, Reunion), Brighton,
+       Lochbuie, Longmont (named by the owner — it prices now; it
+       is no longer on the gate list), Gunbarrel/Niwot and Carbon
+       Valley. Pueblo is NOT here — it is a flat zone below.
+       Pueblo, Grand Junction and Loveland (city) still gate. */
+    { name: "Arvada West",        lat: 39.862, lng: -105.170, radiusM: 6800 },
+    { name: "Arvada Southwest",   lat: 39.806, lng: -105.148, radiusM: 2800 },
+    { name: "Morrison",           lat: 39.645, lng: -105.180, radiusM: 2900 },
+    { name: "Morrison West",      lat: 39.652, lng: -105.208, radiusM: 1300 },
+    { name: "Morrison North",     lat: 39.688, lng: -105.196, radiusM: 1800 },
+    { name: "Ken Caryl",          lat: 39.583, lng: -105.115, radiusM: 5800 },
+    { name: "Parker",             lat: 39.510, lng: -104.780, radiusM: 7200 },
+    { name: "Southlands",         lat: 39.590, lng: -104.710, radiusM: 7800 },
+    { name: "E-470 East",         lat: 39.742, lng: -104.692, radiusM: 7200 },
+    { name: "Green Valley Ranch", lat: 39.800, lng: -104.715, radiusM: 5800 },
+    { name: "Reunion",            lat: 39.898, lng: -104.778, radiusM: 6200 },
+    { name: "Brighton",           lat: 39.985, lng: -104.812, radiusM: 6800 },
+    { name: "Lochbuie",           lat: 40.004, lng: -104.724, radiusM: 6300 },
+    { name: "Longmont",           lat: 40.168, lng: -105.108, radiusM: 8300 },
+    { name: "Gunbarrel/Niwot",    lat: 40.082, lng: -105.180, radiusM: 5500 },
+    { name: "Carbon Valley",      lat: 40.095, lng: -104.985, radiusM: 6200 }
   ];
 
   /* Mountain zones — one flat per town, copied from the live
@@ -225,7 +254,16 @@
      centre, inside a 12 km circle, and capturing it would
      break the stadium rule for Red Rocks rides. At 8 km the
      venue centre and its whole 1.2 km venue circle stay
-     outside this zone. The sheet labels it "Flat fare" too. */
+     outside this zone. The sheet labels it "Flat fare" too.
+     BBL ADDITION (owner order 2026-11-21): Pueblo rides at a
+     flat $450 in this same table, on the same terms as
+     Colorado Springs — it pairs with the metro (and takes
+     the higher flat against Colorado Springs, Fort Collins,
+     Castle Rock, Evergreen or a mountain town), and the gate
+     covers it. Two circles, on the Aspen satellite pattern:
+     the city (11.5 km — downtown, the east side and the
+     airport) and Pueblo West (9.5 km). The sheet labels it
+     "Flat fare" as well. */
   BBL_PRICING.mountainZones = [
     { name: "Aspen",             lat: 39.1907, lng: -106.8192, radiusM: 2500, flat: 1200, names: ["aspen, co", "aspen, colorado"] },
     { name: "Aspen",             lat: 39.1826, lng: -106.8553, radiusM: 1000, flat: 1200, names: ["aspen highlands"] },
@@ -244,7 +282,9 @@
     { name: "Colorado Springs",  lat: 38.8339, lng: -104.8214, radiusM: 12000, flat: 350, names: ["colorado springs"] },
     { name: "Fort Collins",     lat: 40.5853, lng: -105.0844, radiusM: 11000, flat: 250, names: ["fort collins"] },
     { name: "Castle Rock",      lat: 39.3722, lng: -104.8561, radiusM: 12000, flat: 250, names: ["castle rock"] },
-    { name: "Evergreen",        lat: 39.6317, lng: -105.3221, radiusM: 8000,  flat: 250, names: ["evergreen, co", "evergreen, colorado", "evergreen lake"] }
+    { name: "Evergreen",        lat: 39.6317, lng: -105.3221, radiusM: 8000,  flat: 250, names: ["evergreen, co", "evergreen, colorado", "evergreen lake"] },
+    { name: "Pueblo",           lat: 38.272, lng: -104.600, radiusM: 11500, flat: 450, names: ["pueblo"] },
+    { name: "Pueblo",           lat: 38.330, lng: -104.720, radiusM: 9500,  flat: 450, names: ["pueblo west"] }
   ];
 
   /* The meter formula, copied from the shipped computedFare():
@@ -502,7 +542,7 @@
     snapshotDate: "2026-11-18",
     sourceFiles: ["functions/index.js (ridewave-functions)", "app.html (ridewave-web)"],
     sourceBlobs: ["17e751439ffe81247b63635c84cc2c7b48e2763c", "48f41448e533c1a719bdd4a62b1297ba844ecb22"],
-    note: "Snapshot only — no live link to RideWave pricing in either direction. Rates made identical to RideWave's live fare stack at the owner's order, 2026-11-18. BBL-only change 2026-11-19 (staged, not deployed): the airport surcharge now covers every Denver-metro airport, not DIA only. BBL addition 2026-11-20 (staged on preview, not deployed): Castle Rock and Evergreen (incl. Evergreen Lake) join the flat table at $250 each. BBL rule 2026-11-20 (staged on preview, not deployed): hourly prices only for a covered metro pair with no flat-fare zone governing — flat-fare towns are flat-only and uncovered pairs stay gated in every mode (hourlyEligibility). BBL rule extension 2026-11-20 (owner order, staged on preview, not deployed): stadium / venue endpoints are hourly-blocked too — the venue fare governs those rides in every mode (hourlyEligibility reason venue)."
+    note: "Snapshot only — no live link to RideWave pricing in either direction. Rates made identical to RideWave's live fare stack at the owner's order, 2026-11-18. BBL-only change 2026-11-19 (staged, not deployed): the airport surcharge now covers every Denver-metro airport, not DIA only. BBL addition 2026-11-20 (staged on preview, not deployed): Castle Rock and Evergreen (incl. Evergreen Lake) join the flat table at $250 each. BBL rule 2026-11-20 (staged on preview, not deployed): hourly prices only for a covered metro pair with no flat-fare zone governing — flat-fare towns are flat-only and uncovered pairs stay gated in every mode (hourlyEligibility). BBL rule extension 2026-11-20 (owner order, staged on preview, not deployed): stadium / venue endpoints are hourly-blocked too — the venue fare governs those rides in every mode (hourlyEligibility reason venue). BBL coverage fix 2026-11-21 (owner order, staged on preview, not deployed): sixteen BBL-only metro circles close the populated gate holes (Arvada West + Southwest, Morrison x3, Ken Caryl, Parker, Southlands, E-470 East, Green Valley Ranch, Reunion, Brighton, Lochbuie, Longmont, Gunbarrel/Niwot, Carbon Valley) and Pueblo joins the flat table at $450 (two circles: city + Pueblo West). Longmont prices now — the owner named it covered; Grand Junction and Loveland (city) still gate."
   };
 
   /* Version stamp — the quote page pins its script URL to this
@@ -514,6 +554,6 @@
      served against the current page forever). ANY edit to this
      file MUST bump the stamp here AND the page's
      PRICING_STAMP_EXPECTED + script-tag query together. */
-  BBL_PRICING.stamp = "2026-11-20-fc250";
+  BBL_PRICING.stamp = "2026-11-21-metrocover";
   window.BBL_PRICING = BBL_PRICING;
 })();

@@ -201,6 +201,96 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
   </div>
   <div class="wrap">
     <div class="tabpage" id="tabpage-bookings" role="tabpanel" aria-labelledby="tabbtn-bookings">
+    <!-- Schedule a ride (admin scheduling, 2026-11-21): owner and
+         support can book a ride for a rider who calls or texts in,
+         from the booking page's own machinery — same Places
+         autocomplete, same live bbl-pricing fare, same record
+         shape, same one Jotform submission (owner alerts + the
+         rider's confirmation email). The card shows dashboard
+         bookings as "Booked by Boulder Black Line". -->
+    <div class="panel" id="schedPanel" hidden style="margin-bottom:24px">
+      <h3>Schedule a ride</h3>
+      <p style="margin:0 0 14px;color:var(--ink2);font-size:14.5px">For a rider who books by phone or text. The ride is booked under the rider&rsquo;s name with the same fare and the same confirmation email as a website booking.</p>
+      <button class="btn btn-amber" type="button" id="schedOpenBtn">Schedule a ride</button>
+      <div id="schedDone" hidden style="margin-top:6px">
+        <p id="schedDoneText" style="margin:0 0 12px;font-size:15px"></p>
+        <div id="schedDoneActions" style="display:flex;gap:10px;flex-wrap:wrap;margin:0 0 12px"></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-dark" type="button" id="schedAnotherBtn">Schedule another</button>
+          <button class="btn btn-ghost" type="button" id="schedDoneCloseBtn">Done</button>
+        </div>
+      </div>
+      <form id="schedForm" novalidate>
+        <div id="schedFormWrap" hidden>
+          <h3 id="schedFormTitle" style="font-size:17px;margin:18px 0 12px">Schedule a ride</h3>
+          <div class="field"><label class="flabel" for="scName">Rider name</label><input id="scName" type="text" autocomplete="name" placeholder="Full name"><p class="err"></p></div>
+          <div class="row2">
+            <div class="field"><label class="flabel" for="scPhone">Rider phone</label><input id="scPhone" type="tel" autocomplete="tel" placeholder="(720) 555-0100"><p class="err"></p></div>
+            <div class="field"><label class="flabel" for="scEmail">Rider email</label><input id="scEmail" type="email" autocomplete="email" placeholder="rider@email.com"><p class="err"></p></div>
+          </div>
+          <div class="field"><label class="flabel" for="scPickup">Pickup</label><input id="scPickup" type="text" autocomplete="off" placeholder="Start typing the pickup address"><p class="err"></p></div>
+          <div class="field" id="scAirlineWrap" hidden><label class="flabel" for="scAirline">Airline</label><select id="scAirline"></select><p class="err"></p></div>
+          <div class="field" id="scFlightWrap" hidden><label class="flabel" for="scFlight">Flight number</label><input id="scFlight" type="text" autocomplete="off" placeholder="e.g. UA1234" style="text-transform:uppercase"><p class="err"></p></div>
+          <div class="field"><label class="flabel" for="scDropoff">Drop off</label><input id="scDropoff" type="text" autocomplete="off" placeholder="Start typing the destination"><p class="err"></p></div>
+          <div class="field" id="scDropAirlineWrap" hidden><label class="flabel" for="scDropAirline">Airline (drop off)</label><select id="scDropAirline"></select><p class="err"></p></div>
+          <button class="mini-btn" type="button" id="scAddStopBtn" style="margin:2px 0 12px">Add a stop</button>
+          <div class="field" id="scStopRow" hidden><label class="flabel" for="scStop">Stop</label><input id="scStop" type="text" autocomplete="off" placeholder="Start typing the stop address"><p class="err"></p><button class="mini-btn" type="button" id="scRemoveStopBtn" style="margin-top:6px">Remove stop</button></div>
+          <div class="row2">
+            <div class="field"><label class="flabel" for="scDate">Pickup date</label><input id="scDate" type="date"><p class="err"></p></div>
+            <div class="field"><label class="flabel" for="scTime">Pickup time</label><input id="scTime" type="time"><p class="err"></p></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label class="flabel" for="scService">Service</label><select id="scService">
+              <option value="standard">Private SUV Ride</option>
+              <option value="airport">Airport Pickup / Drop Off</option>
+              <option value="business">Business Pickup</option>
+              <option value="special">Special Occasions</option>
+              <option value="wedding">Wedding &amp; Ceremony</option>
+              <option value="concert">Concert &amp; Events</option>
+              <option value="mountain">Mountain Rides</option>
+              <option value="hourly">Hourly Reservation</option>
+            </select><p class="err"></p></div>
+            <div class="field" id="scHoursWrap" hidden><label class="flabel" for="scHours">Hours</label><select id="scHours">
+              <option value="">Select&hellip;</option>
+              <option value="2">2 hours (minimum)</option>
+              <option value="3">3 hours</option>
+              <option value="4">4 hours</option>
+              <option value="5">5 hours</option>
+              <option value="6">6 hours</option>
+              <option value="8">8 hours</option>
+              <option value="10">10 hours</option>
+              <option value="12">12 hours</option>
+            </select><p class="err"></p></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label class="flabel" for="scPax">Passengers</label><select id="scPax">
+              <option value="">Select&hellip;</option>
+              <option value="1">1 passenger</option>
+              <option value="2">2 passengers</option>
+              <option value="3">3 passengers</option>
+              <option value="4">4 passengers</option>
+              <option value="5">5 passengers</option>
+              <option value="6">6 passengers</option>
+            </select><p class="err"></p></div>
+            <div class="field"><label class="flabel" for="scBags">Bags</label><select id="scBags">
+              <option value="0">0 bags</option>
+              <option value="1">1 bag</option>
+              <option value="2">2 bags</option>
+              <option value="3">3 bags</option>
+              <option value="4">4 bags</option>
+              <option value="5">5 bags</option>
+            </select><p class="err"></p></div>
+          </div>
+          <div class="field"><label class="flabel" for="scNotes">Notes for the driver</label><textarea id="scNotes" rows="2" placeholder="Gate code, child seat, anything the driver should know"></textarea><p class="err"></p></div>
+          <div id="scFare" hidden style="background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:15px;margin:4px 0 6px"></div>
+          <p id="scFormNote" style="color:var(--red);font-size:13.5px;margin:8px 0 0"></p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+            <button class="btn btn-dark" type="submit" id="schedSubmitBtn">Book this ride</button>
+            <button class="btn btn-ghost" type="button" id="schedCancelBtn">Close</button>
+          </div>
+        </div>
+      </form>
+    </div>
     <div class="panel" id="livePanel" style="margin-bottom:24px">
       <h3>Live bookings</h3>
       <p style="margin:0 0 14px;color:var(--ink2);font-size:14.5px">Bookings from every device, from the central system.</p>
@@ -336,11 +426,13 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
     <h3>Boulder Black Line</h3>
     <p style="margin:0">Private SUV rides in the Denver metro. Call <a href="tel:+17203264652">(720) 326-4652</a> or email <a href="mailto:boulderblack1@gmail.com">boulderblack1@gmail.com</a>.</p>
     <p class="fine">Owner page for the preview. This page has its own address and its own sign in, and it is not linked from the rider site.<br><a href="/privacy.html">Privacy Policy</a> · <a href="/terms.html">Terms of Service</a></p>
-    <p class="fine build-line">Build 17 · v2026.11.20-rolebadge · 2026-11-20</p>
+    <p class="fine build-line">Build 19 · v2026.11.21-metrocover · 2026-11-22</p>
   </div>
 </footer>
 
 <script src="bbl-pricing.js"></script>
+<script>window.__bblAdminMapsReady=false;window.__bblAdminMaps=function(){window.__bblAdminMapsReady=true;if(typeof window.__bblAdminMapsInit==="function")window.__bblAdminMapsInit()};window.gm_authFailure=function(){window.__bblAdminMapsFailed=true};</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBcOFR4VbAcSn5Q0my5deeEz7JwLZOxiaI&libraries=places&callback=__bblAdminMaps&loading=async" async defer></script>
 <script>
 "use strict";
 var $=function(id){return document.getElementById(id)};
@@ -389,6 +481,97 @@ function setGateCode(code,keep){
 function stopsOf(b){var out=[];if(b&&Array.isArray(b.stops)){b.stops.forEach(function(s){var a=typeof s==="string"?s:(s&&s.address);a=String(a==null?"":a).trim();if(a)out.push(a)})}if(!out.length&&b&&b.stop){var t=String(b.stop).trim();if(t)out.push(t)}return out}
 function notesOf(b){return String((b&&b.notes)||"").trim()}
 function stopsNotesSub(b){return stopsOf(b).map(function(a){return " \u00B7 Stop: "+escHtml(a)}).join("")+(notesOf(b)?" \u00B7 Notes: "+escHtml(notesOf(b)):"")}
+/* Manual rider text (Raju's order, 2026-11-21): on each booking the
+   owner can text the rider the confirmation from his OWN phone — a
+   sms: link with the text prefilled in his Messages app (he taps send
+   himself; nothing is sent by the system), plus a Copy confirmation
+   button carrying the same text. The text is fare-free, mirroring the
+   rider email's fields (standing no-price rule for customer texts). */
+function bkConfirmText(b) {
+  if (!b) return "";
+  var lines = ["Boulder Black Line booking confirmation"];
+  lines.push("Name: " + (b.riderName || b.rider || ""));
+  lines.push("Booking code: " + (b.code || ""));
+  lines.push("Pickup: " + (b.pickup || ""));
+  stopsOf(b).forEach(function (a) { lines.push("Stop: " + a); });
+  lines.push("Drop-off: " + (b.dropoff || ""));
+  var when = "";
+  if (b.date) when = new Date(b.date + "T12:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
+  if (b.time) when += (when ? " at " : "") + fmtTime(b.time);
+  if (when) lines.push("Date: " + when);
+  if (b.serviceName) lines.push("Service: " + b.serviceName);
+  if (b.passengers != null && b.passengers !== "") lines.push("Passengers: " + b.passengers);
+  if (b.bags != null && String(b.bags) !== "") lines.push("Bags: " + b.bags);
+  if (notesOf(b)) lines.push("Notes: " + notesOf(b));
+  lines.push("Questions? Call or text (720) 326-4652.");
+  return lines.join("\n");
+}
+/* Copy rider details (Raju's order, 2026-11-21, added scope): on a
+   booking with a driver assigned, a button copies the rider's trip
+   details as plain text — one field per line, empty optional lines
+   omitted — so the owner can paste them to the assigned driver.
+   Fare-free like every rider-facing text (standing no-price rule). */
+function bkRiderDetailsText(b) {
+  if (!b) return "";
+  var lines = [];
+  lines.push("Rider: " + (b.riderName || b.rider || ""));
+  lines.push("Phone: " + (b.phone || ""));
+  lines.push("Pickup: " + (b.pickup || ""));
+  stopsOf(b).forEach(function (a) { lines.push("Stop: " + a); });
+  lines.push("Drop-off: " + (b.dropoff || ""));
+  var when = "";
+  if (b.date) when = new Date(b.date + "T12:00:00").toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric", year: "numeric" });
+  if (b.time) when += (when ? " at " : "") + fmtTime(b.time);
+  if (when) lines.push("Pickup time: " + when);
+  var flight = [];
+  [b.airline, b.airlineDropoff].forEach(function (a) { a = String(a || "").trim(); if (a && flight.indexOf(a) === -1) flight.push(a); });
+  if (String(b.flightNumber || "").trim()) flight.push(String(b.flightNumber).trim());
+  if (flight.length) lines.push("Flight: " + flight.join(" "));
+  var pax = [];
+  if (b.passengers != null && b.passengers !== "") pax.push("Passengers: " + b.passengers);
+  if (b.bags != null && String(b.bags) !== "") pax.push("Bags: " + b.bags);
+  if (pax.length) lines.push(pax.join(" / "));
+  if (notesOf(b)) lines.push("Notes: " + notesOf(b));
+  lines.push("Booking: " + (b.code || ""));
+  return lines.join("\n");
+}
+function bkSmsPhone(p) {
+  var d = String(p || "").replace(/\D/g, "");
+  if (d.length === 10) return "+1" + d;
+  if (d.length === 11 && d.charAt(0) === "1") return "+" + d;
+  return d ? "+" + d : "";
+}
+function bkSmsHref(b) {
+  var ph = bkSmsPhone(b && b.phone);
+  if (!ph) return "";
+  return "sms:" + ph + "?&body=" + encodeURIComponent(bkConfirmText(b));
+}
+function bkTextButtons(b, copyAttr) {
+  var h = "";
+  var href = bkSmsHref(b);
+  if (href) h += '<a class="mini-btn" href="' + escHtml(href) + '">Text rider</a>';
+  h += '<button class="mini-btn" type="button" ' + copyAttr + '="' + escHtml(b.id || "") + '">Copy confirmation</button>';
+  return h;
+}
+function bkCopyToClipboard(text, btn) {
+  var oldLabel = btn ? btn.textContent : "";
+  function done() {
+    if (!btn) return;
+    btn.textContent = "Copied";
+    setTimeout(function () { btn.textContent = oldLabel; }, 1600);
+  }
+  if (typeof navigator !== "undefined" && navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done, done);
+    return;
+  }
+  try {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    document.execCommand("copy"); ta.remove(); done();
+  } catch (e) {}
+}
 function renderLive(bookings){
   var box=$("liveList");if(!box)return;
   LIVE_BOOKINGS=bookings||[];
@@ -396,17 +579,19 @@ function renderLive(bookings){
   box.innerHTML=LIVE_BOOKINGS.map(function(b){
     var st=b.kind==="quote"?"Quote":(b.status||"Booked");
     var title=escHtml(fmtDate(b.date))+" \u00B7 "+escHtml(fmtTime(b.time))+", "+escHtml(b.serviceName||"Ride");
-    var sub=escHtml(b.riderName||"Rider")+" \u00B7 "+escHtml(b.pickup||"")+" to "+escHtml(b.dropoff||"")+stopsNotesSub(b)+" \u00B7 $"+fmtMoney(b.price)+" \u00B7 "+escHtml(st)+" \u00B7 Live \u00B7 "+escHtml(b.code||"")+(b.receiptSentAt?" \u00B7 Receipt sent":"");
+    var sub=escHtml(b.riderName||"Rider")+" \u00B7 "+escHtml(b.pickup||"")+" to "+escHtml(b.dropoff||"")+stopsNotesSub(b)+" \u00B7 $"+fmtMoney(b.price)+" \u00B7 "+escHtml(st)+" \u00B7 Live \u00B7 "+escHtml(b.code||"")+(b.receiptSentAt?" \u00B7 Receipt sent":""); if(String(b.source||"").indexOf("dashboard")===0) sub+=" \u00B7 Booked by Boulder Black Line";
     if(b.driverName)sub+=" \u00B7 Driver: "+escHtml(b.driverName);
     var actions='<span class="status'+(st==="Completed"?" go":"")+'">'+escHtml(st)+"</span>";
     if(st==="Booked"||st==="On the way"||st==="Arrived"){
       actions+='<button class="mini-btn" type="button" data-ladv="'+escHtml(b.id||"")+'" data-status="'+escHtml(st)+'">Mark: '+escHtml(NEXT[st])+'</button>'
         +'<button class="mini-btn" type="button" data-lcancel="'+escHtml(b.id||"")+'">Cancel</button>';
     }
-    actions+='<select class="assign-sel" data-lassign="'+escHtml(b.id||"")+'" aria-label="Assign driver">'
+    actions+='<button class="mini-btn" type="button" data-ledit="'+escHtml(b.id||"")+'">Edit</button>';actions+='<select class="assign-sel" data-lassign="'+escHtml(b.id||"")+'" aria-label="Assign driver">'
       +'<option value="">Unassigned</option>'
       +(LIVE_DRIVERS||[]).map(function(d){return '<option value="'+escHtml(d.id)+'"'+(b.driverId===d.id?" selected":"")+'>'+escHtml(d.name)+'</option>'}).join("")
       +'</select>';
+    if(b.kind!=="quote")actions+=bkTextButtons(b,"data-lcopy");
+    if(b.kind!=="quote"&&(b.driverId||b.driverName))actions+='<button class="mini-btn" type="button" data-lcopyrider="'+escHtml(b.id||"")+'">Copy rider details</button>';
     return '<div class="owner-row"><div class="info"><b>'+title+'</b><span>'+sub+'</span></div><div class="row-actions">'+actions+"</div></div>";
   }).join("");
   box.querySelectorAll("[data-ladv]").forEach(function(btn){btn.addEventListener("click",function(){
@@ -418,6 +603,16 @@ function renderLive(bookings){
     var id=btn.getAttribute("data-lcancel");
     if(typeof window.__bblCall!=="function")return;
     window.__bblCall("bblSetBookingStatus",centralPayload({bookingId:id,status:"Cancelled"})).then(function(){loadCentral(true)},function(){loadCentral(true)});
+  })});
+  box.querySelectorAll("[data-lcopy]").forEach(function(btn){btn.addEventListener("click",function(){
+    var id=btn.getAttribute("data-lcopy"),bk=null;
+    (LIVE_BOOKINGS||[]).forEach(function(x){if(x.id===id)bk=x});
+    if(bk)bkCopyToClipboard(bkConfirmText(bk),btn);
+  })});
+  box.querySelectorAll("[data-lcopyrider]").forEach(function(btn){btn.addEventListener("click",function(){
+    var id=btn.getAttribute("data-lcopyrider"),bk=null;
+    (LIVE_BOOKINGS||[]).forEach(function(x){if(x.id===id)bk=x});
+    if(bk)bkCopyToClipboard(bkRiderDetailsText(bk),btn);
   })});
   box.querySelectorAll("[data-lassign]").forEach(function(sel){sel.addEventListener("change",function(){
     var id=sel.getAttribute("data-lassign");
@@ -530,14 +725,14 @@ var CODE_ROLE="",SUPPORT_SET=false;
    after a code unlock the page asks the backend (bblCheckCode)
    which code was presented — the role comes from the server,
    never from anything typed or stored on this device. The header
-   label ("Owner / Admin sign-in" / "Support sign-in") and the owner-only
+   label ("Owner / Admin" / "Support") and the owner-only
    Support access block both render from that answer, and silent
    re-entry re-checks it through the same unlock path. */
 function applyRoleUI(){
   var lbl=$("roleLabel");
   if(lbl){
-    if(CODE_SESSION&&CODE_ROLE==="owner"){lbl.textContent="Owner / Admin sign-in";lbl.hidden=false}
-    else if(CODE_SESSION&&CODE_ROLE==="support"){lbl.textContent="Support sign-in";lbl.hidden=false}
+    if(CODE_SESSION&&CODE_ROLE==="owner"){lbl.textContent="Owner / Admin";lbl.hidden=false}
+    else if(CODE_SESSION&&CODE_ROLE==="support"){lbl.textContent="Support";lbl.hidden=false}
     else lbl.hidden=true;
   }
   var scp=$("supportCodePanel");
@@ -565,7 +760,7 @@ function enterCodeChrome(){
   var gs=$("gateScreen");if(gs)gs.hidden=true;
   $("authSection").hidden=true;
   $("daySection").hidden=false;
-  var sp=$("settingsPanel");if(sp)sp.hidden=false;
+  var scp=$("schedPanel");if(scp)scp.hidden=false;var sp=$("settingsPanel");if(sp)sp.hidden=false;
   var ccp=$("codeChangePanel");if(ccp)ccp.hidden=false;
   var lk=$("liveLock");if(lk)lk.hidden=false;
 }
@@ -604,7 +799,7 @@ function lockLiveView(){
   $("liveWrap").hidden=true;
   $("gateForm").hidden=false;
   var lk=$("liveLock");if(lk)lk.hidden=true;
-  var sp=$("settingsPanel");if(sp)sp.hidden=true;
+  var scp=$("schedPanel");if(scp)scp.hidden=true;if(window.__bblSchedLock)window.__bblSchedLock();var sp=$("settingsPanel");if(sp)sp.hidden=true;
   var ccp=$("codeChangePanel");if(ccp)ccp.hidden=true;
   var scp=$("supportCodePanel");if(scp)scp.hidden=true;
   var gcp=$("gateCodePanel");if(gcp)gcp.hidden=true;
@@ -691,7 +886,7 @@ $("supportCodeForm").addEventListener("submit",function(e){e.preventDefault();
   window.__bblCall("bblSetSupportCode",{newCode:v}).then(function(res){
     SUPPORT_SET=!!(res&&res.supportSet);
     f.value="";
-    var note=$("supportNote");if(note)note.textContent="Support code saved. It opens this dashboard as Support sign-in.";
+    var note=$("supportNote");if(note)note.textContent="Support code saved. It opens this dashboard as Support.";
     applyRoleUI();
   }).catch(function(err){
     flagMsg(f,((err&&err.message)||"Something went wrong. Please try again."),true);
@@ -702,7 +897,7 @@ $("supRemove").addEventListener("click",function(){
   window.__bblCall("bblSetSupportCode",{newCode:""}).then(function(res){
     SUPPORT_SET=!!(res&&res.supportSet);
     var f=$("supCode");if(f)f.value="";
-    var note=$("supportNote");if(note)note.textContent="Support code removed. Support sign-in is off.";
+    var note=$("supportNote");if(note)note.textContent="Support code removed. Support is off.";
     applyRoleUI();
   }).catch(function(err){
     var note=$("supportNote");if(note)note.textContent=((err&&err.message)||"Something went wrong. Please try again.");
@@ -1047,6 +1242,737 @@ var FB_USER=null,FB_ACCT=null,FB_UID="";
 window.__bblOnAuth=function(){maybeAutoUnlock()};
 function fmtStamp(iso){if(!iso)return"";var d=new Date(iso);if(!isFinite(d.getTime()))return"";return d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})+", "+d.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"})}
 
+/* ---------- Schedule a ride + booking edit (admin scheduling,
+   2026-11-21) ----------
+   The dashboard books rides for riders who call or text in. This
+   form is the booking page's machinery, moved into the Bookings
+   tab: the same Places autocomplete and place geometry (DIA picks
+   snap to the terminal coordinates), the same bbl-pricing.js fare
+   stack (meter, mountain flats, stadium rule, airport fee, hourly
+   eligibility, by-request gate) recomputed live as the places,
+   service and hours change, the same booking record shape, and —
+   on create — alerts sent by the SERVER: bblAdminCreateBooking
+   emails the rider the confirmation and Deepak his alert (the
+   fare in his only) and returns each channel's result, which the
+   done message reports as it actually went. The create also
+   submits the booking to Deepak's Jotform form through the API
+   (jotform-wire round), which records it in his Jotform inbox —
+   but the round's live test proved an API submission fires NONE
+   of the form's alerts, so the emails above remain the alert
+   path and Deepak's TEXT alert is still not wired for dashboard
+   bookings; the done message says so. (Before the alert-fix
+   round this page fired one client-side Jotform POST and claimed
+   "sent" unconditionally; the POST silently dropped for BK-4651
+   and nobody was alerted.)
+   The fare is never typed in by hand and never reaches the rider:
+   it lives in the form and in Deepak's owner alerts only.
+   Create goes through bblAdminCreateBooking and edit through
+   bblUpdateBooking; both are gated server-side by the access code
+   (owner or support), and the booking's source is set by the
+   server from that code — this page never sends a source. On the
+   booking card every dashboard booking reads "Booked by Boulder
+   Black Line", whichever code created it. Notify-on-edit: a save
+   that changes any rider-relevant detail emails the rider the
+   corrected details (fare-free), sent by bblUpdateBooking; the
+   edit done message reports that email's outcome too. */
+var SCHED_SERVICES = {
+  standard: { name: "Private SUV Ride" },
+  airport: { name: "Airport Pickup / Drop Off" },
+  business: { name: "Business Pickup" },
+  special: { name: "Special Occasions" },
+  wedding: { name: "Wedding & Ceremony" },
+  concert: { name: "Concert & Events" },
+  mountain: { name: "Mountain Rides" },
+  hourly: { name: "Hourly Reservation" }
+};
+var SCHED_ROUTE_SERVICES = { standard: 1, airport: 1, business: 1, special: 1, wedding: 1, concert: 1, mountain: 1 };
+var SC_AIRLINES = ['Aer Lingus','Aeromexico','Air Canada','Air France','Alaska Airlines','American Airlines','British Airways','Condor','Delta','Edelweiss','Frontier Airlines','Iberia','Japan Airlines','KLM','Lufthansa','Norse Atlantic','Southwest Airlines','Spirit Airlines','Sun Country','United Airlines','Volaris','WestJet'];
+var SC_AIRLINE_TERM = { 'Alaska Airlines':'east','American Airlines':'east','Air Canada':'east','Aer Lingus':'east','Condor':'east','Frontier Airlines':'east','Iberia':'east','Japan Airlines':'east','JetBlue':'east','KLM':'east','Norse Atlantic':'east','Southwest Airlines':'east','Sun Country':'east','Volaris':'east','WestJet':'east','Aeromexico':'west','Air France':'west','British Airways':'west','Delta':'west','Edelweiss':'west','Lufthansa':'west','Spirit Airlines':'west','United Airlines':'west' };
+var SC_DIA_SIDE = {
+  UA: "west", DL: "west", NK: "west", AM: "west", AF: "west", BA: "west", LH: "west", WK: "west",
+  WN: "east", F9: "east", AA: "east", AS: "east", B6: "east", AC: "east", EI: "east", DE: "east",
+  IB: "east", JL: "east", KL: "east", N0: "east", SY: "east", Y4: "east", WS: "east"
+};
+var SC_DIA_CANON = "Denver International Airport, 8500 Peña Blvd, Denver, CO 80249, USA";
+var scMode = "create";
+var scEditId = "", scEditCode = "", scOrig = null;
+var scPlaces = { pickup: null, dropoff: null, stop: null };
+var scRouteQuote = null, scGeoQuote = null, scRouteFailed = false, scSeq = 0;
+var scMapsReady = false, scAcBound = false, scPendingGeocode = false;
+var scSessionId = "", scSessionCode = "";
+var scFareDirty = false, scSubmitting = false;
+
+function scPricing() { return window.BBL_PRICING || {}; }
+function scMkLatLng(lat, lng) { return new google.maps.LatLng(lat, lng); }
+function scNormText(v) { return (v || "").trim().toLowerCase(); }
+function scQuoteMatches(q) {
+  return !!q && scNormText(q.fromText) === scNormText($("scPickup").value) && scNormText(q.toText) === scNormText($("scDropoff").value);
+}
+function scIsDIAPlace(p) {
+  if (!p) return false;
+  var a = ((p.name || "") + " " + (p.address || "")).toLowerCase();
+  if (a.indexOf("denver international airport") !== -1) return true;
+  if (a.indexOf("jeppesen terminal") !== -1) return true;
+  var b = scPricing().diaBounds;
+  if (!b) return false;
+  return typeof p.lat === "number" && p.lat >= b.latMin && p.lat <= b.latMax && p.lng >= b.lngMin && p.lng <= b.lngMax;
+}
+function scSnapDIA(p, side) {
+  var P = scPricing();
+  var s = side === "east" ? P.diaEast : P.diaWest;
+  if (!s) return p;
+  p.lat = s.lat; p.lng = s.lng; p.isAirport = true;
+  return p;
+}
+/* A picked place becomes address, name and coordinates read from
+   its geometry — the booking page's normPlace, verbatim logic. A
+   DIA pick snaps to the terminal coordinates (west unless the
+   chosen airline or flight number says east). */
+function scNormPlace(input, place) {
+  if (!place || !place.geometry || !place.geometry.location) return null;
+  var p = {
+    name: place.name || "",
+    address: place.formatted_address || place.name || input.value,
+    lat: place.geometry.location.lat(),
+    lng: place.geometry.location.lng(),
+    types: place.types || []
+  };
+  if (scIsDIAPlace(p)) {
+    var side = "west";
+    if (input && input.id === "scPickup") {
+      var an = $("scAirline") ? $("scAirline").value : "";
+      var fl = ($("scFlight") ? $("scFlight").value : "").trim().toUpperCase();
+      if (an && SC_AIRLINE_TERM[an]) side = SC_AIRLINE_TERM[an];
+      else if (fl && SC_DIA_SIDE[fl.slice(0, 2)]) side = SC_DIA_SIDE[fl.slice(0, 2)];
+    }
+    if (input && input.id === "scDropoff") {
+      var dn = $("scDropAirline") ? $("scDropAirline").value : "";
+      var pn = $("scAirline") ? $("scAirline").value : "";
+      if (dn && SC_AIRLINE_TERM[dn]) side = SC_AIRLINE_TERM[dn];
+      else if (pn && SC_AIRLINE_TERM[pn]) side = SC_AIRLINE_TERM[pn];
+    }
+    scSnapDIA(p, side);
+    if (p.address.toLowerCase().indexOf("denver international airport") === -1) {
+      p.address = SC_DIA_CANON;
+      try { input.value = SC_DIA_CANON; } catch (e) {}
+    }
+  }
+  if ((p.types && p.types.indexOf("airport") !== -1) || /airport/i.test(p.name + " " + p.address)) p.isAnyAirport = true;
+  p.display = p.address;
+  return p;
+}
+function scPickupIsAirport() { var p = scPlaces.pickup; return !!(p && (p.isAnyAirport || p.isAirport)); }
+function scDropoffIsAirport() { var d = scPlaces.dropoff; return !!(d && (d.isAnyAirport || d.isAirport)); }
+/* Airline + flight fields live only while the SELECTED place for
+   that end is an airport — the booking page's rule, on the picked
+   place's flags, never on typed text. Hiding an end whose place
+   is known not to be an airport clears its airline/flight, so a
+   stale value can never ride along. */
+function scSyncAirportFields() {
+  var p = scPlaces.pickup, d = scPlaces.dropoff;
+  var pu = scPickupIsAirport(), dof = scDropoffIsAirport();
+  var aw = $("scAirlineWrap"); if (aw) aw.hidden = !pu;
+  var fw = $("scFlightWrap"); if (fw) fw.hidden = !pu;
+  if (p && !pu) { if ($("scAirline")) $("scAirline").value = ""; if ($("scFlight")) $("scFlight").value = ""; }
+  var dw = $("scDropAirlineWrap"); if (dw) dw.hidden = !dof;
+  if (d && !dof) { if ($("scDropAirline")) $("scDropAirline").value = ""; }
+}
+/* Choosing an airline for a DIA end re-snaps that end to the
+   airline's terminal, like the booking page's picker. */
+function scResnap(end) {
+  var pl = scPlaces[end];
+  if (!pl || !pl.isAirport) return;
+  var P = scPricing();
+  if (!P.diaEast || !P.diaWest) return;
+  var side = null;
+  if (end === "pickup") {
+    var an = $("scAirline").value, fl = ($("scFlight").value || "").trim().toUpperCase();
+    if (an && SC_AIRLINE_TERM[an]) side = SC_AIRLINE_TERM[an];
+    else if (fl && SC_DIA_SIDE[fl.slice(0, 2)]) side = SC_DIA_SIDE[fl.slice(0, 2)];
+    if (!side) side = "west";
+  } else {
+    var dn = $("scDropAirline").value, pn = $("scAirline").value;
+    if (dn && SC_AIRLINE_TERM[dn]) side = SC_AIRLINE_TERM[dn];
+    else if (pn && SC_AIRLINE_TERM[pn]) side = SC_AIRLINE_TERM[pn];
+    if (!side) return;
+  }
+  var t = side === "east" ? P.diaEast : P.diaWest;
+  if (pl.lat !== t.lat || pl.lng !== t.lng) { pl.lat = t.lat; pl.lng = t.lng; scFareDirty = true; scRoute(); }
+}
+/* Geometry-only pricing, resolved the moment both places are
+   picked — the booking page's computeGeoQuote, verbatim logic. */
+function scComputeGeo() {
+  scGeoQuote = null;
+  var p = scPlaces.pickup, d = scPlaces.dropoff;
+  if (!p || !d) return;
+  try {
+    var P = scPricing();
+    var data = {
+      pickup: p.address || "", dropoff: d.address || "",
+      pickupLat: p.lat, pickupLng: p.lng, dropoffLat: d.lat, dropoffLng: d.lng
+    };
+    var mtn = P.mountainRuleFor(data);
+    var stad = mtn ? null : P.stadiumRuleFor(data);
+    var fare = null;
+    if (mtn) fare = mtn.amount;
+    else if (stad && stad.flat) fare = P.stadiumFare;
+    scGeoQuote = {
+      fromText: $("scPickup").value, toText: $("scDropoff").value,
+      fare: fare, stadium: stad, mountain: mtn,
+      openCountry: P.adminRequestGate ? P.openCountryFor(data) : false
+    };
+  } catch (e) { scGeoQuote = null; }
+}
+/* Hourly eligibility — the booking page's hourlyBlock, verbatim
+   logic: both places picked, the snapshot decides the pair; one
+   place picked, that endpoint alone can already settle it. */
+function scHourlyBlock() {
+  var p = scPlaces.pickup, d = scPlaces.dropoff;
+  if (!p && !d) return null;
+  var P = scPricing();
+  if (typeof P.hourlyEligibility !== "function") return null;
+  if (p && d) {
+    var e = P.hourlyEligibility({
+      pickup: p.address || "", dropoff: d.address || "",
+      pickupLat: p.lat, pickupLng: p.lng, dropoffLat: d.lat, dropoffLng: d.lng
+    });
+    if (e.allowed) return null;
+    if (e.reason === "flat") return { kind: "flat", mountain: e.mountain };
+    if (e.reason === "venue") return { kind: "venue", stadium: e.stadium };
+    return { kind: "gate" };
+  }
+  var one = p || d;
+  var mz = P.mountainZoneOf(one.lat, one.lng, one.address || "");
+  if (mz) return { kind: "flat", mountain: { name: mz.name, flat: mz.flat, amount: mz.flat } };
+  var sz = P.stadiumZoneOf(one.lat, one.lng, one.address || "");
+  if (sz) return { kind: "venue", stadium: { name: sz.name } };
+  if (!P.endpointCovered(one.lat, one.lng, one.address || "")) return { kind: "gate" };
+  return null;
+}
+function scEnforceHourly() {
+  if ($("scService").value !== "hourly") return;
+  if (!scHourlyBlock()) return;
+  $("scService").value = "standard";
+  scFareDirty = true;
+  scSyncService();
+}
+function scSyncService() {
+  var svc = $("scService").value;
+  var blocked = svc === "hourly" ? !!scHourlyBlock() : false;
+  $("scHoursWrap").hidden = !(svc === "hourly" && !blocked);
+}
+function scRoutePending() {
+  if (!SCHED_ROUTE_SERVICES[$("scService").value]) return false;
+  if (!scPlaces.pickup || !scPlaces.dropoff) return false;
+  if (scRouteFailed) return false;
+  if (scQuoteMatches(scRouteQuote)) return false;
+  if (scQuoteMatches(scGeoQuote) && (scGeoQuote.openCountry || scGeoQuote.fare != null)) return false;
+  return true;
+}
+/* The fare computation — the booking page's calcPrice, mirrored:
+   hourly prices from the snapshot unless a flat, venue or gate
+   block governs (then that fare governs); route services price
+   from the route quote, falling back to the geometry quote. */
+function scCalcFare() {
+  var P = scPricing();
+  var svc = $("scService").value;
+  if (svc === "hourly") {
+    var hb = scHourlyBlock();
+    if (!hb) { var h = parseInt($("scHours").value || "2", 10); return { fare: P.hourlyFare(h), kind: "hourly", hours: h }; }
+    if (hb.kind === "gate") return { fare: null, gate: true };
+    if (scQuoteMatches(scRouteQuote) && scRouteQuote.fare != null) return { fare: scRouteQuote.fare, kind: "route", miles: scRouteQuote.miles, mins: scRouteQuote.mins, stadium: scRouteQuote.stadium, mountain: scRouteQuote.mountain };
+    if (scQuoteMatches(scGeoQuote) && scGeoQuote.fare != null) return { fare: scGeoQuote.fare, kind: "geo", stadium: scGeoQuote.stadium, mountain: scGeoQuote.mountain };
+    if (hb.kind === "flat") return { fare: hb.mountain && hb.mountain.amount != null ? hb.mountain.amount : null, kind: "flat", mountain: hb.mountain };
+    return { fare: hb.stadium && hb.stadium.flat ? P.stadiumFare : null, kind: "venue", stadium: hb.stadium };
+  }
+  if (SCHED_ROUTE_SERVICES[svc]) {
+    if (scQuoteMatches(scRouteQuote)) {
+      if (scRouteQuote.openCountry) return { fare: null, gate: true };
+      return { fare: scRouteQuote.fare, kind: "route", miles: scRouteQuote.miles, mins: scRouteQuote.mins, stadium: scRouteQuote.stadium, mountain: scRouteQuote.mountain };
+    }
+    if (scQuoteMatches(scGeoQuote)) {
+      if (scGeoQuote.openCountry) return { fare: null, gate: true };
+      if (scGeoQuote.fare != null) return { fare: scGeoQuote.fare, kind: "geo", stadium: scGeoQuote.stadium, mountain: scGeoQuote.mountain };
+    }
+    return { fare: null, pending: !!(scPlaces.pickup && scPlaces.dropoff && !scRouteFailed), routeFailed: scRouteFailed };
+  }
+  return { fare: null };
+}
+/* The fare the form would save right now. In edit mode, until the
+   route, service or hours actually change, that is the booked
+   fare — an edit of the rider's name or phone never reprices. */
+function scCurrentFare() {
+  if (scMode === "edit" && !scFareDirty && scOrig) {
+    return { fare: scOrig.price, kind: "orig", fareDetail: scOrig.fareDetail || null };
+  }
+  var c = scCalcFare();
+  var fd = null;
+  if (c.kind === "route") fd = { kind: "route", fare: c.fare, miles: c.miles, minutes: c.mins };
+  else if (c.kind === "hourly") fd = { kind: "hourly", fare: c.fare, hours: c.hours };
+  c.fareDetail = fd;
+  return c;
+}
+function scFareNote(c) {
+  var note = "";
+  var z = c.mountain;
+  if (z) note = ((z.name === "Colorado Springs" || z.name === "Fort Collins" || z.name === "Castle Rock" || z.name === "Evergreen") ? "Flat fare" : "Mountain fare") + ": " + z.name + ", flat $" + fmtMoney(z.amount);
+  else if (c.stadium) note = "Stadium fare: " + c.stadium.name + (c.stadium.flat ? ", flat $200" : ", $200 minimum");
+  return note;
+}
+function scPaintFare() {
+  var el = $("scFare");
+  if (!el) return;
+  if (scMode === "edit" && !scFareDirty && scOrig) {
+    el.hidden = false;
+    el.innerHTML = '<span class="q-lbl">Fare:</span> <b>$' + fmtMoney(scOrig.price) + '</b> <span>as booked — change the pickup, drop-off, service or hours to reprice.</span>';
+    return;
+  }
+  var c = scCalcFare();
+  if (c.gate) {
+    el.hidden = false;
+    el.textContent = scPricing().adminRequestMsg || "This trip is booked by request.";
+    return;
+  }
+  if (c.kind === "hourly" && c.fare != null) {
+    el.hidden = false;
+    el.innerHTML = '<span class="q-lbl">Hourly fare:</span> <b>$' + fmtMoney(c.fare) + '</b> <span>for ' + c.hours + ' hours.</span>';
+    return;
+  }
+  if (c.fare != null) {
+    el.hidden = false;
+    var det = "";
+    if (c.kind === "route" && c.miles != null) det = ", " + c.miles.toFixed(1) + " mi, about " + Math.max(1, Math.round(c.mins)) + " min";
+    var note = scFareNote(c);
+    el.innerHTML = '<span class="q-lbl">Fare:</span> <b>$' + fmtMoney(c.fare) + '</b><span>' + escHtml(det) + (note ? " · " + escHtml(note) : "") + '</span>';
+    return;
+  }
+  if (c.routeFailed) {
+    el.hidden = false;
+    el.textContent = "We could not find a route between those addresses. Check them and try again.";
+    return;
+  }
+  if (c.pending || (scPlaces.pickup && scPlaces.dropoff)) {
+    el.hidden = false;
+    el.textContent = "Calculating the fare…";
+    return;
+  }
+  el.hidden = true;
+  el.textContent = "";
+}
+/* Routing — the booking page's routeWidget core: genuine LatLng
+   endpoints through DirectionsService, priced by priceRide on
+   the picked places' geometry. A bounded wait lands a stuck
+   route in the failure state instead of spinning forever. */
+function scRoute() {
+  scSyncAirportFields();
+  var p = scPlaces.pickup, d = scPlaces.dropoff;
+  var stop = !$("scStopRow").hidden ? scPlaces.stop : null;
+  if (!p || !d) {
+    scRouteQuote = null; scGeoQuote = null; scRouteFailed = false;
+    scEnforceHourly(); scSyncService(); scPaintFare();
+    return;
+  }
+  scComputeGeo();
+  scEnforceHourly(); scSyncService(); scPaintFare();
+  if (!scMapsReady || !window.google || !google.maps || !google.maps.DirectionsService) return;
+  var seq = ++scSeq;
+  var ds = new google.maps.DirectionsService();
+  var req = {
+    origin: scMkLatLng(p.lat, p.lng),
+    destination: scMkLatLng(d.lat, d.lng),
+    travelMode: google.maps.TravelMode.DRIVING
+  };
+  if (stop) req.waypoints = [{ location: scMkLatLng(stop.lat, stop.lng), stopover: true }];
+  ds.route(req, function (result, status) {
+    if (seq !== scSeq) return;
+    if (status !== "OK" || !result || !result.routes || !result.routes[0]) {
+      scRouteQuote = null; scRouteFailed = true; scPaintFare();
+      return;
+    }
+    scRouteFailed = false;
+    var miles = 0, mins = 0;
+    result.routes[0].legs.forEach(function (lg) {
+      miles += lg.distance.value / 1609.344;
+      mins += lg.duration.value / 60;
+    });
+    try {
+      var priced = scPricing().priceRide(miles, {
+        pickup: p.address || "", dropoff: d.address || "",
+        pickupLat: p.lat, pickupLng: p.lng, dropoffLat: d.lat, dropoffLng: d.lng
+      });
+      scRouteQuote = {
+        fromText: $("scPickup").value, toText: $("scDropoff").value,
+        miles: miles, mins: mins, fare: priced.fare, meterFare: priced.meterFare,
+        stadium: priced.stadium, mountain: priced.mountain, openCountry: priced.openCountry
+      };
+    } catch (e) {
+      scRouteQuote = null; scRouteFailed = true;
+    }
+    scEnforceHourly(); scSyncService(); scPaintFare();
+  });
+  setTimeout(function () {
+    if (seq !== scSeq) return;
+    if (!scRoutePending()) return;
+    scRouteFailed = true;
+    scPaintFare();
+  }, 12000);
+}
+function scBindAc(id, key) {
+  var inp = $(id);
+  if (!inp) return;
+  var ac = new google.maps.places.Autocomplete(inp, {
+    bounds: new google.maps.LatLngBounds(scMkLatLng(39.30, -105.45), scMkLatLng(40.20, -104.40)),
+    componentRestrictions: { country: "us" },
+    fields: ["formatted_address", "geometry", "name", "types"]
+  });
+  ac.addListener("place_changed", function () {
+    var p = ac.getPlace();
+    if (p) { inp.value = p.formatted_address || p.name || inp.value; }
+    clearField(inp);
+    scPlaces[key] = scNormPlace(inp, p);
+    scFareDirty = true;
+    scRoute();
+  });
+  inp.addEventListener("input", function () {
+    if (scPlaces[key] && inp.value === scPlaces[key].display) return;
+    scPlaces[key] = null;
+    scFareDirty = true;
+    scRoute();
+  });
+}
+function scMapsNote() {
+  var el = $("scFare");
+  if (el && !$("schedFormWrap").hidden) {
+    el.hidden = false;
+    el.textContent = "Address lookup could not load, so fares cannot be calculated right now. Please reload the page.";
+  }
+}
+window.__bblAdminMapsInit = function () {
+  try {
+    if (!window.google || !google.maps || !google.maps.places) { scMapsNote(); return; }
+    scMapsReady = true;
+    if (!scAcBound) {
+      scAcBound = true;
+      scBindAc("scPickup", "pickup");
+      scBindAc("scDropoff", "dropoff");
+      scBindAc("scStop", "stop");
+    }
+    if (scPendingGeocode) { scPendingGeocode = false; scGeocodePrefill(); }
+  } catch (e) { scMapsNote(); }
+};
+if (window.__bblAdminMapsReady) window.__bblAdminMapsInit();
+setTimeout(function () { if (!scMapsReady) scMapsNote(); }, 10000);
+/* Edit prefill: the stored booking carries addresses, not
+   coordinates, so the picked places are restored by geocoding
+   the stored addresses — the same place objects a fresh pick
+   makes, DIA snap included. If a geocode misses, that field
+   simply behaves like an unpicked field (pick from the list)
+   and its booked fare stands until a new pick reprices. */
+function scGeocodePrefill() {
+  if (!scMapsReady || !window.google || !google.maps || !google.maps.Geocoder) { scPendingGeocode = true; return; }
+  [["pickup", "scPickup"], ["dropoff", "scDropoff"], ["stop", "scStop"]].forEach(function (job) {
+    var key = job[0], inp = $(job[1]);
+    if (!inp || !inp.value) return;
+    var addr = inp.value;
+    new google.maps.Geocoder().geocode({ address: addr }, function (results, status) {
+      if (status !== "OK" || !results || !results.length) return;
+      if (inp.value !== addr) return;
+      var pl = scNormPlace(inp, results[0]);
+      if (!pl) return;
+      scPlaces[key] = pl;
+      scRoute();
+    });
+  });
+}
+function scShowDone(text, bk) {
+  var d = $("schedDone"), t = $("schedDoneText");
+  if (t) t.textContent = text;
+  var act = $("schedDoneActions");
+  if (act) {
+    act.innerHTML = "";
+    if (bk && typeof bkTextButtons === "function") {
+      act.innerHTML = bkTextButtons(bk, "data-dcopy");
+      act.querySelectorAll("[data-dcopy]").forEach(function (btn) {
+        btn.addEventListener("click", function () { bkCopyToClipboard(bkConfirmText(bk), btn); });
+      });
+    }
+  }
+  if (d) d.hidden = false;
+  $("schedFormWrap").hidden = true;
+  var b = $("schedOpenBtn"); if (b) b.hidden = true;
+  if (d && d.scrollIntoView) d.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+function scFormError(err) {
+  var n = $("scFormNote");
+  if (n) n.textContent = (err && err.message) ? err.message : "Something went wrong. Please try again.";
+}
+function scResetForm(mode, bk) {
+  scMode = mode;
+  scPlaces = { pickup: null, dropoff: null, stop: null };
+  scRouteQuote = null; scGeoQuote = null; scRouteFailed = false;
+  scFareDirty = false; scSubmitting = false;
+  scSessionId = "q" + Date.now().toString(36) + Math.floor(Math.random() * 10000);
+  scSessionCode = "";
+  scEditId = ""; scEditCode = ""; scOrig = null;
+  var form = $("schedForm");
+  if (form) form.reset();
+  $("scFormNote").textContent = "";
+  $("scStopRow").hidden = true;
+  $("scAddStopBtn").hidden = false;
+  $("schedSubmitBtn").disabled = false;
+  if (mode === "edit" && bk) {
+    scEditId = bk.id || "";
+    scEditCode = bk.code || "";
+    scOrig = { price: bk.price, fareDetail: bk.fareDetail || null, paymentStatus: bk.paymentStatus || "Pay driver later" };
+    $("schedFormTitle").textContent = "Edit booking " + scEditCode;
+    $("schedSubmitBtn").textContent = "Save changes";
+    $("scName").value = bk.riderName || bk.rider || "";
+    $("scPhone").value = bk.phone || "";
+    $("scEmail").value = bk.email || "";
+    $("scPickup").value = bk.pickup || "";
+    $("scDropoff").value = bk.dropoff || "";
+    var st = bk.stop || (bk.stops && bk.stops[0]) || "";
+    if (st) { $("scStop").value = st; $("scStopRow").hidden = false; $("scAddStopBtn").hidden = true; }
+    $("scDate").value = bk.date || "";
+    $("scTime").value = bk.time || "";
+    $("scService").value = SCHED_SERVICES[bk.service] ? bk.service : "standard";
+    if (bk.service === "hourly" && bk.fareDetail && bk.fareDetail.hours) $("scHours").value = String(bk.fareDetail.hours);
+    $("scPax").value = bk.passengers != null ? String(bk.passengers) : "";
+    $("scBags").value = bk.bags != null ? String(bk.bags) : "0";
+    $("scNotes").value = bk.notes || "";
+    $("scAirline").value = bk.airline || "";
+    $("scDropAirline").value = bk.airlineDropoff || "";
+    $("scFlight").value = bk.flightNumber || "";
+  } else {
+    $("schedFormTitle").textContent = "Schedule a ride";
+    $("schedSubmitBtn").textContent = "Book this ride";
+  }
+  scSyncService();
+  scSyncAirportFields();
+  scPaintFare();
+}
+function scOpenForm() {
+  $("schedDone").hidden = true;
+  $("schedFormWrap").hidden = false;
+  var b = $("schedOpenBtn"); if (b) b.hidden = true;
+  if (!scMapsReady && window.__bblAdminMapsReady) window.__bblAdminMapsInit();
+}
+function scCloseForm() {
+  $("schedFormWrap").hidden = true;
+  var d = $("schedDone"); if (d) d.hidden = true;
+  var b = $("schedOpenBtn"); if (b) b.hidden = false;
+}
+window.__bblSchedLock = function () { scCloseForm(); };
+function scOpenEdit(bk) {
+  scResetForm("edit", bk);
+  scOpenForm();
+  if (window.__bblShowTab) window.__bblShowTab("bookings");
+  var panel = $("schedPanel");
+  if (panel && panel.scrollIntoView) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+  if (scMapsReady) scGeocodePrefill();
+  else scPendingGeocode = true;
+}
+(function () {
+  var list = $("liveList");
+  if (list) list.addEventListener("click", function (e) {
+    var t = e.target;
+    var btn = t && t.closest ? t.closest("[data-ledit]") : null;
+    if (!btn) return;
+    var id = btn.getAttribute("data-ledit");
+    var bk = null;
+    (LIVE_BOOKINGS || []).forEach(function (x) { if (x.id === id) bk = x; });
+    if (bk) scOpenEdit(bk);
+  });
+  var airlineOpts = '<option value="">Airline (optional)</option>' + SC_AIRLINES.map(function (n) { return '<option value="' + n + '">' + n + '</option>'; }).join("");
+  if ($("scAirline")) $("scAirline").innerHTML = airlineOpts;
+  if ($("scDropAirline")) $("scDropAirline").innerHTML = airlineOpts;
+  var dEl = $("scDate");
+  if (dEl) {
+    var now = new Date();
+    function p2(n) { return (n < 10 ? "0" : "") + n; }
+    dEl.min = now.getFullYear() + "-" + p2(now.getMonth() + 1) + "-" + p2(now.getDate());
+  }
+  $("schedOpenBtn").addEventListener("click", function () { scResetForm("create", null); scOpenForm(); });
+  $("schedAnotherBtn").addEventListener("click", function () { scResetForm("create", null); scOpenForm(); });
+  $("schedDoneCloseBtn").addEventListener("click", function () { scCloseForm(); });
+  $("schedCancelBtn").addEventListener("click", function () { scCloseForm(); });
+  $("scAddStopBtn").addEventListener("click", function () {
+    $("scStopRow").hidden = false;
+    $("scAddStopBtn").hidden = true;
+    var s = $("scStop"); if (s) s.focus();
+  });
+  $("scRemoveStopBtn").addEventListener("click", function () {
+    $("scStop").value = "";
+    scPlaces.stop = null;
+    $("scStopRow").hidden = true;
+    $("scAddStopBtn").hidden = false;
+    scFareDirty = true;
+    scRoute();
+  });
+  $("scService").addEventListener("change", function () { scFareDirty = true; scSyncService(); scRoute(); });
+  $("scHours").addEventListener("change", function () { scFareDirty = true; scPaintFare(); });
+  $("scAirline").addEventListener("change", function () { scResnap("pickup"); scSyncAirportFields(); });
+  $("scDropAirline").addEventListener("change", function () { scResnap("dropoff"); scSyncAirportFields(); });
+  $("scFlight").addEventListener("change", function () { scResnap("pickup"); });
+  $("schedForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (scSubmitting) return;
+    /* Validation — the field-error standard: the box itself is
+       flagged, the reason sits under it, and the first bad field
+       is scrolled to and focused. Date and time are the standing
+       exception: flagged and scrolled to, never focused or
+       auto-opened. */
+    var bad = null;
+    function need(el, ok, msg) {
+      if (ok) { clearField(el); return; }
+      if (msg) flagMsg(el, msg); else flagField(el);
+      if (!bad) bad = el;
+    }
+    var name = $("scName"), phone = $("scPhone"), email = $("scEmail");
+    need(name, (name.value || "").trim().length >= 2, "Please enter the rider's full name.");
+    need(phone, (phone.value || "").replace(/\D/g, "").length >= 10, "Please enter a valid phone number (at least 10 digits).");
+    need(email, /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((email.value || "").trim()), "Please enter a valid email address.");
+    if (!scPlaces.pickup) {
+      flagMsg($("scPickup"), $("scPickup").value ? "Please pick the pickup from the address list so we can price the ride." : "Please enter the pickup.", false);
+      if (!bad) bad = $("scPickup");
+    } else clearField($("scPickup"));
+    if (!scPlaces.dropoff) {
+      flagMsg($("scDropoff"), $("scDropoff").value ? "Please pick the drop off from the address list so we can price the ride." : "Please enter the drop off.", false);
+      if (!bad) bad = $("scDropoff");
+    } else clearField($("scDropoff"));
+    var dEl2 = $("scDate"), tEl = $("scTime");
+    if (!dEl2.value) { flagMsg(dEl2, "Please pick the pickup date.", false); if (!bad) bad = dEl2; } else clearField(dEl2);
+    if (!tEl.value) { flagMsg(tEl, "Please pick the pickup time.", false); if (!bad) bad = tEl; } else clearField(tEl);
+    need($("scPax"), !!$("scPax").value, "Please select how many passengers (max 6).");
+    if ($("scService").value === "hourly" && !$("scHours").value) { flagField($("scHours")); if (!bad) bad = $("scHours"); }
+    var f = scCurrentFare();
+    if (f.gate) {
+      flagMsg($("scDropoff"), scPricing().adminRequestMsg || "This trip is booked by request.", false);
+      if (!bad) bad = $("scDropoff");
+    } else if (f.routeFailed) {
+      flagMsg($("scDropoff"), "We could not find a route between those addresses. Check them and try again.", false);
+      if (!bad) bad = $("scDropoff");
+    } else if (f.fare == null && scMode === "create") {
+      flagMsg($("scDropoff"), "The fare is still calculating. Give it a moment and try again.", false);
+      if (!bad) bad = $("scDropoff");
+    } else if (f.fare == null && scFareDirty) {
+      flagMsg($("scDropoff"), "The fare is still calculating. Give it a moment and try again.", false);
+      if (!bad) bad = $("scDropoff");
+    }
+    if (bad) {
+      if (bad === dEl2 || bad === tEl) { bad.scrollIntoView({ behavior: "smooth", block: "center" }); }
+      else flagField(bad, true);
+      return;
+    }
+    if (typeof window.__bblCall !== "function") { scFormError({ message: "Live view is unavailable right now." }); return; }
+    $("scFormNote").textContent = "";
+    var svc = $("scService").value;
+    var rec = {
+      id: scMode === "edit" ? scEditId : scSessionId,
+      kind: "booking",
+      service: svc,
+      serviceName: SCHED_SERVICES[svc] ? SCHED_SERVICES[svc].name : "",
+      date: $("scDate").value, time: $("scTime").value,
+      pickup: $("scPickup").value, dropoff: $("scDropoff").value,
+      stop: !$("scStopRow").hidden ? $("scStop").value : "",
+      price: f.fare,
+      paymentStatus: scMode === "edit" ? (scOrig.paymentStatus || "Pay driver later") : "Pay driver later",
+      rider: (name.value || "").trim(),
+      phone: (phone.value || "").trim(),
+      email: (email.value || "").trim(),
+      passengers: parseInt($("scPax").value, 10) || 1,
+      bags: $("scBags").value,
+      notes: ($("scNotes").value || "").trim(),
+      fareDetail: f.fareDetail || null
+    };
+    if (scPickupIsAirport()) {
+      var fl = ($("scFlight").value || "").trim().toUpperCase();
+      if (fl) rec.flightNumber = fl;
+      if ($("scAirline").value) rec.airline = $("scAirline").value;
+    }
+    if (scDropoffIsAirport() && $("scDropAirline").value) rec.airlineDropoff = $("scDropAirline").value;
+    scSubmitting = true;
+    $("schedSubmitBtn").disabled = true;
+    if (scMode === "edit") {
+      var payload = {
+        bookingId: scEditId,
+        rider: rec.rider, phone: rec.phone, email: rec.email,
+        pickup: rec.pickup, dropoff: rec.dropoff, stop: rec.stop,
+        date: rec.date, time: rec.time,
+        service: rec.service, serviceName: rec.serviceName,
+        passengers: rec.passengers, bags: rec.bags, notes: rec.notes,
+        price: rec.price, fareDetail: rec.fareDetail,
+        airline: rec.airline || "", airlineDropoff: rec.airlineDropoff || "",
+        flightNumber: rec.flightNumber || "",
+        paymentStatus: rec.paymentStatus
+      };
+      window.__bblCall("bblUpdateBooking", payload).then(function (res) {
+        scSubmitting = false;
+        $("schedSubmitBtn").disabled = false;
+        var doneMsg = "Booking " + scEditCode + " updated.";
+        var ue = res && res.updateEmail;
+        if (ue && ue.sent) doneMsg += " An update email with the corrected details was sent to " + (ue.to || rec.email) + ".";
+        else if (ue && ue.error) doneMsg += " The update email to the rider could not be sent — please let the rider know the new details directly.";
+        else if (ue && ue.alreadySent) doneMsg += " The rider already has an email with these exact details, so no new email was sent.";
+        else if (ue && !ue.changed) doneMsg += " Nothing the rider sees changed, so no email was sent."
+        rec.code = scEditCode; rec.id = scEditId;
+        scShowDone(doneMsg, rec);
+        loadCentral(true);
+      }, function (err) {
+        scSubmitting = false;
+        $("schedSubmitBtn").disabled = false;
+        scFormError(err);
+      });
+      return;
+    }
+    if (!scSessionCode) scSessionCode = "BK-" + (1000 + Math.floor(Math.random() * 9000));
+    rec.code = scSessionCode;
+    var cpayload = {
+      bookingCode: rec.code,
+      id: rec.id,
+      rider: rec.rider, phone: rec.phone, email: rec.email,
+      pickup: rec.pickup, dropoff: rec.dropoff, stop: rec.stop,
+      date: rec.date, time: rec.time,
+      service: rec.service, serviceName: rec.serviceName,
+      passengers: rec.passengers, bags: rec.bags, notes: rec.notes,
+      price: rec.price, fareDetail: rec.fareDetail,
+      airline: rec.airline || "", airlineDropoff: rec.airlineDropoff || "",
+      flightNumber: rec.flightNumber || "",
+      paymentStatus: rec.paymentStatus
+    };
+    window.__bblCall("bblAdminCreateBooking", cpayload).then(function (res) {
+      scSubmitting = false;
+      $("schedSubmitBtn").disabled = false;
+      var msg = "Booked — " + rec.code + ".";
+      var n = res && res.notify;
+      if (res && res.duplicate) {
+        msg += " That booking was already saved, so no new alerts were sent.";
+      } else if (n && n.ownerText && n.ownerText.sent) {
+        msg += " Confirmation email sent to " + rec.email + ".";
+        msg += " Deepak's email and text alerts were submitted through Jotform and confirmed (submission " + ((n.jotform && n.jotform.submissionId) || n.ownerText.submissionId || "") + ").";
+        msg += " (Rider texts are not set up for Boulder Black Line — the rider's confirmation is by email.)";
+      } else if (n) {
+        if (n.riderEmail && n.riderEmail.sent) msg += " Confirmation email sent to " + rec.email + ".";
+        else msg += " The booking saved, but the confirmation email to the rider could not be sent — please give the rider the details directly.";
+        if (n.ownerEmail && n.ownerEmail.sent) msg += " Deepak's email alert was sent.";
+        else msg += " Deepak's email alert could not be sent — please let him know about this booking.";
+        if (n.jotform && n.jotform.submitted) msg += " (The booking is recorded in Jotform (submission " + n.jotform.submissionId + "), but Jotform does not send its alerts for API submissions, so Deepak's text alert was not sent; rider texts are not set up for Boulder Black Line.)";
+        else if (n.jotform) msg += " (The Jotform submission failed, so Deepak's text alert was not sent; rider texts are not set up for Boulder Black Line.)";
+        else msg += " (Deepak's text alert is not set up for dashboard bookings yet; rider texts are not set up for Boulder Black Line.)";
+      } else {
+        msg += " The booking saved; whether its email alerts went out could not be confirmed — please check with Deepak that he has it.";
+      }
+      scShowDone(msg, rec);
+      scResetForm("create", null);
+      loadCentral(true);
+    }, function (err) {
+      scSubmitting = false;
+      $("schedSubmitBtn").disabled = false;
+      scFormError(err);
+    });
+  });
+})();
+
 
 </script>
 <script>
@@ -1210,7 +2136,7 @@ function fmtStamp(iso){if(!iso)return"";var d=new Date(iso);if(!isFinite(d.getTi
      and the rider-side booking mirror below stay on the local
      demo store. */
   var BBL_FN_BASE = "https://us-central1-blackcarservice4u-57d2a.cloudfunctions.net/";
-  var BBL_LIVE_FNS = { bblListBookings: 1, bblListDrivers: 1, bblSaveDriver: 1, bblDeleteDriver: 1, bblAssignDriver: 1, bblSetBookingStatus: 1, bblChangeOwnerCode: 1, bblCheckCode: 1, bblSetSupportCode: 1, bblCheckGateCode: 1, bblSetGateCode: 1 };
+  var BBL_LIVE_FNS = { bblListBookings: 1, bblListDrivers: 1, bblSaveDriver: 1, bblDeleteDriver: 1, bblAssignDriver: 1, bblSetBookingStatus: 1, bblChangeOwnerCode: 1, bblCheckCode: 1, bblSetSupportCode: 1, bblCheckGateCode: 1, bblSetGateCode: 1, bblAdminCreateBooking: 1, bblUpdateBooking: 1 };
   function bblFnCall(name, data) {
     var code = "";
     try { code = localStorage.getItem("bbl_owner_gate_v1") || sessionStorage.getItem("bbl_owner_gate_v1") || ""; } catch (e) {}
