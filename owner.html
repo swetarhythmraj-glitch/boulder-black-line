@@ -558,6 +558,25 @@ function bkSmsHref(b) {
   if (!ph) return "";
   return "sms:" + ph + "?&body=" + encodeURIComponent(bkConfirmText(b));
 }
+/* Text driver (owner's order, 2026-11-22, Build 20 follow-on): on a
+   booking with a driver assigned, a sms: link to the ASSIGNED
+   driver's own phone (looked up live in LIVE_DRIVERS by driverId),
+   prefilled with the same fare-free rider-details text Copy rider
+   details copies — so the owner can hand the driver the trip from
+   his own Messages app. Exactly like Text rider: the link only
+   opens Messages with the text prefilled; the owner taps send
+   himself and the system sends nothing. No driver record, or no
+   phone on file for that driver, and the button simply is not
+   there (Copy rider details stays as the fallback). */
+function bkDriverSmsHref(b) {
+  if (!b || !(b.driverId || b.driverName)) return "";
+  var d = null;
+  (LIVE_DRIVERS || []).forEach(function (x) { if (x && b.driverId && x.id === b.driverId) d = x; });
+  if (!d) return "";
+  var ph = bkSmsPhone(d.mobile || d.phone || "");
+  if (!ph) return "";
+  return "sms:" + ph + "?&body=" + encodeURIComponent(bkRiderDetailsText(b));
+}
 function bkTextButtons(b, copyAttr) {
   var h = "";
   var href = bkSmsHref(b);
@@ -604,6 +623,7 @@ function renderLive(bookings){
       +'</select>';
     if(b.kind!=="quote")actions+=bkTextButtons(b,"data-lcopy");
     if(b.kind!=="quote"&&(b.driverId||b.driverName))actions+='<button class="mini-btn" type="button" data-lcopyrider="'+escHtml(b.id||"")+'">Copy rider details</button>';
+    if(b.kind!=="quote"&&(b.driverId||b.driverName)){var dh=bkDriverSmsHref(b);if(dh)actions+='<a class="mini-btn" href="'+escHtml(dh)+'">Text driver</a>';}
     return '<div class="owner-row"><div class="info"><b>'+title+'</b><span>'+sub+'</span></div><div class="row-actions">'+actions+"</div></div>";
   }).join("");
   box.querySelectorAll("[data-ladv]").forEach(function(btn){btn.addEventListener("click",function(){
