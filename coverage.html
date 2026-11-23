@@ -4,8 +4,12 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="color-scheme" content="light" />
-<link rel="icon" href="data:," />
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <title>Coverage map: Boulder Black Line</title>
+<meta name="description" content="See where Boulder Black Line picks up and drops off: the Denver metro coverage map with covered ZIP codes, flat-fare towns, and venue zones.">
 <link rel="stylesheet" href="assets/bbl-coverage/leaflet.css" />
 <style>
   *{box-sizing:border-box}
@@ -162,14 +166,18 @@
   .leaflet-control-zoom a{width:36px !important; height:36px !important; line-height:36px !important}
   .leaflet-control-attribution{font-size:10px; background:rgba(255,255,255,.85) !important}
 </style>
+<style>.skip-link{position:absolute;left:-9999px;top:0;background:#111;color:#fff;padding:10px 16px;z-index:200;border-radius:0 0 10px 0;font-weight:700}.skip-link:focus{left:0}</style>
+<link rel="canonical" href="https://boulderblack.com/coverage">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Boulder Black Line"><meta property="og:title" content="Coverage map: Boulder Black Line"><meta property="og:description" content="See where Boulder Black Line picks up and drops off: the Denver metro coverage map with covered ZIP codes, flat-fare towns, and venue zones."><meta property="og:url" content="https://boulderblack.com/coverage"><meta property="og:image" content="https://boulderblack.com/icon-512.png"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Coverage map: Boulder Black Line"><meta name="twitter:description" content="See where Boulder Black Line picks up and drops off: the Denver metro coverage map with covered ZIP codes, flat-fare towns, and venue zones."><meta name="twitter:image" content="https://boulderblack.com/icon-512.png">
 </head>
 <body>
+<a class="skip-link" href="#map">Skip to content</a>
 
 <div id="map" aria-label="Coverage map" hidden></div>
 
 <div id="covLocked" style="position:absolute;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;background:#e5e7eb;padding:16px">
   <div style="background:#fff;border:1px solid #d1d5db;border-radius:16px;padding:20px;max-width:420px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.18)">
-    <h1 style="font-size:20px;margin:0 0 8px">Coverage map</h1>
+    <p style="font-size:20px;margin:0 0 8px;font-weight:700">Coverage map</p>
     <p id="covLockedMsg" style="font-size:14px;line-height:1.5;color:#1f2937;margin:0 0 14px">Checking your sign-in…</p>
     <a href="/owner.html" style="font-weight:700;color:#111827">← Back to dashboard</a>
   </div>
@@ -235,7 +243,7 @@
     <p class="fare-note">Venues and mountain towns keep their own flat prices even inside a green ZIP. Green here means regular mileage coverage for the other addresses in that ZIP.</p>
 
     <p class="footer-note">ZIP boundaries are real Census ZIP code areas (ZCTA). City names are each ZIP's primary city. 301 ZIP codes are on this map.</p>
-    <p class="footer-note">Build 21 · v2026.11.22-build21 · 2026-11-22</p>
+    <p class="footer-note">Build 22 · v2026.11.23-build22 · 2026-11-23</p>
   </div>
 </aside>
 

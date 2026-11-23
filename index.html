@@ -12,7 +12,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
-<meta name="description" content="Request a flat fare quote: send the owner your pickup, drop off and time. No account, no payment.">
+<meta name="description" content="Boulder's black car service for DIA airport rides and trips around the Denver metro. Flat fares and a local owner-driver. Call (720) 326-4652.">
+<link rel="canonical" href="https://boulderblack.com/">
 <meta name="theme-color" content="#17130E">
 <!-- Home Screen / tab icons (user, 2026-11-18): the approved Escalade-crest artwork, full-bleed black. Preview files are bbl-prefixed (the ridewave-web root names belong to RideWave itself); the domain variant renames them to the canonical root names. -->
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -20,10 +21,8 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <meta name="apple-mobile-web-app-title" content="Boulder Black Line">
-<title>Book your ride with Boulder Black Line</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>Boulder Black Car Service | DIA Airport & Private SUV Rides</title>
+<link rel="stylesheet" href="bbl-fonts.css">
 <script>try{if(new URLSearchParams(location.search).get("look")==="app")document.documentElement.classList.add("look-app");}catch(e){}</script>
 <!-- Fresh load always starts at the top (user, 2026-11-17): iOS Safari restores the previous scroll position on reload, which landed the page mid-form (header cut, map cropped). No page code scrolls or focuses anything at load — audited 2026-11-17 — so the fix is to opt out of restoration and reset to 0. -->
 <script>try{if("scrollRestoration" in history)history.scrollRestoration="manual";window.scrollTo(0,0);document.addEventListener("DOMContentLoaded",function(){window.scrollTo(0,0);});window.addEventListener("pageshow",function(e){if(e&&e.persisted)window.scrollTo(0,0);});}catch(e){}</script>
@@ -1017,8 +1016,33 @@ body.qpage.bk-on .guide-note.slim{margin-top:4px;padding:1px 10px}
 body.qpage.bk-on .qhero .q-fare .q-amt{font-size:27px}
 body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
 </style>
+<style>.skip-link{position:absolute;left:-9999px;top:0;background:#111;color:#fff;padding:10px 16px;z-index:200;border-radius:0 0 10px 0;font-weight:700}.skip-link:focus{left:0}</style>
+<meta property="og:type" content="website"><meta property="og:site_name" content="Boulder Black Line"><meta property="og:title" content="Boulder Black Car Service | DIA Airport & Private SUV Rides"><meta property="og:description" content="Boulder's black car service for DIA airport rides and trips around the Denver metro. Flat fares and a local owner-driver. Call (720) 326-4652."><meta property="og:url" content="https://boulderblack.com/"><meta property="og:image" content="https://boulderblack.com/icon-512.png"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Boulder Black Car Service | DIA Airport & Private SUV Rides"><meta name="twitter:description" content="Boulder's black car service for DIA airport rides and trips around the Denver metro. Flat fares and a local owner-driver. Call (720) 326-4652."><meta name="twitter:image" content="https://boulderblack.com/icon-512.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TaxiService",
+  "name": "Boulder Black Line",
+  "url": "https://boulderblack.com/",
+  "telephone": "+1-720-326-4652",
+  "email": "boulderblack1@gmail.com",
+  "priceRange": "$$",
+  "provider": {
+    "@type": "LocalBusiness",
+    "name": "Boulder Black Line",
+    "telephone": "+1-720-326-4652",
+    "email": "boulderblack1@gmail.com"
+  },
+  "areaServed": [
+    { "@type": "City", "name": "Boulder" },
+    { "@type": "AdministrativeArea", "name": "Denver metropolitan area" }
+  ],
+  "serviceType": "Black car service"
+}
+</script>
 </head>
 <body class="qpage">
+<a class="skip-link" href="#top">Skip to content</a>
 
 
 <main id="top">
@@ -1074,11 +1098,11 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
   <div class="qband">
     <div class="qshow" id="qShow" role="region" aria-roledescription="carousel" aria-label="2026 Cadillac Escalade ESV photos">
       <div class="qshow-track" id="qShowTrack">
-      <img id="qVehImg" data-bbl-veh="vehicle" src="bbl-suv-1.jpg" alt="2026 Cadillac Escalade ESV, front three quarter view">
-      <img src="bbl-suv-2.jpg" alt="2026 Cadillac Escalade ESV, rear three quarter view" loading="lazy">
-      <img src="bbl-suv-3.jpg" alt="2026 Cadillac Escalade ESV, front cabin with black leather interior" loading="lazy">
-      <img src="bbl-suv-4.jpg" alt="2026 Cadillac Escalade ESV, rear passenger seats with black leather interior" loading="lazy">
-      <img src="bbl-suv-5.jpg" alt="2026 Cadillac Escalade ESV, front three quarter view showing the vertical LED headlights" loading="lazy">
+      <img id="qVehImg" data-bbl-veh="vehicle" width="1200" height="800" src="bbl-suv-1.webp" alt="2026 Cadillac Escalade ESV, front three quarter view">
+      <img width="1200" height="800" src="bbl-suv-2.webp" alt="2026 Cadillac Escalade ESV, rear three quarter view" loading="lazy">
+      <img width="1200" height="800" src="bbl-suv-3.webp" alt="2026 Cadillac Escalade ESV, front cabin with black leather interior" loading="lazy">
+      <img width="1200" height="800" src="bbl-suv-4.webp" alt="2026 Cadillac Escalade ESV, rear passenger seats with black leather interior" loading="lazy">
+      <img width="1200" height="800" src="bbl-suv-5.webp" alt="2026 Cadillac Escalade ESV, front three quarter view showing the vertical LED headlights" loading="lazy">
       </div>
       <button class="qshow-btn qshow-prev" id="qShowPrev" type="button" aria-label="Previous photo">&#8249;</button>
       <button class="qshow-btn qshow-next" id="qShowNext" type="button" aria-label="Next photo">&#8250;</button>
@@ -1107,13 +1131,13 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
     <div class="kicker">Services</div>
     <h2 class="sec">What do you need the SUV for?</h2>
     <div class="svc-grid" id="svcGrid">
-      <article class="svc svc-k-business"><img src="bbl-svc-business.jpg" alt="Black Cadillac Escalade ESV on a downtown Denver street in front of glass office towers" loading="lazy"><div class="svc-body"><h3>Business Pickup</h3><p>On-time pickups for meetings, offices and client visits around the Denver metro, quiet, private, and priced before you ride.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="business">Book this</button></div></div></article>
-      <article class="svc svc-k-airport svc-feature"><img src="bbl-svc-airport.jpg" alt="Black Cadillac Escalade ESV waiting at an airport departures curb" loading="lazy"><div class="svc-body"><h3>Airport Pickup &amp; Drop Off</h3><p>We track your flight and meet you at the terminal, DIA and every metro airport, with room for all your bags.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="airport">Book this</button></div></div></article>
-      <article class="svc svc-k-special svc-feature"><img src="bbl-svc-special.jpg" alt="Black Cadillac Escalade ESV outside a restaurant row at dusk, city lights behind it" loading="lazy"><div class="svc-body"><h3>Special Occasions</h3><p>Anniversaries, birthdays, date nights and proposals, arrive relaxed, and ride home safely when the night ends.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="special">Book this</button></div></div></article>
-      <article class="svc svc-k-wedding"><img src="bbl-svc-wedding.jpg" alt="Black Cadillac Escalade ESV in profile outside a stone wedding venue with a floral arch" loading="lazy"><div class="svc-body"><h3>Wedding &amp; Ceremony</h3><p>Ceremony, photos, reception: one calm driver for the whole day, waiting at every stop while you celebrate.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="wedding">Book this</button></div></div></article>
-      <article class="svc svc-k-concert svc-pano"><img src="bbl-svc-concert.jpg" alt="Black Cadillac Escalade ESV at a theater marquee on a concert night" loading="lazy"><div class="svc-body"><h3>Concert &amp; Events</h3><p>Red Rocks, Ball Arena and every metro venue, dropped off at the gate and picked up at a set spot after the show.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="concert">Book this</button></div></div></article>
-      <article class="svc svc-k-mountain svc-split svc-split-r"><img src="bbl-svc-mountain.jpg" alt="Black Cadillac Escalade ESV on a winding Colorado mountain road" loading="lazy"><div class="svc-body"><h3>Mountain Rides</h3><p>Ski towns, resorts and mountain weddings in the long wheelbase Escalade, room for skis, boards and all the gear.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="mountain">Book this</button></div></div></article>
-      <article class="svc svc-k-hourly"><img src="bbl-svc-hourly.jpg" alt="Black Cadillac Escalade ESV waiting at a hotel front drive at dusk" loading="lazy"><div class="svc-body"><h3>Hourly Reservation</h3><p>Your driver stays with you through errands, tours or a full evening of stops. One booking, 2 hour minimum.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="hourly">Book this</button></div></div></article>
+      <article class="svc svc-k-business"><img width="1200" height="800" src="bbl-svc-business.webp" alt="Black Cadillac Escalade ESV on a downtown Denver street in front of glass office towers" loading="lazy"><div class="svc-body"><h3>Business Pickup</h3><p>On-time pickups for meetings, offices and client visits around the Denver metro, quiet, private, and priced before you ride.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="business">Book this</button></div></div></article>
+      <article class="svc svc-k-airport svc-feature"><img width="1200" height="800" src="bbl-svc-airport.webp" alt="Black Cadillac Escalade ESV waiting at an airport departures curb" loading="lazy"><div class="svc-body"><h3>Airport Pickup &amp; Drop Off</h3><p>We track your flight and meet you at the terminal, DIA and every metro airport, with room for all your bags.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="airport">Book this</button></div></div></article>
+      <article class="svc svc-k-special svc-feature"><img width="1200" height="800" src="bbl-svc-special.webp" alt="Black Cadillac Escalade ESV outside a restaurant row at dusk, city lights behind it" loading="lazy"><div class="svc-body"><h3>Special Occasions</h3><p>Anniversaries, birthdays, date nights and proposals, arrive relaxed, and ride home safely when the night ends.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="special">Book this</button></div></div></article>
+      <article class="svc svc-k-wedding"><img width="1200" height="800" src="bbl-svc-wedding.webp" alt="Black Cadillac Escalade ESV in profile outside a stone wedding venue with a floral arch" loading="lazy"><div class="svc-body"><h3>Wedding &amp; Ceremony</h3><p>Ceremony, photos, reception: one calm driver for the whole day, waiting at every stop while you celebrate.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="wedding">Book this</button></div></div></article>
+      <article class="svc svc-k-concert svc-pano"><img width="1200" height="800" src="bbl-svc-concert.webp" alt="Black Cadillac Escalade ESV at a theater marquee on a concert night" loading="lazy"><div class="svc-body"><h3>Concert &amp; Events</h3><p>Red Rocks, Ball Arena and every metro venue, dropped off at the gate and picked up at a set spot after the show.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="concert">Book this</button></div></div></article>
+      <article class="svc svc-k-mountain svc-split svc-split-r"><img width="1200" height="800" src="bbl-svc-mountain.webp" alt="Black Cadillac Escalade ESV on a winding Colorado mountain road" loading="lazy"><div class="svc-body"><h3>Mountain Rides</h3><p>Ski towns, resorts and mountain weddings in the long wheelbase Escalade, room for skis, boards and all the gear.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="mountain">Book this</button></div></div></article>
+      <article class="svc svc-k-hourly"><img width="1200" height="800" src="bbl-svc-hourly.webp" alt="Black Cadillac Escalade ESV waiting at a hotel front drive at dusk" loading="lazy"><div class="svc-body"><h3>Hourly Reservation</h3><p>Your driver stays with you through errands, tours or a full evening of stops. One booking, 2 hour minimum.</p><div class="svc-meta"><button class="btn btn-amber" type="button" data-book="hourly">Book this</button></div></div></article>
     </div>
   </div>
 </section>
@@ -1125,7 +1149,7 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
     <h2 class="sec">Meet your SUV</h2>
     <p class="secsub">Locally owned and operated, based in Boulder — the Escalade you book is the Escalade that arrives.</p>
     <div class="suv-grid">
-      <img src="bbl-suv-1.jpg" alt="2026 Cadillac Escalade ESV, front three quarter view">
+      <img width="1200" height="800" src="bbl-suv-1.webp" alt="2026 Cadillac Escalade ESV, front three quarter view">
       <div>
         <h3 style="font-size:24px">2026 Cadillac Escalade ESV, Black on Black</h3>
         <p style="color:var(--ink2);margin:10px 0 0">Black outside, black inside, black leather throughout, finished with gloss black premium wheels and blacked out trim.</p>
@@ -1184,7 +1208,7 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
       <!-- STEP 1: PRICE, SUV AND RIDE DETAILS (ride facts come from the widget) -->
       <div class="bstep on" data-step="1">
         <div class="sum-card" id="priceSummary"></div>
-        <img class="suv-banner" src="bbl-suv-2.jpg" alt="2026 Cadillac Escalade ESV, rear three quarter view, the SUV that will pick you up">
+        <img class="suv-banner" width="1200" height="800" src="bbl-suv-2.webp" alt="2026 Cadillac Escalade ESV, rear three quarter view, the SUV that will pick you up">
         <div class="grid g2" style="margin-top:12px">
           <div class="field"><label class="flabel" for="bPax">Passengers *</label><select id="bPax"><option value="">Select…</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select><div class="err">Please select how many passengers (max 6).</div></div>
           <div class="field"><label class="flabel" for="bBags">Bags</label><select id="bBags"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select><div class="err"></div></div>
@@ -1275,8 +1299,8 @@ body.qpage.bk-on .qhero .continue-btn{margin-top:4px}
       <div><h3>Contact</h3><p>Call / text: <a href="tel:+17203264652">(720) 326-4652</a><br>Email: <a href="mailto:boulderblack1@gmail.com">boulderblack1@gmail.com</a></p></div>
       <div><h3>Good to know</h3><p>Licensed &amp; insured, LLC #LL04950<br>A locally owned Boulder business. Rides are first booked, first served.<br>Airport pickups include flight tracking.</p></div>
     </div>
-    <div class="fine">© 2026 Boulder Black Line <a href="/privacy.html">Privacy Policy</a><a href="/terms.html">Terms of Service</a><a href="/owner.html">Admin</a></div>
-    <div class="fine build-line">Build 20 · v2026.11.22-build20 · 2026-11-22</div>
+    <div class="fine">© 2026 Boulder Black Line <a href="/privacy.html">Privacy Policy</a><a href="/terms.html">Terms of Service</a><a href="/coverage.html">Coverage</a><a href="/owner.html">Admin</a></div>
+    <div class="fine build-line">Build 21 · v2026.11.23-build21 · 2026-11-23</div>
   </div>
 </footer>
 

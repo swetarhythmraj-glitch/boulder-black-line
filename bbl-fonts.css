@@ -1,0 +1,18 @@
+/* Boulder Black Line self-hosted fonts (audit fix L7, staged 2026-11-23).
+   Inter and Urbanist, latin subsets, variable fonts obtained from Google Fonts.
+   Both families are licensed under the SIL Open Font License 1.1;
+   license texts ship alongside the font files in bbl-fonts/. */
+@font-face {
+  font-family: 'Inter';
+  src: url('bbl-fonts/inter-var.woff2') format('woff2');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Urbanist';
+  src: url('bbl-fonts/urbanist-var.woff2') format('woff2');
+  font-weight: 500 800;
+  font-style: normal;
+  font-display: swap;
+}

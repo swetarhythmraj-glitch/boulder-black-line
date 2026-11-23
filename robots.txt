@@ -1,0 +1,7 @@
+# Boulder Black Line - robots.txt (audit fix H2, staged 2026-11-23)
+User-agent: *
+Allow: /
+Disallow: /owner.html
+Disallow: /owner
+
+Sitemap: https://boulderblack.com/sitemap.xml

@@ -3,8 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
 <meta name="color-scheme" content="light dark">
-<meta name="description" content="Boulder Black Line owner page. Sign in to see the day view, the sample rides and the preview bookings made in this browser. Call (720) 326-4652.">
+<meta name="description" content="Owner page for Boulder Black Line. Sign in with the owner or support code to see bookings, the day view, drivers, and settings.">
 <meta name="theme-color" content="#17130E">
 <!-- Home Screen / tab icons (user, 2026-11-18): the approved Escalade-crest artwork, full-bleed black. -->
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -13,9 +14,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <meta name="apple-mobile-web-app-title" content="Boulder Black Line">
 <title>Boulder Black Line: Owner Day View</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="bbl-fonts.css">
 <style>
 :root{
   --bg:#FAF7F1; --surface:#FFFFFF; --surface2:#F3EEE4; --ink:#17130E; --ink2:#4A4236; --muted:#6E6353;
@@ -309,7 +308,7 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
     </div>
     <div class="tabpage" id="tabpage-drivers" role="tabpanel" aria-labelledby="tabbtn-drivers" hidden>
     <h2 class="sec" style="margin-top:56px">Drivers</h2>
-    <p class="secsub">Add the drivers who run your rides here, then use the Assign driver box on any ride in the day view above to give the ride to a driver. Drivers sign in on the driver page at the driver page (separate preview, not part of this build). That page is not linked from the rider site, so tell your drivers the address.</p>
+    <p class="secsub">Add the drivers who run your rides here, then use the Assign driver box on any ride in the day view above to give the ride to a driver. Drivers sign in on the driver page (a separate page, not part of this one). That page is not linked from the rider site, so tell your drivers the address.</p>
     <h3 id="driverFormTitle" style="font-size:19px;margin:0 0 14px">Add a driver</h3>
     <form class="drv-form" id="driverForm" novalidate>
       <div class="field"><label class="flabel" for="dName">Full name *</label><input id="dName" type="text" autocomplete="name" placeholder="e.g. Alex Morgan"><div class="err">Please enter the driver full name.</div></div>
@@ -329,7 +328,7 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
     </div>
     <div class="tabpage" id="tabpage-block" role="tabpanel" aria-labelledby="tabbtn-block" hidden>
     <h2 class="sec" style="margin-top:56px">Block a day</h2>
-    <p class="secsub">Pick a day to block. Nobody can book that date, and the blocked days are saved on this device for the preview.</p>
+    <p class="secsub">Pick a day to block. Nobody can book that date, and the blocked days are saved on this device.</p>
     <form id="blockForm" novalidate>
       <div class="block-row">
         <div class="field"><label class="flabel" for="blockDate">Day to block</label><input id="blockDate" type="date"><div class="err">Please choose a day to block.</div></div>
@@ -413,7 +412,7 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
     <div class="tabpage" id="tabpage-day" role="tabpanel" aria-labelledby="tabbtn-day" hidden>
     <div class="kicker">For the owner</div>
     <h2 class="sec">Your day, on one simple screen</h2>
-    <p class="secsub">Sample rides and preview bookings made in this browser are listed together below. Tap a status as the ride happens, block days off, and every tap would text the rider automatically in the live site.</p>
+    <p class="secsub">Rides for the selected day are listed below. Tap a status as the ride happens, and block days off here.</p>
     <div id="quotesWrap" style="display:none;">
     <h3 style="margin:22px 0 10px;font-size:18px;">Quote requests</h3>
     <div id="quotesList"><p class="empty-note">No quote requests yet.</p></div>
@@ -443,8 +442,8 @@ select.assign-sel{width:auto;min-height:44px;padding:8px 10px;font-size:13.5px;f
     <div class="foot-crest"></div>
     <h3>Boulder Black Line</h3>
     <p style="margin:0">Private SUV rides in the Denver metro. Call <a href="tel:+17203264652">(720) 326-4652</a> or email <a href="mailto:boulderblack1@gmail.com">boulderblack1@gmail.com</a>.</p>
-    <p class="fine">Owner page for the preview. This page has its own address and its own sign in, and it is not linked from the rider site.<br><a href="/privacy.html">Privacy Policy</a> · <a href="/terms.html">Terms of Service</a></p>
-    <p class="fine build-line">Build 22 · v2026.11.22-build22 · 2026-11-22</p>
+    <p class="fine">Owner page. This page has its own address and its own sign in, and it is not linked from the rider site.<br><a href="/privacy.html">Privacy Policy</a> · <a href="/terms.html">Terms of Service</a></p>
+    <p class="fine build-line">Build 23 · v2026.11.23-build23 · 2026-11-23</p>
   </div>
 </footer>
 
@@ -780,6 +779,8 @@ function applyRoleUI(){
   if(scp)scp.hidden=!(CODE_SESSION&&CODE_ROLE==="owner");
   var gcp=$("gateCodePanel");
   if(gcp)gcp.hidden=!(CODE_SESSION&&CODE_ROLE==="owner");
+  var ahp=$("accessHistoryPanel");
+  if(ahp)ahp.hidden=!(CODE_SESSION&&CODE_ROLE==="support");
   var st=$("supportState");
   if(st)st.textContent=SUPPORT_SET?"A support code is set.":"No support code is set.";
 }
@@ -813,7 +814,7 @@ function enterCodeChrome(){
   $("authSection").hidden=true;
   $("daySection").hidden=false;
   var scp=$("schedPanel");if(scp)scp.hidden=false;var sp=$("settingsPanel");if(sp)sp.hidden=false;
-  var ccp=$("codeChangePanel");if(ccp)ccp.hidden=false;var cvp=$("coveragePanel");if(cvp)cvp.hidden=false;var ahp=$("accessHistoryPanel");if(ahp)ahp.hidden=false;
+  var ccp=$("codeChangePanel");if(ccp)ccp.hidden=false;var cvp=$("coveragePanel");if(cvp)cvp.hidden=false;
   if(window.__bblCollapseCodeChange)window.__bblCollapseCodeChange();
   if(window.__bblCollapseAccessHistory)window.__bblCollapseAccessHistory();
   var lk=$("liveLock");if(lk)lk.hidden=false;
